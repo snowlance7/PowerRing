@@ -6,6 +6,8 @@ using System.Linq;
 using UnityEngine;
 using static PowerRing.Plugin;
 
+namespace PowerRing;
+
 /* bodyparts
  * 0 head
  * 1 right arm
@@ -19,43 +21,40 @@ using static PowerRing.Plugin;
  * 9 left shoulder
  * 10 right shoulder */
 
-namespace PowerRing
+[HarmonyPatch]
+public static class TESTING
 {
-    [HarmonyPatch]
-    public static class TESTING
+    [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
+    public static void PingScan_performedPostFix()
     {
-        [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
-        public static void PingScan_performedPostFix()
+        try
         {
-            try
+            if (!Utils.testing) { return; }
+        }
+        catch
+        {
+            return;
+        }
+    }
+
+    [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
+    public static void SubmitChat_performedPrefix(HUDManager __instance)
+    {
+        try
+        {
+            if (!Utils.testing) { return; }
+            string msg = __instance.chatTextField.text;
+            string[] args = msg.Split(" ");
+
+            switch (args[0])
             {
-                if (!Utils.testing) { return; }
-            }
-            catch
-            {
-                return;
+                default:
+                    break;
             }
         }
-
-        [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
-        public static void SubmitChat_performedPrefix(HUDManager __instance)
+        catch
         {
-            try
-            {
-                if (!Utils.testing) { return; }
-                string msg = __instance.chatTextField.text;
-                string[] args = msg.Split(" ");
-
-                switch (args[0])
-                {
-                    default:
-                        break;
-                }
-            }
-            catch
-            {
-                return;
-            }
+            return;
         }
     }
 }

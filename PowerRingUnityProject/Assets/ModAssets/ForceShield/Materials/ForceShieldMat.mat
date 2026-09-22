@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: ForceShieldMat
-  m_Shader: {fileID: 4800000, guid: ba8e2ab68bbc368409f4ce9567679df7, type: 3}
+  m_Shader: {fileID: 4800000, guid: cf6661a49c9197f4c89b17278cdd0c2b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -59,15 +59,25 @@ Material:
     m_Floats:
     - _Displacement: 0.15
     - _EdgeLength: 6.3
+    - _HitDuration: 1
+    - _HitGlow: 5
     - _HitLenght: 1
+    - _HitRingWidth: 0.08
     - _HitSize: 0.2
     - _HitTime: 0
+    - _HitWave: 0.15
     - _IntersectIntensity: 0.191
     - _Opacity: 0.378
+    - _PatternScale: 24
+    - _PatternSpeed: 1
+    - _PatternStrength: 0.35
     - _Phong: 0.5
     - _ShieldPatternPower: 3
     - _ShieldPatternSize: 1
     - _ShieldRimPower: 7.76
+    - _WaveScale: 12
+    - _WaveSpeed: 1.5
+    - _WaveStrength: 0.25
     m_Colors:
     - _Color: {r: 0.11151922, g: 1, b: 0, a: 1}
     - _HitColor: {r: 0.006026864, g: 1, b: 0, a: 1}

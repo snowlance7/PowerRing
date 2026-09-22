@@ -15,3 +15,5 @@ For issues and suggestions visit the [github](https://github.com/snowlance7/Powe
 ## Credit
 
 - [Green Lantern Ring](https://skfb.ly/owTzA) by YahyaKassab
+- [Green Lantern's Power Battery from Lanterns](https://skfb.ly/pNQMn) by BatCat
+- [Responsive Energy Shield](https://assetstore.unity.com/packages/vfx/shaders/responsive-energy-shield-141118) by IndieChest

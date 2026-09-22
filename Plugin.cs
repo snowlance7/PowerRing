@@ -11,57 +11,56 @@ using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace PowerRing
+namespace PowerRing;
+
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInDependency(DawnLib.PLUGIN_GUID)]
+[BepInDependency(SnowyLib.MyPluginInfo.PLUGIN_GUID)]
+internal class Plugin : BaseUnityPlugin
 {
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-    [BepInDependency(DawnLib.PLUGIN_GUID)]
-    [BepInDependency(SnowyLib.MyPluginInfo.PLUGIN_GUID)]
-    internal class Plugin : BaseUnityPlugin
+    public static Plugin PluginInstance { get; private set; } = null!;
+    public static ManualLogSource logger { get; private set; } = null!;
+    public static DuskMod Mod { get; private set; } = null!;
+
+    private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
+    public static PlayerControllerB localPlayer { get { return StartOfRound.Instance.localPlayerController; } }
+    public static PlayerControllerB? PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).FirstOrDefault(); }
+    public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
+
+    private void Awake()
     {
-        public static Plugin PluginInstance { get; private set; } = null!;
-        public static ManualLogSource logger { get; private set; } = null!;
-        public static DuskMod Mod { get; private set; } = null!;
+        if (PluginInstance == null) PluginInstance = this;
 
-        private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
-        public static PlayerControllerB localPlayer { get { return StartOfRound.Instance.localPlayerController; } }
-        public static PlayerControllerB? PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).FirstOrDefault(); }
-        public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
+        logger = PluginInstance.Logger;
 
-        private void Awake()
+        harmony.PatchAll();
+
+        AssetBundle? mainBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Info.Location), "powerring_mainassets"));
+        Mod = DuskMod.RegisterMod(this, mainBundle);
+        Mod.RegisterContentHandlers();
+
+        InitializeNetworkBehaviours();
+
+        // Finished
+        Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+    }
+
+    private static void InitializeNetworkBehaviours()
+    {
+        var types = Assembly.GetExecutingAssembly().GetTypes();
+        foreach (var type in types)
         {
-            if (PluginInstance == null) PluginInstance = this;
-
-            logger = PluginInstance.Logger;
-
-            harmony.PatchAll();
-
-            AssetBundle? mainBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Info.Location), "powerring_mainassets"));
-            Mod = DuskMod.RegisterMod(this, mainBundle);
-            Mod.RegisterContentHandlers();
-
-            InitializeNetworkBehaviours();
-
-            // Finished
-            Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
-        }
-
-        private static void InitializeNetworkBehaviours()
-        {
-            var types = Assembly.GetExecutingAssembly().GetTypes();
-            foreach (var type in types)
+            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            foreach (var method in methods)
             {
-                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                foreach (var method in methods)
+                var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                if (attributes.Length > 0)
                 {
-                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                    if (attributes.Length > 0)
-                    {
-                        method.Invoke(null, null);
-                    }
+                    method.Invoke(null, null);
                 }
             }
-            logger?.LogDebug("Finished initializing network behaviours");
         }
+        logger?.LogDebug("Finished initializing network behaviours");
     }
 }
 

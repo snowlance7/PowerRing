@@ -1,88 +1,122 @@
-﻿using Something;
+﻿using SnowyLib;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace PowerRing
+namespace PowerRing;
+
+internal class PowerRingBehavior : PhysicsProp
 {
-    internal class PowerRingBehavior : PhysicsProp
+    public MeshRenderer renderer = null!;
+    public GameObject bubbleShieldPrefab = null!;
+    public GameObject energyConstructPrefab = null!;
+    public GameObject energyCagePrefab = null!;
+    public GameObject energyShieldObj = null!;
+
+    public float charge = 1f;
+
+    public static readonly bool energyShieldToggle = true;
+
+    [StaticInit]
+    public static void InitConfigs()
     {
-        public MeshRenderer renderer = null!;
+        // TODO: Look at configs.txt
+    }
 
-        public override void Start()
-        {
-            base.Start();
-            PowerRingInputs.Instance.GreenLightKey.performed += GreenLightKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed += EnergyBubbleShieldKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed += EnergyConstructKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed += EnergyCageKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed += EnergyShieldKeyPressed;
-        }
+    public void Awake()
+    {
+        itemProperties.positionOffset = new Vector3(0, 0, 0);
+        itemProperties.rotationOffset = new Vector3(0, 0, 0);
+    }
 
-        public override void OnDestroy()
-        {
-            PowerRingInputs.Instance.GreenLightKey.performed -= GreenLightKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed -= EnergyBubbleShieldKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed -= EnergyConstructKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed -= EnergyCageKeyPressed;
-            PowerRingInputs.Instance.GreenLightKey.performed -= EnergyShieldKeyPressed;
-            base.OnDestroy();
-        }
+    public void OnEnable()
+    {
+        PowerRingInputs.Instance.GreenLightKey.performed += GreenLightKeyPressed;
+        PowerRingInputs.Instance.EnergyBubbleShieldKey.performed += EnergyBubbleShieldKeyPressed;
+        PowerRingInputs.Instance.EnergyConstructKey.performed += EnergyConstructKeyPressed;
+        PowerRingInputs.Instance.EnergyCageKey.performed += EnergyCageKeyPressed;
+        PowerRingInputs.Instance.EnergyShieldKey.performed += EnergyShieldKeyPressed;
+    }
 
-        public override void EquipItem()
-        {
-            base.EquipItem();
-            playerHeldBy.equippedUsableItemQE = true;
-        }
+    public void OnDisable()
+    {
+        PowerRingInputs.Instance.GreenLightKey.performed -= GreenLightKeyPressed;
+        PowerRingInputs.Instance.EnergyBubbleShieldKey.performed -= EnergyBubbleShieldKeyPressed;
+        PowerRingInputs.Instance.EnergyConstructKey.performed -= EnergyConstructKeyPressed;
+        PowerRingInputs.Instance.EnergyCageKey.performed -= EnergyCageKeyPressed;
+        PowerRingInputs.Instance.EnergyShieldKey.performed -= EnergyShieldKeyPressed;
+    }
 
-        public override void PocketItem()
-        {
-            playerHeldBy.equippedUsableItemQE = false;
-            base.PocketItem();
-        }
+    public override void SetControlTipsForItem()
+    {
+        string[] tooltips =
+        [
+            "Energy Beam [LMB]",
+                "Flight [Q]",
+                $"Green Light [{PowerRingInputs.Instance.GreenLightKey_BindingDisplayString}]",
+                $"Energy Bubble Shield [{PowerRingInputs.Instance.EnergyBubbleShieldKey_BindingDisplayString}]",
+                $"Energy Construct [{PowerRingInputs.Instance.EnergyConstructKey_BindingDisplayString}]",
+                $"Energy Cage [{PowerRingInputs.Instance.EnergyCageKey_BindingDisplayString}]",
+                $"Energy Shield [{PowerRingInputs.Instance.EnergyShieldKey_BindingDisplayString}]"
+        ];
+        HUDManager.Instance.ChangeControlTipMultiple(tooltips, holdingItem: true, itemProperties);
+    }
 
-        public override void DiscardItem()
-        {
-            playerHeldBy.equippedUsableItemQE = false;
-            base.DiscardItem();
-        }
+    public override void EquipItem()
+    {
+        base.EquipItem();
+        playerHeldBy.equippedUsableItemQE = true;
+        SetControlTipsForItem();
+    }
+    public override void PocketItem()
+    {
+        playerHeldBy.equippedUsableItemQE = false;
+        base.PocketItem();
+    }
+    public override void DiscardItem()
+    {
+        playerHeldBy.equippedUsableItemQE = false;
+        base.DiscardItem();
+    }
 
-        public override void ItemActivate(bool used, bool buttonDown = true) // Energy Beam
-        {
-            base.ItemActivate(used, buttonDown);
+    public override void ItemActivate(bool used, bool buttonDown = true) // Energy Beam
+    {
+        base.ItemActivate(used, buttonDown);
 
-        }
+        // TODO: Find out if it should be a constant beam or a burst
+    }
 
-        public override void ItemInteractLeftRight(bool right) // Flight
-        {
-            base.ItemInteractLeftRight(right);
-            if (right) { return; }
+    public override void ItemInteractLeftRight(bool right) // Flight
+    {
+        base.ItemInteractLeftRight(right);
+        if (right) { return; }
 
-        }
+        // TODO
+    }
 
-        private void EnergyShieldKeyPressed(InputAction.CallbackContext context)
-        {
-            throw new NotImplementedException();
-        }
+    private void EnergyShieldKeyPressed(InputAction.CallbackContext context) // Energy Shield
+    {
+        throw new NotImplementedException();
+    }
 
-        private void EnergyCageKeyPressed(InputAction.CallbackContext context)
-        {
-            throw new NotImplementedException();
-        }
+    private void EnergyCageKeyPressed(InputAction.CallbackContext context) // Energy Cage
+    {
+        throw new NotImplementedException();
+    }
 
-        private void EnergyConstructKeyPressed(InputAction.CallbackContext context)
-        {
-            throw new NotImplementedException();
-        }
+    private void EnergyConstructKeyPressed(InputAction.CallbackContext context) // Energy Construct
+    {
+        throw new NotImplementedException();
+    }
 
-        private void EnergyBubbleShieldKeyPressed(InputAction.CallbackContext context)
-        {
-            throw new NotImplementedException();
-        }
+    private void EnergyBubbleShieldKeyPressed(InputAction.CallbackContext context) // Energy Bubble Shield
+    {
+        // TODO: make it so you cast on yourself by default but if you use the point emote, it tries to cast on a player
+        throw new NotImplementedException();
+    }
 
-        private void GreenLightKeyPressed(InputAction.CallbackContext context)
-        {
-            throw new NotImplementedException();
-        }
+    private void GreenLightKeyPressed(InputAction.CallbackContext context) // Green Light
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,0 +1,62 @@
+green light:
+- toggle
+- power usage on cast
+- power usage per second
+
+bubble shield:
+- toggle
+- power usage on cast
+- power usage per second
+- deactivate on discard/pocket ring
+- use duration
+- duration
+- self use duration
+- self duration
+- cooldown
+
+energy construct:
+- toggle
+- power usage on cast
+- power usage per second
+- deactivate on discard/pocket ring
+- use duration
+- duration
+- cooldown
+
+energy beam:
+- power usage on cast
+- cooldown
+- enemy knockback force
+- player knockback force
+- enemy damage
+- player damage
+
+flight:
+- toggle
+- power usage on cast
+- power usage per second
+- deactivate on discard/pocket ring
+- use duration
+- duration
+- cooldown
+- hover or fly
+
+energy trap:
+- toggle
+- power usage on cast
+- power usage per second
+- deactivate on discard/pocket ring
+- use duration
+- duration
+- cooldown
+- slow multiplier (1 is stop fully)
+
+energy shield:
+- toggle
+- power usage on cast
+- power usage per second
+- use duration
+- duration
+- cooldown
+
+should the bubble shield use more power when it blocks damage or should it only be a power usage / time thing?
