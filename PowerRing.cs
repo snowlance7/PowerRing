@@ -2,10 +2,11 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static PowerRing.Plugin;
 
 namespace PowerRing;
 
-internal class PowerRingBehavior : PhysicsProp
+internal class PowerRing : PhysicsProp
 {
     public MeshRenderer renderer = null!;
     public GameObject bubbleShieldPrefab = null!;
@@ -15,7 +16,10 @@ internal class PowerRingBehavior : PhysicsProp
 
     public float charge = 1f;
 
+    public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
+
     public static readonly bool energyShieldToggle = true;
+
 
     [StaticInit]
     public static void InitConfigs()

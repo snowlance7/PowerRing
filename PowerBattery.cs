@@ -4,7 +4,7 @@ using static PowerRing.Plugin;
 
 namespace PowerRing;
 
-internal class PowerBatteryBehavior : NetworkBehaviour
+internal class PowerBattery : NetworkBehaviour
 {
     public InteractTrigger interactTrigger = null!;
 
