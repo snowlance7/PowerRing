@@ -10,7 +10,7 @@ internal class PowerBattery : NetworkBehaviour
 
     public void Update()
     {
-        interactTrigger.interactable = localPlayer.currentlyHeldObjectServer != null && localPlayer.currentlyHeldObjectServer is PowerRingBehavior;
+        interactTrigger.interactable = localPlayer.currentlyHeldObjectServer != null && localPlayer.currentlyHeldObjectServer is PowerRing;
     }
 
     public void ChargeRing()
