@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static PowerRing.Plugin;
 using static PowerRing.Configs;
+using Unity.Netcode;
 
 namespace PowerRing;
 
@@ -27,6 +28,8 @@ internal class PowerRing : PhysicsProp
 
     float[] cooldowns = new float[7];
 
+    int enemiesAndPlayersMask;
+
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
 
     public enum Ability
@@ -44,6 +47,7 @@ internal class PowerRing : PhysicsProp
     {
         itemProperties.positionOffset = new Vector3(0, 0, 0);
         itemProperties.rotationOffset = new Vector3(0, 0, 0);
+        enemiesAndPlayersMask = LayerMask.GetMask("Enemies", "Player");
     }
 
     public void OnEnable()
@@ -120,19 +124,14 @@ internal class PowerRing : PhysicsProp
     public override void PocketItem()
     {
         playerHeldBy.equippedUsableItemQE = false;
+        SetPowerRpc(power);
         base.PocketItem();
     }
     public override void DiscardItem()
     {
         playerHeldBy.equippedUsableItemQE = false;
+        SetPowerRpc(power);
         base.DiscardItem();
-    }
-
-    public bool UsePower(float powerAmount)
-    {
-        if (!CanUsePower(powerAmount)) { return false; }
-        power -= powerAmount;
-        return true;
     }
 
     public bool CanUsePower(float powerAmount)
@@ -157,13 +156,16 @@ internal class PowerRing : PhysicsProp
         base.ItemActivate(used, buttonDown);
         if (!buttonDown) { return; }
 
-        if (!CanCastAbility(Ability.EnergyBeam))
+        if (!IsOffCooldown(Ability.EnergyBeam) || !CanUsePower(EnergyBeamPowerUsageOnCast))
         {
             DoCastFailedEffects();
             return;
         }
 
-        if (!UsePower(EnergyBeamPowerUsageOnCast)) { return; }
+        energyBlastParticleSystem.Play();
+
+        if (!Physics.SphereCast(localPlayer.transform.position + localPlayer.transform.forward, 1f, localPlayer.transform.forward, out RaycastHit hitInfo, 5f, enemiesAndPlayersMask)) { return; }
+
     }
 
     public override void ItemInteractLeftRight(bool right) // Flight
@@ -198,5 +200,11 @@ internal class PowerRing : PhysicsProp
     private void GreenLightKeyPressed(InputAction.CallbackContext context) // Green Light
     {
         throw new NotImplementedException();
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void SetPowerRpc(float powerAmount)
+    {
+        power = powerAmount;
     }
 }
