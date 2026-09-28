@@ -165,6 +165,14 @@ internal class PowerRing : PhysicsProp
         energyBlastParticleSystem.Play();
 
         if (!Physics.SphereCast(localPlayer.transform.position + localPlayer.transform.forward, 1f, localPlayer.transform.forward, out RaycastHit hitInfo, 5f, enemiesAndPlayersMask)) { return; }
+        if (hitInfo.collider.CompareTag("Enemies"))
+        {
+
+        }
+        else
+        {
+
+        }
 
     }
 
@@ -204,6 +212,28 @@ internal class PowerRing : PhysicsProp
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void SetPowerRpc(float powerAmount)
+    {
+        power = powerAmount;
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void EnergyBlastRpc(NetworkObjectReference netRef, Vector3 direction)
+    {
+        if (!netRef.TryGet(out NetworkObject netObj)) { logger.LogError("EnergyBlastRpc: failed to get networkobject from networkobjectreference"); return; }
+        EnemyAI enemy = netObj.GetComponent<EnemyAI>();
+
+        energyBlastParticleSystem.Play();
+        GameObject energyHitObj = Instantiate(energyHitPrefab, enemy.eye);
+        Destroy(energyHitObj, 2f);
+
+        Utils.AddForceToEnemy(enemy, direction, EnergyBeamEnemyKnockbackForce);
+        enemy.HitEnemy(EnergyBeamEnemyDamage, playerHeldBy);
+
+        power = Mathf.Clamp01(power - EnergyBeamPowerUsageOnCast);
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void EnergyBlastRpc(ulong playerHitId, Vector3 direction)
     {
         power = powerAmount;
     }
