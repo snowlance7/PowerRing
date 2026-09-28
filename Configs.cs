@@ -9,7 +9,7 @@ namespace PowerRing
 {
     internal static class Configs
     {
-        public static ulong[] RingRestrictedSteamIDs => PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Restricted Steam IDs", "", "List of steam ids separated by commas of players who can use the Power Ring. Leave blank to allow all players to use it.").Value.Split(",").Select(x => ulong.Parse(x)).ToArray();
+        public static ulong[] RingRestrictedSteamIDs => ParseSteamIds(PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Restricted Steam IDs", "", "List of steam ids separated by commas of players who can use the Power Ring. Leave blank to allow all players to use it.").Value);
 
         public static bool GreenLightToggle => PluginInstance.Config.Bind("Green Light", "Toggle", true, "If the green light ability should toggle or require holding the button down to work.").Value;
         public static float GreenLightPowerUsageOnCast => PluginInstance.Config.Bind("Green Light", "Power Usage On Cast", 0f, "How much power the green light ability consumes when activated.").Value;
@@ -113,6 +113,22 @@ namespace PowerRing
             _ = EnergyShieldPowerUsagePerSecond;
             _ = EnergyShieldDuration;
             _ = EnergyShieldCooldown;
+        }
+
+        public static ulong[] ParseSteamIds(string input)
+        {
+            string[] output = input.Split(",");
+            if (output.Length == 0) { return []; }
+
+            List<ulong> ulongs = new List<ulong>();
+
+            foreach (var item in output)
+            {
+                if (!ulong.TryParse(item, out ulong result)) { continue; }
+                ulongs.Add(result);
+            }
+
+            return ulongs.ToArray();
         }
     }
 }

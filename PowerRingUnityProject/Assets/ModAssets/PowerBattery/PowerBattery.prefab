@@ -377,6 +377,7 @@ GameObject:
   - component: {fileID: 7705481374237114352}
   - component: {fileID: 6585253833710483072}
   - component: {fileID: 3070050871564635292}
+  - component: {fileID: 7843731861133242753}
   m_Layer: 8
   m_Name: PowerBattery
   m_TagString: Untagged
@@ -414,7 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2414067853
+  GlobalObjectIdHash: 2390634969
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -442,6 +443,19 @@ MonoBehaviour:
   startingRotation: {x: 0, y: 0, z: 0}
   overrideOffset: 1
   unlockableID: -1
+--- !u!114 &7843731861133242753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6647373106572453177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1989671303, guid: af8bea4c03dc99d43947544af35ff6c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactTrigger: {fileID: 7244097047178664251}
 --- !u!1 &6961908950977701351
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,10 +564,9 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: LethalDiseases.Unlockables.CottonSwabsBehavior,
-          Snowlance.LethalDiseases
-        m_MethodName: Interact
+      - m_Target: {fileID: 7843731861133242753}
+        m_TargetAssemblyTypeName: PowerRing.PowerBattery, Snowlance.PowerRing
+        m_MethodName: ChargeRing
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

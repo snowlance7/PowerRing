@@ -1,4 +1,5 @@
-﻿using Dusk;
+﻿using BepInEx.Logging;
+using Dusk;
 
 namespace PowerRing;
 

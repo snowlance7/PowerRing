@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using static PowerRing.Plugin;
 using static PowerRing.Configs;
 using Unity.Netcode;
+using GameNetcodeStuff;
 
 namespace PowerRing;
 
@@ -155,7 +156,7 @@ internal class PowerRing : PhysicsProp
     {
         base.ItemActivate(used, buttonDown);
         if (!buttonDown) { return; }
-
+        return;
         if (!IsOffCooldown(Ability.EnergyBeam) || !CanUsePower(EnergyBeamPowerUsageOnCast))
         {
             DoCastFailedEffects();
@@ -167,10 +168,12 @@ internal class PowerRing : PhysicsProp
         if (!Physics.SphereCast(localPlayer.transform.position + localPlayer.transform.forward, 1f, localPlayer.transform.forward, out RaycastHit hitInfo, 5f, enemiesAndPlayersMask)) { return; }
         if (hitInfo.collider.CompareTag("Enemies"))
         {
+            EnemyAI enemy = hitInfo.collider.gameObject.GetComponent<EnemyAICollisionDetect>().mainScript;
 
         }
         else
         {
+            PlayerControllerB player = hitInfo.collider.gameObject.GetComponent<PlayerControllerB>();
 
         }
 
@@ -235,6 +238,16 @@ internal class PowerRing : PhysicsProp
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void EnergyBlastRpc(ulong playerHitId, Vector3 direction)
     {
-        power = powerAmount;
+        PlayerControllerB? player = PlayerFromId(playerHitId);
+        if (player == null) { logger.LogError("Failed to get player from player id " + playerHitId); return; }
+
+        energyBlastParticleSystem.Play();
+        GameObject energyHitObj = Instantiate(energyHitPrefab, player.bodyParts[5]);
+        Destroy(energyHitObj, 2f);
+
+        Utils.AddForceToPlayer(player, direction, EnergyBeamPlayerKnockbackForce);
+        player.DamagePlayer(EnergyBeamPlayerDamage, callRPC: false, causeOfDeath: CauseOfDeath.Blast, force: direction * EnergyBeamPlayerKnockbackForce);
+
+        power = Mathf.Clamp01(power - EnergyBeamPowerUsageOnCast);
     }
 }
