@@ -32,4 +32,9 @@ internal class PowerRingInputs : LcInputActions
     [InputAction(KeyboardControl.V, Name = "Energy Shield")]
     public InputAction EnergyShieldKey { get; set; } = null!;
     public string EnergyShieldKey_BindingDisplayString => EnergyShieldKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
+
+
+    [InputAction(KeyboardControl.V, Name = "Oath")]
+    public InputAction OathKey { get; set; } = null!;
+    public string OathKey_BindingDisplayString => EnergyShieldKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
 }

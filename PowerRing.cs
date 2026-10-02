@@ -54,35 +54,21 @@ internal class PowerRing : PhysicsProp
     public void OnEnable()
     {
         PowerRingInputs.Instance.GreenLightKey.performed += GreenLightKeyPressed;
-
-        PowerRingInputs.Instance.EnergyBubbleShieldKey.started += EnergyBubbleShieldKeyPressed;
-        PowerRingInputs.Instance.EnergyBubbleShieldKey.canceled += EnergyBubbleShieldKeyPressed;
-
-        PowerRingInputs.Instance.EnergyConstructKey.started += EnergyConstructKeyPressed;
-        PowerRingInputs.Instance.EnergyConstructKey.canceled += EnergyConstructKeyPressed;
-
-        PowerRingInputs.Instance.EnergyCageKey.started += EnergyCageKeyPressed;
-        PowerRingInputs.Instance.EnergyCageKey.canceled += EnergyCageKeyPressed;
-
-        PowerRingInputs.Instance.EnergyShieldKey.started += EnergyShieldKeyPressed;
-        PowerRingInputs.Instance.EnergyShieldKey.canceled += EnergyShieldKeyPressed;
+        PowerRingInputs.Instance.EnergyBubbleShieldKey.performed += EnergyBubbleShieldKeyPressed;
+        PowerRingInputs.Instance.EnergyConstructKey.performed += EnergyConstructKeyPressed;
+        PowerRingInputs.Instance.EnergyCageKey.performed += EnergyCageKeyPressed;
+        PowerRingInputs.Instance.EnergyShieldKey.performed += EnergyShieldKeyPressed;
+        PowerRingInputs.Instance.OathKey.performed += OathKeyPressed;
     }
 
     public void OnDisable()
     {
         PowerRingInputs.Instance.GreenLightKey.performed -= GreenLightKeyPressed;
-
-        PowerRingInputs.Instance.EnergyBubbleShieldKey.started -= EnergyBubbleShieldKeyPressed;
-        PowerRingInputs.Instance.EnergyBubbleShieldKey.canceled -= EnergyBubbleShieldKeyPressed;
-
-        PowerRingInputs.Instance.EnergyConstructKey.started -= EnergyConstructKeyPressed;
-        PowerRingInputs.Instance.EnergyConstructKey.canceled -= EnergyConstructKeyPressed;
-
-        PowerRingInputs.Instance.EnergyCageKey.started -= EnergyCageKeyPressed;
-        PowerRingInputs.Instance.EnergyCageKey.canceled -= EnergyCageKeyPressed;
-
-        PowerRingInputs.Instance.EnergyShieldKey.started -= EnergyShieldKeyPressed;
-        PowerRingInputs.Instance.EnergyShieldKey.canceled -= EnergyShieldKeyPressed;
+        PowerRingInputs.Instance.EnergyBubbleShieldKey.performed -= EnergyBubbleShieldKeyPressed;
+        PowerRingInputs.Instance.EnergyConstructKey.performed -= EnergyConstructKeyPressed;
+        PowerRingInputs.Instance.EnergyCageKey.performed -= EnergyCageKeyPressed;
+        PowerRingInputs.Instance.EnergyShieldKey.performed -= EnergyShieldKeyPressed;
+        PowerRingInputs.Instance.OathKey.performed -= OathKeyPressed;
     }
 
     public override void SetControlTipsForItem()
@@ -209,6 +195,11 @@ internal class PowerRing : PhysicsProp
     }
 
     private void GreenLightKeyPressed(InputAction.CallbackContext context) // Green Light
+    {
+        throw new NotImplementedException();
+    }
+
+    private void OathKeyPressed(InputAction.CallbackContext context)
     {
         throw new NotImplementedException();
     }
