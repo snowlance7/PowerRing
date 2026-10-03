@@ -251,7 +251,8 @@ MonoBehaviour:
   energyHitPrefab: {fileID: 6823302871133167919, guid: 3138a83bedbd6ad4481ba0b061da2eb6,
     type: 3}
   noPowerParticleSystem: {fileID: 5599915321278935489}
-  bubbleShieldPrefab: {fileID: 0}
+  bubbleShieldPrefab: {fileID: 6886465544896991847, guid: bcfd4474c049a7f48905ee20096717c0,
+    type: 3}
   energyConstructPrefab: {fileID: 0}
   energyCagePrefab: {fileID: 0}
   energyShieldObj: {fileID: 0}

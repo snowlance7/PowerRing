@@ -14,6 +14,6 @@ public class PowerRingContentHandler : ContentHandler<PowerRingContentHandler>
     public PowerRingContentHandler(DuskMod mod) : base(mod)
     {
         RegisterContent("power_ring", out PowerRing);
-        RegisterContent("power_battery", out PowerBattery);
+        //RegisterContent("power_battery", out PowerBattery);
     }
 }

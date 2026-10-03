@@ -6,6 +6,7 @@ using static PowerRing.Plugin;
 using static PowerRing.Configs;
 using Unity.Netcode;
 using GameNetcodeStuff;
+using PowerRing.ProceduralForceField;
 
 namespace PowerRing;
 
@@ -26,6 +27,7 @@ internal class PowerRing : PhysicsProp
     public GameObject energyShieldObj = null!;
 
     public float power = 1f;
+    public float powerUsage;
 
     float[] cooldowns = new float[7];
 
@@ -90,6 +92,11 @@ internal class PowerRing : PhysicsProp
     {
         base.Update();
 
+        if (IsOwner)
+        {
+            power -= Time.deltaTime * powerUsage;
+        }
+
         for (int i = 0; i < cooldowns.Length; i++)
         {
             if (cooldowns[i] <= 0)
@@ -119,6 +126,11 @@ internal class PowerRing : PhysicsProp
         playerHeldBy.equippedUsableItemQE = false;
         SetPowerRpc(power);
         base.DiscardItem();
+    }
+
+    public void UsedUpPower()
+    {
+
     }
 
     public bool CanUsePower(float powerAmount)
@@ -162,7 +174,6 @@ internal class PowerRing : PhysicsProp
             PlayerControllerB player = hitInfo.collider.gameObject.GetComponent<PlayerControllerB>();
 
         }
-
     }
 
     public override void ItemInteractLeftRight(bool right) // Flight
@@ -191,6 +202,17 @@ internal class PowerRing : PhysicsProp
     private void EnergyBubbleShieldKeyPressed(InputAction.CallbackContext context) // Energy Bubble Shield
     {
         // TODO: make it so you cast on yourself by default but if you use the point emote, it tries to cast on a player
+        bool selfCast = localPlayer.GetCurrentEmote() == 2;
+
+        if (selfCast)
+        {
+
+        }
+        else
+        {
+
+        }
+
         throw new NotImplementedException();
     }
 
@@ -241,4 +263,18 @@ internal class PowerRing : PhysicsProp
 
         power = Mathf.Clamp01(power - EnergyBeamPowerUsageOnCast);
     }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void BubbleShieldRpc(ulong clientId)
+    {
+        PlayerControllerB player = PlayerFromId(clientId)!;
+        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform);
+        ProceduralForceFieldOverlay overlay = 
+    }
+}
+
+public class EnergyBubbleShield : NetworkBehaviour
+{
+    [SerializeField] ProceduralForceFieldOverlay overlay = null!;
+
 }

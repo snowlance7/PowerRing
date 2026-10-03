@@ -13,7 +13,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <RootNamespace>PowerRing</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <!-- Enable Nullable for better IDE null-checking -->
