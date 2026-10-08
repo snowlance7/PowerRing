@@ -205,7 +205,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 612455492156143838}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2100335427, guid: af8bea4c03dc99d43947544af35ff6c6, type: 3}
+  m_Script: {fileID: -2100335427, guid: 7d4a7f39fe81c244fb5fbcab406764c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grabbable: 1
@@ -245,18 +245,23 @@ MonoBehaviour:
   grabbableToEnemies: 1
   hasBeenHeld: 0
   rotateObject: 0
+  wearableItemProperties: {fileID: 11400000, guid: a567b6f66c030d743b36fbdf143b2b89,
+    type: 2}
   renderer: {fileID: 459608588168304256}
   castDirection: {fileID: 7291864793515370551}
   energyBlastParticleSystem: {fileID: 5105284358897077271}
   energyHitPrefab: {fileID: 6823302871133167919, guid: 3138a83bedbd6ad4481ba0b061da2eb6,
     type: 3}
   noPowerParticleSystem: {fileID: 5599915321278935489}
+  audioSource: {fileID: 4417028755508985538}
+  oathSFX: {fileID: 0}
   bubbleShieldPrefab: {fileID: 6886465544896991847, guid: bcfd4474c049a7f48905ee20096717c0,
     type: 3}
   energyConstructPrefab: {fileID: 0}
   energyCagePrefab: {fileID: 0}
   energyShieldObj: {fileID: 0}
   power: 1
+  powerUsage: 0
 --- !u!1 &1378073317737193971
 GameObject:
   m_ObjectHideFlags: 0

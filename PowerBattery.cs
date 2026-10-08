@@ -1,5 +1,4 @@
-﻿using PowerRing;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using static PowerRing.Plugin;
 
 namespace PowerRing;

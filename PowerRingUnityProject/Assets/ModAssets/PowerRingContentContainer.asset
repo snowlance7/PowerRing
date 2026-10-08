@@ -9,13 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1097792660, guid: 1f73291e6cf64124796e048d841e7d1f, type: 3}
+  m_Script: {fileID: -1097792660, guid: b9fa88e95e15d9348a8d0583367ab6d6, type: 3}
   m_Name: PowerRingContentContainer
   m_EditorClassIdentifier: 
   assetBundles:
   - assetBundleName: power_ring
-    enabledByDefault: 1
     configName: Power Ring
-  - assetBundleName: power_battery
-    enabledByDefault: 1
-    configName: Power Battery

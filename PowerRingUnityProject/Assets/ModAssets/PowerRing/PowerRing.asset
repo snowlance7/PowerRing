@@ -36,15 +36,15 @@ MonoBehaviour:
   requiresBattery: 0
   batteryUsage: 0
   automaticallySetUsingPower: 0
-  itemIcon: {fileID: 21300000, guid: 332838a27a7e53448b9c38bc21337d47, type: 2}
+  itemIcon: {fileID: 21300000, guid: 5afebdcd3ee345c4cb7cee6d5b5bdf18, type: 3}
   grabAnim: 
   useAnim: 
   pocketAnim: 
   throwAnim: 
   grabAnimationTime: 0
-  grabSFX: {fileID: 8300000, guid: 30e14186376fff5439b13bd61922148a, type: 3}
-  dropSFX: {fileID: 8300000, guid: 0a4c426c79b01ef44b96ed663fb1ce63, type: 3}
-  pocketSFX: {fileID: 0}
+  grabSFX: {fileID: 8300000, guid: 673faa409c5d9ad4f9da17b9ca42c6a6, type: 3}
+  dropSFX: {fileID: 8300000, guid: 364d60ff5e4c1234ebe2359f14ab84ca, type: 3}
+  pocketSFX: {fileID: 8300000, guid: 673faa409c5d9ad4f9da17b9ca42c6a6, type: 3}
   throwSFX: {fileID: 0}
   syncGrabFunction: 0
   syncUseFunction: 0
@@ -52,11 +52,12 @@ MonoBehaviour:
   syncInteractLRFunction: 0
   saveItemVariable: 1
   isDefensiveWeapon: 1
-  toolTips: []
+  toolTips:
+  - Wear [LMB]
   verticalOffset: 0
   floorYOffset: 0
   allowDroppingAheadOfPlayer: 1
-  restingRotation: {x: 0, y: 0, z: 90}
+  restingRotation: {x: 0, y: 0, z: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
   positionOffset: {x: 0, y: 0, z: 0}
   meshOffset: 1

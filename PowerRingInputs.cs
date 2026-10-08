@@ -8,33 +8,29 @@ internal class PowerRingInputs : LcInputActions
 {
     public static PowerRingInputs Instance = new PowerRingInputs();
 
-
     [InputAction(KeyboardControl.F, Name = "Green Light")]
     public InputAction GreenLightKey { get; set; } = null!;
-    public string GreenLightKey_BindingDisplayString => GreenLightKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
-
 
     [InputAction(KeyboardControl.B, Name = "Bubble Shield")]
-    public InputAction EnergyBubbleShieldKey { get; set; } = null!;
-    public string EnergyBubbleShieldKey_BindingDisplayString => EnergyBubbleShieldKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
-
+    public InputAction BubbleShieldKey { get; set; } = null!;
 
     [InputAction(KeyboardControl.C, Name = "Energy Construct")]
     public InputAction EnergyConstructKey { get; set; } = null!;
-    public string EnergyConstructKey_BindingDisplayString => EnergyConstructKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
 
+    [InputAction(KeyboardControl.R, Name = "Energy Beam")]
+    public InputAction EnergyBlastKey { get; set; } = null!;
+
+    [InputAction(KeyboardControl.Y, Name = "Flight")]
+    public InputAction FlightKey { get; set; } = null!;
 
     [InputAction(KeyboardControl.X, Name = "Energy Cage")]
     public InputAction EnergyCageKey { get; set; } = null!;
-    public string EnergyCageKey_BindingDisplayString => EnergyCageKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
-
 
     [InputAction(KeyboardControl.V, Name = "Energy Shield")]
     public InputAction EnergyShieldKey { get; set; } = null!;
-    public string EnergyShieldKey_BindingDisplayString => EnergyShieldKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
 
-
-    [InputAction(KeyboardControl.V, Name = "Oath")]
+    [InputAction(KeyboardControl.H, Name = "Oath")]
     public InputAction OathKey { get; set; } = null!;
-    public string OathKey_BindingDisplayString => EnergyShieldKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
 }
+
+//public string GreenLightKey_BindingDisplayString => GreenLightKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
