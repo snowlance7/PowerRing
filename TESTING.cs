@@ -1,7 +1,9 @@
+using GameNetcodeStuff;
 using HarmonyLib;
 using SnowyLib;
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using static PowerRing.Plugin;
@@ -57,4 +59,36 @@ public static class TESTING
             return;
         }
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.DamagePlayer))]
+    private static void PlayerControllerB_DamagePlayer_Prefix(PlayerControllerB __instance) // TODO: RESULT FROM PUFFER ATTACK BELOW
+    {
+        try
+        {
+            StackTrace stackTrace = new StackTrace();
+
+            foreach (StackFrame frame in stackTrace.GetFrames())
+            {
+                var method = frame.GetMethod();
+
+                if (method == null)
+                    continue;
+
+                logger.LogInfo($"Caller: {method.DeclaringType?.FullName}.{method.Name}");
+            }
+        }
+        catch (System.Exception e)
+        {
+            logger.LogError(e);
+            return;
+        }
+    }
 }
+
+//[Info   : Unity Log] Called finishopeningentrance (False)
+//[Info   : Unity Log] finishopeningentrance animator null
+//[Info   : PowerRing] Caller: PowerRing.TESTING.PlayerControllerB_DamagePlayer_Prefix
+//[Info   : PowerRing] Caller: GameNetcodeStuff.PlayerControllerB.DamagePlayer
+//[Info   : PowerRing] Caller: PufferAI.OnCollideWithPlayer
+//[Info   : PowerRing] Caller: EnemyAICollisionDetect.OnTriggerStay

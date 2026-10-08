@@ -113,16 +113,23 @@ internal partial class PowerRing : WearableObject
         itemProperties.rotationOffset = new Vector3(45, 110, 0);
         enemiesAndPlayersMask = LayerMask.GetMask("Enemies", "Player");
 
-        wearableItemProperties.showWearableOnClient = true;
+        wearableItemProperties.showWearableOnClient = true; // .7
         wearableItemProperties.showWearable = true;
 
         wearableItemProperties.useLocalOffsets = true;
-        wearableItemProperties.boneTransform = "spine.001/spine.002/spine.003/shoulder.R/arm.R_upper/arm.R_lower/hand.R/finger4.R/finger4.R.001";
-        wearableItemProperties.boneTransformLocal = "metarig/spine.003/shoulder.R/arm.R_upper/arm.R_lower/hand.R/finger4.R/finger4.R.001";
-        wearableItemProperties.wornPositionOffsetLocal = new Vector3(0.02f, -0.03f, 0f);
-        wearableItemProperties.wornRotationOffsetLocal = new Vector3(0, 0, 20);
-        wearableItemProperties.wornPositionOffset = new Vector3(0.03f, -0.06f, -0.01f);
-        wearableItemProperties.wornRotationOffset = new Vector3(0, 0, 30);
+
+        wearableItemProperties.boneTransform = "spine.001/spine.002/spine.003/shoulder.R/arm.R_upper/arm.R_lower/hand.R/finger4.R";
+        wearableItemProperties.boneTransformLocal = "metarig/spine.003/shoulder.R/arm.R_upper/arm.R_lower/hand.R/finger4.R";
+
+        wearableItemProperties.wornScaleLocal = new Vector3(0.7f, 0.7f, 0.7f);
+        wearableItemProperties.wornPositionOffsetLocal = new Vector3(-0.0079f, 0.0024f, 0.0003f);
+        wearableItemProperties.wornRotationOffsetLocal = new Vector3(14.245f, -92.178f, -0.946f);
+        //wearableItemProperties.wornPositionOffsetLocal = new Vector3(0.03f, -0.05f, 0f);
+        //wearableItemProperties.wornRotationOffsetLocal = new Vector3(30, -90, 0);
+
+        wearableItemProperties.wornScale = new Vector3(0.7f, 0.7f, 0.7f);
+        wearableItemProperties.wornPositionOffset = new Vector3(-0.0067f, 0.0013f, 0.0016f);
+        wearableItemProperties.wornRotationOffset = new Vector3(8.992f, -80.749f, 1.765f);
     }
 
     public void OnEnable()
@@ -209,7 +216,7 @@ internal partial class PowerRing : WearableObject
         base.ItemActivate(used, buttonDown);
         if (!buttonDown) { return; }
 
-        //WearItem();
+        WearItem();
     }
 
     public void UsedUpPowerOnLocalClient()

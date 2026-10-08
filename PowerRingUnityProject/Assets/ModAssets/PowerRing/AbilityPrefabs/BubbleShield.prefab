@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8963504397272052696}
   - component: {fileID: 5080657052563667712}
+  - component: {fileID: 2419843675782165640}
+  - component: {fileID: 8191598190541994726}
   m_Layer: 0
   m_Name: BubbleShield
   m_TagString: Untagged
@@ -47,14 +49,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _forceFieldHit: {fileID: 4537105589004891418}
   _overlayRenderer: {fileID: 7660529981802382027}
-  _startVisible: 0
-  _autoHide: 1
+  _startVisible: 1
+  _autoHide: 0
   _disableRendererWhenHidden: 1
   _visibleSeconds: 2.5
   _fadeOutSeconds: 0.6
   _autoComputeRevealMaxDistance: 1
   _revealMaxDistanceMultiplier: 2.25
   _minimumRevealMaxDistance: 1
+--- !u!114 &2419843675782165640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886465544896991847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 490573273
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &8191598190541994726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886465544896991847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1334364889, guid: 7d4a7f39fe81c244fb5fbcab406764c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overlay: {fileID: 5080657052563667712}
 --- !u!1 &7228611927796373688
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,19 +19,17 @@ namespace PowerRing;
 internal class Plugin : BaseUnityPlugin
 {
     public static Plugin PluginInstance { get; private set; } = null!;
-    public static ManualLogSource logger { get; private set; } = null!;
+    public static ManualLogSource logger => PluginInstance.Logger;
     public static DuskMod Mod { get; private set; } = null!;
 
     private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
-    public static PlayerControllerB localPlayer { get { return StartOfRound.Instance.localPlayerController; } }
-    public static PlayerControllerB? PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).FirstOrDefault(); }
-    public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
+    public static PlayerControllerB localPlayer => StartOfRound.Instance.localPlayerController;
+    public static PlayerControllerB? PlayerFromId(ulong id) => StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).FirstOrDefault();
+    public static bool IsServerOrHost => NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost;
 
     private void Awake()
     {
-        if (PluginInstance == null) PluginInstance = this;
-
-        logger = PluginInstance.Logger;
+        PluginInstance ??= this;
 
         harmony.PatchAll();
 
@@ -63,10 +61,3 @@ internal class Plugin : BaseUnityPlugin
         logger?.LogDebug("Finished initializing network behaviours");
     }
 }
-
-/*
-Voice.ListenForPhrase("my cool phrase", (message) => {
-    Plugin.logger.LogInfo("my cool voice phrase was said!");
-});
-https://github.com/LoafOrc/VoiceRecognitionAPI/wiki/For-Developers
-*/

@@ -1,21 +1,36 @@
-﻿using Unity.Netcode;
+﻿using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace PowerRing.Ring
 {
     internal abstract class PowerRingAbility : NetworkBehaviour
     {
+        public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
+
         public abstract float PowerUsagePerSecond { get; }
         public abstract float Duration { get; }
 
         PowerRing? ring;
 
         float timeActivated;
-        bool active;
+        public bool IsActive { get; private set; }
+
+        public override void OnNetworkPostSpawn()
+        {
+            base.OnNetworkPostSpawn();
+            Instances.Add(this);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            Instances.Remove(this);
+            base.OnNetworkDespawn();
+        }
 
         public virtual void Update()
         {
-            if (active && Duration > 0)
+            if (IsActive && Duration > 0)
             {
                 timeActivated += Time.deltaTime;
 
@@ -38,7 +53,7 @@ namespace PowerRing.Ring
 
         public void ActivatePower()
         {
-            active = true;
+            IsActive = true;
             timeActivated = 0f;
             ring?.powerUsage += PowerUsagePerSecond;
             OnActivatePower();
@@ -46,7 +61,7 @@ namespace PowerRing.Ring
 
         public void DeactivatePower()
         {
-            active = false;
+            IsActive = false;
             ring?.powerUsage -= PowerUsagePerSecond;
             OnDeactivatePower();
         }
@@ -56,6 +71,12 @@ namespace PowerRing.Ring
         public abstract void OnActivatePower();
 
         public abstract void OnDeactivatePower();
+
+        public void Despawn()
+        {
+            if (!IsServer) { return; }
+            NetworkObject.Despawn(destroy: true);
+        }
 
         [Rpc(SendTo.Everyone, RequireOwnership = false)]
         public void SetRingRpc(NetworkObjectReference netRef, bool activate = false)
