@@ -1,5 +1,6 @@
 using GameNetcodeStuff;
 using HarmonyLib;
+using PowerRing.ProceduralForceField;
 using SnowyLib;
 using System;
 using System.Collections;
@@ -26,13 +27,36 @@ namespace PowerRing;
 [HarmonyPatch]
 public static class TESTING
 {
+    //public static void DoHitTest()
+    //{
+    //    var shield = EnergyBubbleShield.GetBubbleShield(localPlayer);
+    //    if (shield == null) { return; }
+    //    Vector3 firePos = Utils.GetRandomPositionOnSphere(localPlayer.bodyParts[5].position, 2f);
+    //    Vector3 directionToPlayer = (localPlayer.bodyParts[5].position - firePos).normalized;
+    //    if (!Physics.Raycast(firePos, directionToPlayer, out RaycastHit hit, 5f, LayerMask.GetMask("Player"))) { return; }
+    //    shield.HitRpc(hit.point);
+    //}
+
+    public static void DoHitTest()
+    {
+        logger.LogDebug("DoHitTest");
+        Vector3 firePos = Utils.GetRandomPositionOnSphere(localPlayer.bodyParts[5].position, 2f);
+        Vector3 directionToPlayer = (localPlayer.bodyParts[5].position - firePos).normalized;
+        if (!Physics.Raycast(firePos, directionToPlayer, out RaycastHit hit, 5f, LayerMask.GetMask("Colliders"))) { return; }
+        logger.LogDebug("Collider hit");
+        ProceduralForceFieldOverlay overlay = hit.collider.GetComponentInParent<ProceduralForceFieldOverlay>();
+        if (overlay == null) { return; }
+        logger.LogDebug("Triggering");
+        overlay.Trigger(hit.point);
+    }
+
     [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
     public static void PingScan_performedPostFix()
     {
         try
         {
             if (!Utils.testing) { return; }
-            EnergyBubbleShield.GetBubbleShield(localPlayer)?.HitRpc(localPlayer.transform.position);
+            DoHitTest();
         }
         catch
         {

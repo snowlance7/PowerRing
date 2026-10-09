@@ -11,7 +11,9 @@ namespace PowerRing.Ring
     {
         public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
 
+        [HideInInspector]
         public PlayerControllerB? player;
+        [HideInInspector]
         public EnemyAI? enemy;
 
         public abstract float PowerUsagePerSecond { get; }

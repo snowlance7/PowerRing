@@ -68,7 +68,13 @@ Shader "FX/Procedural Force Field"
 
         SubShader
         {
-            Tags { "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
+            Tags
+            {
+                "Queue" = "Transparent"
+                "RenderType" = "Transparent"
+                "IgnoreProjector" = "True"
+                "RenderPipeline" = "HDRenderPipeline"
+            }
             Cull Back
             ZWrite Off
             Lighting Off

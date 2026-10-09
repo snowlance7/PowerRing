@@ -48,7 +48,7 @@ internal partial class PowerRing : WearableObject
     {
         logger.LogDebug("BubbleShieldRpc");
         PlayerControllerB player = PlayerFromId(clientId)!;
-        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform.position, Quaternion.identity, player.transform);
+        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform.position, Quaternion.identity);
         NetworkObject netObj = shieldObj.GetComponent<NetworkObject>();
         netObj.Spawn(destroyWithScene: true);
         netObj.DoActionAfterSpawn((netObj) => netObj.GetComponent<EnergyBubbleShield>().SetRingRpc(NetworkObject, clientId, true));
@@ -62,6 +62,13 @@ internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
     public override float PowerUsagePerSecond => PowerRing.BubbleShieldPowerUsagePerSecond;
 
     public override float Duration => PowerRing.BubbleShieldDuration;
+
+    public override void Update()
+    {
+        base.Update();
+
+        if (player != null) transform.position = player.transform.position;
+    }
 
     public override void OnActivatePower()
     {
