@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using GameNetcodeStuff;
+using Steamworks.Data;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static PowerRing.Plugin;
 
 namespace PowerRing.Ring
 {
     internal abstract class PowerRingAbility : NetworkBehaviour
     {
         public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
+
+        public PlayerControllerB? player;
+        public EnemyAI? enemy;
 
         public abstract float PowerUsagePerSecond { get; }
         public abstract float Duration { get; }
@@ -83,6 +89,30 @@ namespace PowerRing.Ring
         {
             netRef.TryGet(out NetworkObject netObj);
             ring = netObj.GetComponent<PowerRing>();
+
+            if (activate) ActivatePower();
+        }
+
+        [Rpc(SendTo.Everyone, RequireOwnership = false)]
+        public void SetRingRpc(NetworkObjectReference netRef, ulong playerClientId, bool activate = false)
+        {
+            netRef.TryGet(out NetworkObject netObj);
+            ring = netObj.GetComponent<PowerRing>();
+            player = PlayerFromId(playerClientId);
+
+            if (activate) ActivatePower();
+        }
+
+        [Rpc(SendTo.Everyone, RequireOwnership = false)]
+        public void SetRingRpc(NetworkObjectReference netRef, NetworkObjectReference enemyRef, bool activate = false)
+        {
+            netRef.TryGet(out NetworkObject netObj);
+            ring = netObj.GetComponent<PowerRing>();
+            
+            if (enemyRef.TryGet(out NetworkObject enemyNetObj))
+            {
+                enemy = enemyNetObj.GetComponent<EnemyAI>();
+            }
 
             if (activate) ActivatePower();
         }

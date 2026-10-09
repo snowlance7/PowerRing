@@ -5,6 +5,7 @@ using PowerRing.ProceduralForceField;
 using PowerRing.Ring;
 using SnowyLib;
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using UnityEngine;
@@ -47,10 +48,10 @@ internal partial class PowerRing : WearableObject
     {
         logger.LogDebug("BubbleShieldRpc");
         PlayerControllerB player = PlayerFromId(clientId)!;
-        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform);
+        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform.position, Quaternion.identity, player.transform);
         NetworkObject netObj = shieldObj.GetComponent<NetworkObject>();
         netObj.Spawn(destroyWithScene: true);
-        netObj.DoActionAfterSpawn((netObj) => netObj.GetComponent<EnergyBubbleShield>().SetRingRpc(NetworkObject, true));
+        netObj.DoActionAfterSpawn((netObj) => netObj.GetComponent<EnergyBubbleShield>().SetRingRpc(NetworkObject, clientId, true));
     }
 }
 
@@ -80,12 +81,13 @@ internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void HitRpc(Vector3 position)
     {
+        logger.LogDebug("HitRpc");
         overlay.Trigger(position);
     }
 
     public static EnergyBubbleShield? GetBubbleShield(PlayerControllerB player)
     {
-        return player.transform.GetComponentInChildren<EnergyBubbleShield>();
+        return Instances.OfType<EnergyBubbleShield>().FirstOrDefault(x => x.player == player);
     }
 }
 

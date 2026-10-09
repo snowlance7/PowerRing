@@ -51,9 +51,9 @@ MonoBehaviour:
   _overlayRenderer: {fileID: 7660529981802382027}
   _startVisible: 1
   _autoHide: 0
-  _disableRendererWhenHidden: 1
+  _disableRendererWhenHidden: 0
   _visibleSeconds: 2.5
-  _fadeOutSeconds: 0.6
+  _fadeOutSeconds: 1
   _autoComputeRevealMaxDistance: 1
   _revealMaxDistanceMultiplier: 2.25
   _minimumRevealMaxDistance: 1
@@ -74,10 +74,10 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  AutoObjectParentSync: 0
 --- !u!114 &8191598190541994726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,11 +102,11 @@ GameObject:
   - component: {fileID: 420218257394027158}
   - component: {fileID: 3866297821265917686}
   - component: {fileID: 7660529981802382027}
-  - component: {fileID: 8063743448909593788}
   - component: {fileID: 4537105589004891418}
+  - component: {fileID: 4979664156491982665}
   m_Layer: 0
   m_Name: ForceField
-  m_TagString: Untagged
+  m_TagString: DoNotSet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -142,7 +142,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7228611927796373688}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -176,27 +176,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &8063743448909593788
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7228611927796373688}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4537105589004891418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,3 +190,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetRenderer: {fileID: 7660529981802382027}
   _hitStrength: 1
+--- !u!135 &4979664156491982665
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7228611927796373688}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

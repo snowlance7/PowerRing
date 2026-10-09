@@ -32,6 +32,7 @@ public static class TESTING
         try
         {
             if (!Utils.testing) { return; }
+            EnergyBubbleShield.GetBubbleShield(localPlayer)?.HitRpc(localPlayer.transform.position);
         }
         catch
         {
