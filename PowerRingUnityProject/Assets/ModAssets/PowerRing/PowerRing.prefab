@@ -255,7 +255,8 @@ MonoBehaviour:
   noPowerParticleSystem: {fileID: 5599915321278935489}
   audioSource: {fileID: 4417028755508985538}
   oathSFX: {fileID: 0}
-  bubbleShieldPrefab: {fileID: 6886465544896991847, guid: bcfd4474c049a7f48905ee20096717c0,
+  energyBlastSFX: {fileID: 0}
+  bubbleShieldPrefab: {fileID: 1525283551620874659, guid: bcfd4474c049a7f48905ee20096717c0,
     type: 3}
   energyConstructPrefab: {fileID: 0}
   energyCagePrefab: {fileID: 0}

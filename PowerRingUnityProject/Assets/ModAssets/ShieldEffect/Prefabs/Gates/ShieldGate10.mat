@@ -1,0 +1,200 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShieldGate10
+  m_Shader: {fileID: 4800000, guid: 698d80be1edae534d88a3eb185ddaa31, type: 3}
+  m_ValidKeywords:
+  - ACTIVATION_EFFECT_ON
+  - RIM_SOURCE_TEXTURE
+  - USE_MAIN_TEXTURE
+  - USE_PATTERN_TEXTURE
+  - USE_REFRACTION
+  m_InvalidKeywords:
+  - ACTIVATION_TYPE_CUSTOM_TEX
+  - USE_COLOR_RIM
+  - USE_DEPTH_OVERLAP_RIM
+  - USE_DIRECTION_VISIBILITY
+  - USE_MAIN_TEXTURE_ANIMATION
+  - USE_MATERIAL_PROPERTY_BLOCKS
+  - _FEATURE_COLORRIM_ON
+  - _FEATURE_DEPTHOVERLAPRIM_ON
+  - _FEATURE_DIRECTIONALVISIBILITY_ON
+  - _FEATURE_MAINTEXTUREANIMATION_ON
+  - _FEATURE_PATTERNTEXTUREANIMATION_ON
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - Postprocess
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _ActivationTex:
+        m_Texture: {fileID: 2800000, guid: 16d2f37aafece424b81ea39d0262ceaf, type: 3}
+        m_Scale: {x: 1.3, y: 3}
+        m_Offset: {x: 0.1, y: 0.03}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CameraDepthTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistortTex:
+        m_Texture: {fileID: 2800000, guid: 9b26c86809f836b4eb681bfac4c1578c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HitRippleTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: dd58690354e802e478b03587808ce437, type: 3}
+        m_Scale: {x: 2, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _PatternTex:
+        m_Texture: {fileID: 2800000, guid: e2c5bf49f094b4043b80ccdadf1297e1, type: 3}
+        m_Scale: {x: 0.5, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RimTexture:
+        m_Texture: {fileID: 2800000, guid: c690c1ef75737f649a60d6ec350da4bc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ActivationFadeOut: 0
+    - _ActivationInluenceByMainTex: 0
+    - _ActivationInluenceByPatternTex: 0
+    - _ActivationRim: 0.084
+    - _ActivationRimPower: 0.74
+    - _ActivationTexScale: 1
+    - _ActivationTime: 1
+    - _ActivationTime01: 1
+    - _BackfacesIntensity: 1
+    - _BlendDstMode: 10
+    - _BlendSrcMode: 5
+    - _BumpScale: 1
+    - _ColorRimHitInfluence: 1
+    - _ColorRimMax: 2.11
+    - _ColorRimMin: -0.08
+    - _CullMode: 2
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DirVisActivationInfluence: 1
+    - _DirectionVisibility: 1
+    - _DistortionFactor: 0.05
+    - _DistortionScale: 2
+    - _DistortionSpeedX: 1
+    - _DistortionSpeedY: 1
+    - _DstBlend: 0
+    - _FEATURE_ActivationType: 3
+    - _FEATURE_ColorRim: 1
+    - _FEATURE_DepthOverlapRim: 1
+    - _FEATURE_DirectionalVisibility: 1
+    - _FEATURE_MainTextureAnimation: 1
+    - _FEATURE_PatternTextureAnimation: 0
+    - _FadePow: 1
+    - _FadeScale: 0
+    - _GlobalAlphaCurve: 1.92
+    - _GlobalIntensity: 3.94
+    - _Glossiness: 0.5
+    - _HitColorAffect: 0
+    - _HitEffectValue: 1
+    - _HitPower: 1
+    - _HitRadius: 1
+    - _HitRefractionScale: 0.1
+    - _HitRippleDistortion: 0
+    - _HitRippleScale: 1
+    - _HitT: 0
+    - _Metallic: 0
+    - _Mode: 0
+    - _NormalCorrection: 0
+    - _OcclusionStrength: 1
+    - _OverlapRim: 4.9
+    - _OverlapRimPower: 0.57
+    - _Parallax: 0.02
+    - _PatternAnimationFactor: 10
+    - _PatternAnimationSpeed: 49.6
+    - _PatternDistortionInfluence: 1
+    - _PatternHitInfluence: 1
+    - _PatternPower: 1.81
+    - _PatternRimMax: 0.44
+    - _PatternRimMin: -0.61
+    - _PatternScale: 1
+    - _PatternScrollX: 0
+    - _PatternScrollY: 0
+    - _PostprocessIntensity: 1
+    - _Preview: 0
+    - _RefractionBackground: 1
+    - _RefractionBackgroundExposure: 0
+    - _RefractionColorRimInfluence: -1.25
+    - _RefractionPatternRimInfluence: 0.64
+    - _RefractionRimMax: 1.23
+    - _RefractionRimMin: -1.45
+    - _RefractionScale: 0.149
+    - _RefractionTextureRimInfluence: 1.21
+    - _RimMax: 0.68
+    - _RimMin: 0.23
+    - _RimVariationFrequency: 0.5
+    - _RimVariationScale: 0
+    - _SrcBlend: 1
+    - _TextureAnimationFactor: -9.5
+    - _TextureAnimationSpeed: 6.7
+    - _TextureDistortionInfluence: 1
+    - _TextureHitInfluence: 1
+    - _TexturePower: 0.5
+    - _TextureRimMax: 1.62
+    - _TextureRimMin: -0.06
+    - _TextureScale: 3.2
+    - _TextureScrollX: 0
+    - _TextureScrollY: 0
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 0, g: 1, b: 0.71103144, a: 0.36078432}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HitColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HitPos: {r: 1, g: 1, b: 1, a: 1}
+    - _PatternColor: {r: 0.2980392, g: 0.8506264, b: 1, a: 0.27450982}
+    - _ShieldBounds: {r: 1, g: 1, b: 1, a: 0}
+    - _ShieldDirection: {r: 1, g: 0, b: 0, a: 0}
+    - _TextureColor: {r: 0.07379975, g: 0.34415653, b: 0.47794116, a: 1}
+    - _WorldScale: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

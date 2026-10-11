@@ -1,12 +1,9 @@
-﻿using Dawn;
+﻿using FXV;
 using GameNetcodeStuff;
 using HarmonyLib;
-using PowerRing.ProceduralForceField;
 using PowerRing.Ring;
 using SnowyLib;
-using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -57,11 +54,16 @@ internal partial class PowerRing : WearableObject
 
 internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
 {
-    [SerializeField] ProceduralForceFieldOverlay overlay = null!;
+    Shield shield = null!;
 
     public override float PowerUsagePerSecond => PowerRing.BubbleShieldPowerUsagePerSecond;
 
     public override float Duration => PowerRing.BubbleShieldDuration;
+
+    public void Awake()
+    {
+        shield = gameObject.GetComponentInChildren<Shield>();
+    }
 
     public override void Update()
     {
@@ -86,10 +88,10 @@ internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void HitRpc(Vector3 position)
+    public void HitRpc(Vector3 hitPos, Vector3 hitNormal, float hitScale, float hitDuration)
     {
         logger.LogDebug("HitRpc");
-        overlay.Trigger(position);
+        shield.OnHit(hitPos, hitNormal, hitScale, hitDuration);
     }
 
     public static EnergyBubbleShield? GetBubbleShield(PlayerControllerB player)
@@ -137,7 +139,7 @@ internal static class BubbleShieldPatches
             var shield = EnergyBubbleShield.GetBubbleShield(__instance);
             if (shield == null) { return true; }
             Vector3 hitPoint = enemyColliding.eye != null ? enemyColliding.eye.position : enemyColliding.transform.position;
-            shield.HitRpc(hitPoint);
+            //shield.HitRpc(hitPoint); // TODO
             return false;
         }
         catch (System.Exception e)
