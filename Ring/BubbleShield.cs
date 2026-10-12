@@ -40,19 +40,17 @@ internal partial class PowerRing : WearableObject
         //throw new NotImplementedException();
     }
 
-    [Rpc(SendTo.Server, RequireOwnership = false)]
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void BubbleShieldRpc(ulong clientId)
     {
         logger.LogDebug("BubbleShieldRpc");
         PlayerControllerB player = PlayerFromId(clientId)!;
-        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform.position, Quaternion.identity);
-        NetworkObject netObj = shieldObj.GetComponent<NetworkObject>();
-        netObj.Spawn(destroyWithScene: true);
-        netObj.DoActionAfterSpawn((netObj) => netObj.GetComponent<EnergyBubbleShield>().SetRingRpc(NetworkObject, clientId, true));
+        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform);
+        shieldObj.GetComponent<EnergyBubbleShield>().SetRing(this, activate: true);
     }
 }
 
-internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
+internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this // TODO: FIGURE OUT WHY THE SHIELD ISNT RENDERING
 {
     Shield shield = null!;
 
@@ -79,20 +77,20 @@ internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
 
     public override void OnDeactivatePower()
     {
-        Despawn();
+        GameObject.Destroy(gameObject);
     }
 
     public override void OnUsedUpPower()
     {
-        Despawn();
+        GameObject.Destroy(gameObject);
     }
 
-    [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void HitRpc(Vector3 hitPos, Vector3 hitNormal, float hitScale, float hitDuration)
-    {
-        logger.LogDebug("HitRpc");
-        shield.OnHit(hitPos, hitNormal, hitScale, hitDuration);
-    }
+    //[Rpc(SendTo.Everyone, RequireOwnership = false)]
+    //public void HitRpc(Vector3 hitPos, Vector3 hitNormal, float hitScale, float hitDuration)
+    //{
+    //    logger.LogDebug("HitRpc");
+    //    shield.OnHit(hitPos, hitNormal, hitScale, hitDuration);
+    //}
 
     public static EnergyBubbleShield? GetBubbleShield(PlayerControllerB player)
     {
@@ -100,86 +98,86 @@ internal class EnergyBubbleShield : PowerRingAbility // TODO: Test this
     }
 }
 
-[HarmonyPatch]
-internal static class BubbleShieldPatches
-{
-    static PlayerControllerB? collidedWith;
-    static EnemyAI? enemyColliding;
+//[HarmonyPatch]
+//internal static class BubbleShieldPatches
+//{
+//    static PlayerControllerB? collidedWith;
+//    static EnemyAI? enemyColliding;
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.OnCollideWithPlayer))]
-    static void EnemyAI_OnCollideWithPlayer_Prefix(EnemyAI __instance, Collider other) // TODO: Test this
-    {
-        try
-        {
-            if (!__instance.IsServer) { return; }
+//    [HarmonyPrefix]
+//    [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.OnCollideWithPlayer))]
+//    static void EnemyAI_OnCollideWithPlayer_Prefix(EnemyAI __instance, Collider other) // TODO: Test this
+//    {
+//        try
+//        {
+//            if (!__instance.IsServer) { return; }
 
-            if (!other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
-            collidedWith = player;
-            enemyColliding = __instance;
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return;
-        }
-    }
+//            if (!other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
+//            collidedWith = player;
+//            enemyColliding = __instance;
+//        }
+//        catch (System.Exception e)
+//        {
+//            logger.LogError(e);
+//            return;
+//        }
+//    }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.DamagePlayerServerRpc))]
-    static bool PlayerControllerB_DamagePlayerServerRpc_Prefix(PlayerControllerB __instance) // TODO: Test this
-    {
-        try
-        {
-            if (!__instance.IsServer) { return true; }
+//    [HarmonyPrefix]
+//    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.DamagePlayerServerRpc))]
+//    static bool PlayerControllerB_DamagePlayerServerRpc_Prefix(PlayerControllerB __instance) // TODO: Test this
+//    {
+//        try
+//        {
+//            if (!__instance.IsServer) { return true; }
 
-            if (collidedWith == null || enemyColliding == null) { return true; }
-            if (__instance != collidedWith) { return true; }
+//            if (collidedWith == null || enemyColliding == null) { return true; }
+//            if (__instance != collidedWith) { return true; }
 
-            var shield = EnergyBubbleShield.GetBubbleShield(__instance);
-            if (shield == null) { return true; }
-            Vector3 hitPoint = enemyColliding.eye != null ? enemyColliding.eye.position : enemyColliding.transform.position;
-            //shield.HitRpc(hitPoint); // TODO
-            return false;
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return true;
-        }
-    }
+//            var shield = EnergyBubbleShield.GetBubbleShield(__instance);
+//            if (shield == null) { return true; }
+//            Vector3 hitPoint = enemyColliding.eye != null ? enemyColliding.eye.position : enemyColliding.transform.position;
+//            //shield.HitRpc(hitPoint); // TODO
+//            return false;
+//        }
+//        catch (System.Exception e)
+//        {
+//            logger.LogError(e);
+//            return true;
+//        }
+//    }
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.OnCollideWithPlayer))]
-    static void EnemyAI_OnCollideWithPlayer_Postfix(EnemyAI __instance, Collider other) // TODO: Test this
-    {
-        try
-        {
-            if (!__instance.IsServer) { return; }
+//    [HarmonyPostfix]
+//    [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.OnCollideWithPlayer))]
+//    static void EnemyAI_OnCollideWithPlayer_Postfix(EnemyAI __instance, Collider other) // TODO: Test this
+//    {
+//        try
+//        {
+//            if (!__instance.IsServer) { return; }
 
-            collidedWith = null;
-            enemyColliding = null;
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return;
-        }
-    }
+//            collidedWith = null;
+//            enemyColliding = null;
+//        }
+//        catch (System.Exception e)
+//        {
+//            logger.LogError(e);
+//            return;
+//        }
+//    }
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.AllowPlayerDeath))]
-    static void PlayerControllerB_AllowPlayerDeath_Postfix(PlayerControllerB __instance, ref bool __result) // TODO: Test this
-    {
-        try
-        {
-            if (EnergyBubbleShield.GetBubbleShield(__instance) == null) { return; }
-            __result = false;
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return;
-        }
-    }
-}
+//    [HarmonyPostfix]
+//    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.AllowPlayerDeath))]
+//    static void PlayerControllerB_AllowPlayerDeath_Postfix(PlayerControllerB __instance, ref bool __result) // TODO: Test this
+//    {
+//        try
+//        {
+//            if (EnergyBubbleShield.GetBubbleShield(__instance) == null) { return; }
+//            __result = false;
+//        }
+//        catch (System.Exception e)
+//        {
+//            logger.LogError(e);
+//            return;
+//        }
+//    }
+//}

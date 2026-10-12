@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering;
 using UnityEditor;
 using System;
+using PowerRing;
 
 namespace FXV
 {
@@ -200,10 +201,10 @@ namespace FXV
         int kernelRadius = 5;
         [SerializeField, Range(0.1f, 10.0f)]
         [Tooltip("Blur shape parameters.")]
-        float sigma = 4.0f;
+        float sigma = 3.0f;
         [SerializeField, Range(0.1f, 2.0f)]
         [Tooltip("Sampling step factor.")]
-        float sampleStep = 1.0f;
+        float sampleStep = 1.5f;
 
         [SerializeField, Range(1, 7)]
         [Tooltip("Blur kernel radius on vertical axis.")]
@@ -421,19 +422,21 @@ namespace FXV
 
             if (blendAddMaterial == null)
             {
-                blendAddMaterial = new Material(Shader.Find("Hidden/FXV/FXVPostprocessBlitAdd"));
+                Shader blendAddMaterialShader = PowerRingContentHandler.Instance.PowerRing!.FXVPostprocessBlitAddShader;
+                blendAddMaterial = new Material(blendAddMaterialShader);
             }
             blendAddMaterial.SetFloat("_ColorMultiplier", postprocessPower);
 
             if (postprocessMaterial == null)
             {
-                postprocessMaterial = new Material(Shader.Find("Hidden/FXV/FXVPostprocessShield"));
+                Shader postprocessMaterialShader = PowerRingContentHandler.Instance.PowerRing!.FXVPostprocessShieldShader;
+                postprocessMaterial = new Material(postprocessMaterialShader);
                 UpdateSSGIPostprocessMaterial();
             }
 
             if (normalNoiseTexture == null)
             {
-                normalNoiseTexture = Resources.Load<Texture2D>("Textures/RandomNoise");
+                normalNoiseTexture = PowerRingContentHandler.Instance.PowerRing!.RandomNoiseTexture;
             }
 
             ssgiSampleDirections = new float[128];

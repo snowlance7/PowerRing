@@ -1,13 +1,10 @@
 ﻿using GameNetcodeStuff;
-using Steamworks.Data;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
-using static PowerRing.Plugin;
 
 namespace PowerRing.Ring
 {
-    internal abstract class PowerRingAbility : NetworkBehaviour
+    internal abstract class PowerRingAbility : MonoBehaviour
     {
         public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
 
@@ -24,16 +21,14 @@ namespace PowerRing.Ring
         float timeActivated;
         public bool IsActive { get; private set; }
 
-        public override void OnNetworkPostSpawn()
+        public virtual void Start()
         {
-            base.OnNetworkPostSpawn();
             Instances.Add(this);
         }
 
-        public override void OnNetworkDespawn()
+        public virtual void OnDestroy()
         {
             Instances.Remove(this);
-            base.OnNetworkDespawn();
         }
 
         public virtual void Update()
@@ -80,41 +75,25 @@ namespace PowerRing.Ring
 
         public abstract void OnDeactivatePower();
 
-        public void Despawn()
+        public void SetRing(PowerRing ring, bool activate = false)
         {
-            if (!IsServer) { return; }
-            NetworkObject.Despawn(destroy: true);
-        }
-
-        [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void SetRingRpc(NetworkObjectReference netRef, bool activate = false)
-        {
-            netRef.TryGet(out NetworkObject netObj);
-            ring = netObj.GetComponent<PowerRing>();
+            this.ring = ring;
 
             if (activate) ActivatePower();
         }
 
-        [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void SetRingRpc(NetworkObjectReference netRef, ulong playerClientId, bool activate = false)
+        public void SetRing(PowerRing ring, PlayerControllerB player, bool activate = false)
         {
-            netRef.TryGet(out NetworkObject netObj);
-            ring = netObj.GetComponent<PowerRing>();
-            player = PlayerFromId(playerClientId);
+            this.ring = ring;
+            this.player = player;
 
             if (activate) ActivatePower();
         }
 
-        [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void SetRingRpc(NetworkObjectReference netRef, NetworkObjectReference enemyRef, bool activate = false)
+        public void SetRing(PowerRing ring, EnemyAI enemy, bool activate = false)
         {
-            netRef.TryGet(out NetworkObject netObj);
-            ring = netObj.GetComponent<PowerRing>();
-            
-            if (enemyRef.TryGet(out NetworkObject enemyNetObj))
-            {
-                enemy = enemyNetObj.GetComponent<EnemyAI>();
-            }
+            this.ring = ring;
+            this.enemy = enemy;
 
             if (activate) ActivatePower();
         }

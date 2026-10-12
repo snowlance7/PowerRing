@@ -1,10 +1,13 @@
-﻿using Unity.Netcode;
+﻿using Dawn;
+using Unity.Netcode;
 using static PowerRing.Plugin;
 
 namespace PowerRing;
 
 internal class PowerBattery : NetworkBehaviour
 {
+    public static bool IsEnabled => LethalContent.Unlockables[PowerRingKeys.PowerBattery] != null;
+
     public InteractTrigger interactTrigger = null!;
 
     public void Update()

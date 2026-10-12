@@ -53,6 +53,10 @@
       <None Remove="PowerRingUnityProject\**" />
     </ItemGroup>
     <ItemGroup>
+      <Compile Remove="Ring\BubbleShield - Copy.cs" />
+      <Compile Remove="Ring\PowerRingAbility - Copy.cs" />
+    </ItemGroup>
+    <ItemGroup>
       <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\AssetBundles\ui-assets" />
       <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\en_US.json" />
       <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\ru_RU.json" />

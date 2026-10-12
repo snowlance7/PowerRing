@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
+using PowerRing;
 
 namespace FXV
 {
@@ -33,8 +34,11 @@ namespace FXV
 
             downSampleSteps = -1;
 
-            blendAddMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FXV/FXVPostprocessBlitAdd_HDRP"));
-            postprocessMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/FXV/FXVPostprocessShield_HDRP"));
+            Shader blendAddMaterialShader = PowerRingContentHandler.Instance.PowerRing!.FXVPostprocessBlitAdd_HDRPShader;
+            Shader postprocessMaterialShader = PowerRingContentHandler.Instance.PowerRing!.FXVPostprocessShield_HDRPShader;
+
+            blendAddMaterial = CoreUtils.CreateEngineMaterial(blendAddMaterialShader);
+            postprocessMaterial = CoreUtils.CreateEngineMaterial(postprocessMaterialShader);
 
             ssgiSampleDirections = new float[32];
             for (int s = 0; s < 16; ++s)

@@ -1,7 +1,14 @@
-﻿using SnowyLib;
+﻿using Dawn;
+using FXV;
+using GameNetcodeStuff;
+using HarmonyLib;
+using SnowyLib;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.SceneManagement;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
 
@@ -9,6 +16,8 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
+    public static bool IsEnabled => LethalContent.Items[PowerRingKeys.PowerRing] != null;
+
     public MeshRenderer renderer = null!;
     public Transform castDirection = null!;
     public ParticleSystem energyBlastParticleSystem = null!;
@@ -105,6 +114,24 @@ internal partial class PowerRing : WearableObject
         _ = EnergyShieldPowerUsagePerSecond;
         _ = EnergyShieldDuration;
         _ = EnergyShieldCooldown;
+
+        SetUpShieldVisualization();
+    }
+
+    private static void SetUpShieldVisualization()
+    {
+        if (!IsEnabled) { return; }
+
+        var systemsRoot = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(obj => obj.name == "Systems");
+        var renderingRoot = systemsRoot.transform.Find("Rendering");
+        var shieldCustomPassTransform = renderingRoot.transform.Find("ShieldCustomPass");
+
+        if (shieldCustomPassTransform == null)
+        {
+            logger.LogDebug("Creating ShieldCustomPass");
+            GameObject shieldCustomPassObj = Instantiate(PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab, renderingRoot);
+            DontDestroyOnLoad(shieldCustomPassObj);
+        }
     }
 
     public void Awake()
@@ -289,5 +316,36 @@ internal partial class PowerRing : WearableObject
         }
 
         return ulongs.ToArray();
+    }
+}
+
+[HarmonyPatch]
+internal static class PowerRingPatches
+{
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
+    public static void PlayerControllerB_ConnectClientToPlayerObject_Postfix(PlayerControllerB __instance)
+    {
+        try
+        {
+            if (localPlayer != __instance || !PowerRing.IsEnabled) { return; }
+            if (localPlayer.gameplayCamera.gameObject.GetComponent<ShieldPostprocess>() == null)
+            {
+                logger.LogDebug("Adding ShieldPostprocess script to player camera");
+                ShieldPostprocess shield = localPlayer.gameplayCamera.gameObject.AddComponent<ShieldPostprocess>();
+                shield.blurMethod = ShieldPostprocess.BlurMethod.GaussianOnly;
+                shield.postprocessPower = 4;
+                shield.globalIllumination = true;
+                shield.giSampleRadius = 2;
+                shield.giIntensity = 0.25f;
+                shield.giDenoiseStepWidth = 2;
+                shield.giAtIteration = 2;
+            }
+        }
+        catch (System.Exception e)
+        {
+            logger.LogError(e);
+            return;
+        }
     }
 }
