@@ -8,6 +8,6 @@ internal partial class PowerRing : WearableObject
 {
     private void OathKeyPressed(InputAction.CallbackContext context) // Oath
     {
-        throw new NotImplementedException();
+        return;
     }
 }

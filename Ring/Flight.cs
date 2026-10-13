@@ -17,6 +17,6 @@ internal partial class PowerRing : WearableObject
 
     private void FlightKeyPressed(InputAction.CallbackContext context) // Flight
     {
-        throw new NotImplementedException();
+        return;
     }
 }

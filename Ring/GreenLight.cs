@@ -13,6 +13,6 @@ internal partial class PowerRing : WearableObject
 
     private void GreenLightKeyPressed(InputAction.CallbackContext context) // Green Light
     {
-        throw new NotImplementedException();
+        return;
     }
 }

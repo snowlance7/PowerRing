@@ -123,14 +123,37 @@ internal partial class PowerRing : WearableObject
         if (!IsEnabled) { return; }
 
         var systemsRoot = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(obj => obj.name == "Systems");
+
+        if (systemsRoot == null)
+        {
+            logger.LogError("Systems root not found");
+            return;
+        }
+
         var renderingRoot = systemsRoot.transform.Find("Rendering");
-        var shieldCustomPassTransform = renderingRoot.transform.Find("ShieldCustomPass");
+
+        if (renderingRoot == null)
+        {
+            logger.LogError("Systems/Rendering not found");
+            return;
+        }
+
+        var shieldCustomPassTransform = renderingRoot.Find("ShieldCustomPass");
 
         if (shieldCustomPassTransform == null)
         {
             logger.LogDebug("Creating ShieldCustomPass");
-            GameObject shieldCustomPassObj = Instantiate(PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab, renderingRoot);
-            DontDestroyOnLoad(shieldCustomPassObj);
+
+            var instance = Instantiate(
+                PowerRingContentHandler.Instance.PowerRing!
+                    .ShieldCustomPassPrefab,
+                renderingRoot);
+
+            instance.name = "ShieldCustomPass";
+        }
+        else
+        {
+            logger.LogDebug("ShieldCustomPass already exists");
         }
     }
 

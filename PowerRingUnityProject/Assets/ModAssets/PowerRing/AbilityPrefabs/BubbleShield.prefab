@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7200860215422097810}
+  - component: {fileID: 8669107591914073026}
   m_Layer: 0
   m_Name: BubbleShield
   m_TagString: Untagged
@@ -32,6 +33,20 @@ Transform:
   - {fileID: 5726774609354309676}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8669107591914073026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525283551620874659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1334364889, guid: 7d4a7f39fe81c244fb5fbcab406764c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  enemy: {fileID: 0}
 --- !u!1 &1763121822996587227
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,8 +45,8 @@ internal partial class PowerRing : WearableObject
     {
         logger.LogDebug("BubbleShieldRpc");
         PlayerControllerB player = PlayerFromId(clientId)!;
-        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform);
-        shieldObj.GetComponent<EnergyBubbleShield>().SetRing(this, activate: true);
+        var shieldObj = Instantiate(bubbleShieldPrefab);
+        shieldObj.GetComponent<EnergyBubbleShield>().SetRing(this, player, activate: true);
     }
 }
 

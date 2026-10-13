@@ -16,6 +16,6 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyConstructKeyPressed(InputAction.CallbackContext context) // Energy Construct
     {
-        throw new NotImplementedException();
+        return;
     }
 }
