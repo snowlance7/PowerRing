@@ -3,10 +3,12 @@ using FXV;
 using GameNetcodeStuff;
 using HarmonyLib;
 using SnowyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
@@ -41,6 +43,7 @@ internal partial class PowerRing : WearableObject
     float[] cooldowns = new float[7];
 
     int enemiesAndPlayersMask;
+    int playerMask;
 
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
 
@@ -74,7 +77,6 @@ internal partial class PowerRing : WearableObject
         _ = BubbleShieldToggle;
         _ = BubbleShieldPowerUsageOnCast;
         _ = BubbleShieldPowerUsagePerSecond;
-        _ = BubbleShieldDeactivateOnDiscard;
         _ = BubbleShieldDuration;
         _ = BubbleShieldCooldown;
 
@@ -166,6 +168,7 @@ internal partial class PowerRing : WearableObject
         itemProperties.positionOffset = new Vector3(0.06f, 0.1f, 0.01f);
         itemProperties.rotationOffset = new Vector3(45, 110, 0);
         enemiesAndPlayersMask = LayerMask.GetMask("Enemies", "Player");
+        playerMask = LayerMask.GetMask("Player");
 
         wearableItemProperties.showWearableOnClient = true; // .7
         wearableItemProperties.showWearable = true;
@@ -194,6 +197,9 @@ internal partial class PowerRing : WearableObject
         PowerRingInputs.Instance.BubbleShieldKey.started += BubbleShieldKeyPressed;
         PowerRingInputs.Instance.BubbleShieldKey.canceled += BubbleShieldKeyPressed;
 
+        PowerRingInputs.Instance.SharedBubbleShieldKey.started += SharedBubbleShieldKeyPressed;
+        PowerRingInputs.Instance.SharedBubbleShieldKey.canceled += SharedBubbleShieldKeyPressed;
+
         PowerRingInputs.Instance.EnergyConstructKey.started += EnergyConstructKeyPressed;
         PowerRingInputs.Instance.EnergyConstructKey.canceled += EnergyConstructKeyPressed;
 
@@ -218,6 +224,9 @@ internal partial class PowerRing : WearableObject
 
         PowerRingInputs.Instance.BubbleShieldKey.started -= BubbleShieldKeyPressed;
         PowerRingInputs.Instance.BubbleShieldKey.canceled -= BubbleShieldKeyPressed;
+
+        PowerRingInputs.Instance.SharedBubbleShieldKey.started -= SharedBubbleShieldKeyPressed;
+        PowerRingInputs.Instance.SharedBubbleShieldKey.canceled -= SharedBubbleShieldKeyPressed;
 
         PowerRingInputs.Instance.EnergyConstructKey.started -= EnergyConstructKeyPressed;
         PowerRingInputs.Instance.EnergyConstructKey.canceled -= EnergyConstructKeyPressed;
@@ -273,6 +282,23 @@ internal partial class PowerRing : WearableObject
         WearItem();
     }
 
+    public bool CanCastAbility(Ability ability)
+    {
+        if (!IsOffCooldown(ability)) { return false; }
+
+        return ability switch
+        {
+            Ability.GreenLight => CanUsePower(GreenLightPowerUsageOnCast),
+            Ability.BubbleShield => CanUsePower(BubbleShieldPowerUsageOnCast),
+            Ability.EnergyConstruct => CanUsePower(EnergyConstructPowerUsageOnCast),
+            Ability.EnergyBlast => CanUsePower(EnergyBlastPowerUsageOnCast),
+            Ability.Flight => CanUsePower(FlightPowerUsageOnCast),
+            Ability.EnergyCage => CanUsePower(EnergyTrapPowerUsageOnCast),
+            Ability.EnergyShield => CanUsePower(EnergyShieldPowerUsageOnCast),
+            _ => true
+        };
+    }
+
     public void UsedUpPowerOnLocalClient()
     {
         DoCastFailedEffects();
@@ -309,6 +335,14 @@ internal partial class PowerRing : WearableObject
     public void DoCastFailedEffects()
     {
         noPowerParticleSystem.Play();
+    }
+
+    public PlayerControllerB? GetPlayerLookingAt(float maxDistance)
+    {
+        int playerMask = LayerMask.GetMask("Player");
+
+        if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, maxDistance, playerMask)) { return null; }
+        return hit.collider.GetComponent<PlayerControllerB>();
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]

@@ -14,10 +14,13 @@ internal class PowerRingInputs : LcInputActions
     [InputAction(KeyboardControl.B, Name = "Bubble Shield")]
     public InputAction BubbleShieldKey { get; set; } = null!;
 
+    [InputAction(KeyboardControl.H, Name = "Shared Bubble Shield")]
+    public InputAction SharedBubbleShieldKey { get; set; } = null!;
+
     [InputAction(KeyboardControl.C, Name = "Energy Construct")]
     public InputAction EnergyConstructKey { get; set; } = null!;
 
-    [InputAction(KeyboardControl.R, Name = "Energy Beam")]
+    [InputAction(KeyboardControl.R, Name = "Energy Blast")]
     public InputAction EnergyBlastKey { get; set; } = null!;
 
     [InputAction(KeyboardControl.Y, Name = "Flight")]
@@ -29,7 +32,7 @@ internal class PowerRingInputs : LcInputActions
     [InputAction(KeyboardControl.V, Name = "Energy Shield")]
     public InputAction EnergyShieldKey { get; set; } = null!;
 
-    [InputAction(KeyboardControl.H, Name = "Oath")]
+    [InputAction(KeyboardControl.O, Name = "Oath")]
     public InputAction OathKey { get; set; } = null!;
 }
 

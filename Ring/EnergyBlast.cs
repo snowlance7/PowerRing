@@ -25,7 +25,7 @@ internal partial class PowerRing : WearableObject
         if (context.canceled) { return; }
         if (playerWornBy == null || playerWornBy != localPlayer) { return; }
 
-        if (!IsOffCooldown(Ability.EnergyBlast) || !CanUsePower(EnergyBlastPowerUsageOnCast))
+        if (!CanCastAbility(Ability.EnergyBlast))
         {
             DoCastFailedEffectsRpc();
             return;

@@ -3,6 +3,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using PowerRing.Ring;
 using SnowyLib;
+using System;
 using System.Linq;
 using Unity.Netcode;
 using Unity.Services.Authentication.Generated;
@@ -29,66 +30,66 @@ internal partial class PowerRing : WearableObject
     {
         if (!BubbleShieldEnabled) { return; }
 
-        logger.LogDebug("BubbleShieldKeyPressed");
-        // TODO: make it so you cast on yourself by default but if you use the point emote, it tries to cast on a player
+        logger.LogDebug("Self cast");
 
-        if (localPlayer.GetCurrentEmote() == 2)
+        if (BubbleShieldToggle)
         {
-            logger.LogDebug("Shared cast");
+            if (context.canceled) { return; }
 
-            if (BubbleShieldSharedToggle)
+            var shield = BubbleShield.GetShield(localPlayer);
+
+            if (shield.IsActive)
             {
-                if (playerShielding != null)
-                {
+                shield.DeactivatePowerRpc();
+                return;
+            }
 
+            if (!CanCastAbility(Ability.BubbleShield))
+            {
+                DoCastFailedEffectsRpc();
+                return;
+            }
+
+            shield.ActivatePowerRpc(NetworkObject);
+        }
+        else
+        {
+            if (context.started)
+            {
+                if (!CanCastAbility(Ability.BubbleShield))
+                {
+                    DoCastFailedEffectsRpc();
+                    return;
                 }
+
+                var shield = BubbleShield.GetShield(localPlayer);
+                shield.ActivatePowerRpc(NetworkObject);
             }
             else
+            {
+                var shield = BubbleShield.GetShield(localPlayer);
+                if (!shield.IsActive) { return; }
+                shield.DeactivatePowerRpc();
+            }
+        }
+    }
+
+    private void SharedBubbleShieldKeyPressed(InputAction.CallbackContext context) // Shared Bubble Shield
+    {
+        if (!BubbleShieldEnabled) { return; }
+
+        logger.LogDebug("Shared cast");
+
+        if (BubbleShieldSharedToggle)
+        {
+            if (playerShielding != null)
             {
 
             }
         }
         else
         {
-            logger.LogDebug("Self cast");
 
-            if (BubbleShieldToggle)
-            {
-                var shield = BubbleShield.GetShield(localPlayer);
-                if (shield.IsActive)
-                {
-                    shield.DeactivatePowerRpc();
-                    return;
-                }
-
-                if (!IsOffCooldown(Ability.BubbleShield) || !CanUsePower(BubbleShieldPowerUsageOnCast))
-                {
-                    DoCastFailedEffectsRpc();
-                    return;
-                }
-
-                shield.ActivatePowerRpc(NetworkObject);
-            }
-            else
-            {
-                if (context.started)
-                {
-                    if (!IsOffCooldown(Ability.BubbleShield) || !CanUsePower(BubbleShieldPowerUsageOnCast))
-                    {
-                        DoCastFailedEffectsRpc();
-                        return;
-                    }
-
-                    var shield = BubbleShield.GetShield(localPlayer);
-                    shield.ActivatePowerRpc(NetworkObject);
-                }
-                else
-                {
-                    var shield = BubbleShield.GetShield(localPlayer);
-                    if (!shield.IsActive) { return; }
-                    shield.DeactivatePowerRpc();
-                }
-            }
         }
     }
 }
