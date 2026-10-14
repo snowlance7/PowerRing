@@ -27,8 +27,6 @@ internal partial class PowerRing : WearableObject
     public AudioClip oathSFX = null!;
     public AudioClip energyBlastSFX = null!;
 
-    public GameObject bubbleShieldPrefab = null!;
-
     public GameObject energyConstructPrefab = null!;
 
     public GameObject energyCagePrefab = null!;
@@ -137,6 +135,12 @@ internal partial class PowerRing : WearableObject
             logger.LogError("Systems/Rendering not found");
             return;
         }
+
+        //var shieldCustomPass = PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab.GetComponent<CustomPassVolume>().customPasses[0];
+
+        //var customPass = renderingRoot.Find("CustomPass (1)").GetComponent<CustomPassVolume>();
+        //customPass.customPasses.Add(shieldCustomPass);
+        //return;
 
         var shieldCustomPassTransform = renderingRoot.Find("ShieldCustomPass");
 

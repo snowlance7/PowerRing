@@ -1,22 +1,19 @@
 ﻿using GameNetcodeStuff;
 using System.Collections.Generic;
+using Unity.Netcode;
+using static PowerRing.Plugin;
 using UnityEngine;
 
 namespace PowerRing.Ring
 {
-    internal abstract class PowerRingAbility : MonoBehaviour
+    internal abstract class PowerRingAbility : NetworkBehaviour
     {
         public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
-
-        [HideInInspector]
-        public PlayerControllerB? player;
-        [HideInInspector]
-        public EnemyAI? enemy;
 
         public abstract float PowerUsagePerSecond { get; }
         public abstract float Duration { get; }
 
-        PowerRing? ring;
+        public PowerRing? ring;
 
         float timeActivated;
         public bool IsActive { get; private set; }
@@ -26,7 +23,7 @@ namespace PowerRing.Ring
             Instances.Add(this);
         }
 
-        public virtual void OnDestroy()
+        public override void OnDestroy()
         {
             Instances.Remove(this);
         }
@@ -54,11 +51,12 @@ namespace PowerRing.Ring
             }
         }
 
-        public void ActivatePower()
+        public void ActivatePower(PowerRing sourceRing)
         {
+            ring = sourceRing;
             IsActive = true;
             timeActivated = 0f;
-            ring?.powerUsage += PowerUsagePerSecond;
+            ring.powerUsage += PowerUsagePerSecond;
             OnActivatePower();
         }
 
@@ -66,6 +64,7 @@ namespace PowerRing.Ring
         {
             IsActive = false;
             ring?.powerUsage -= PowerUsagePerSecond;
+            ring = null;
             OnDeactivatePower();
         }
 
@@ -75,27 +74,17 @@ namespace PowerRing.Ring
 
         public abstract void OnDeactivatePower();
 
-        public void SetRing(PowerRing ring, bool activate = false)
+        [Rpc(SendTo.Everyone, RequireOwnership = false)]
+        public void ActivatePowerRpc(NetworkObjectReference powerRingRef)
         {
-            this.ring = ring;
-
-            if (activate) ActivatePower();
+            if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
+            ActivatePower(netObj.GetComponent<PowerRing>());
         }
 
-        public void SetRing(PowerRing ring, PlayerControllerB player, bool activate = false)
+        [Rpc(SendTo.Everyone, RequireOwnership = false)]
+        public void DeactivatePowerRpc()
         {
-            this.ring = ring;
-            this.player = player;
-
-            if (activate) ActivatePower();
-        }
-
-        public void SetRing(PowerRing ring, EnemyAI enemy, bool activate = false)
-        {
-            this.ring = ring;
-            this.enemy = enemy;
-
-            if (activate) ActivatePower();
+            DeactivatePower();
         }
     }
 }

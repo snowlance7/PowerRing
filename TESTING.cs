@@ -111,8 +111,6 @@ public static class TESTING
     }
 }
 
-//[Info   : Unity Log] Called finishopeningentrance (False)
-//[Info   : Unity Log] finishopeningentrance animator null
 //[Info   : PowerRing] Caller: PowerRing.TESTING.PlayerControllerB_DamagePlayer_Prefix
 //[Info   : PowerRing] Caller: GameNetcodeStuff.PlayerControllerB.DamagePlayer
 //[Info   : PowerRing] Caller: PufferAI.OnCollideWithPlayer

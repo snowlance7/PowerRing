@@ -8,6 +8,9 @@ public class PowerRingContentHandler : ContentHandler<PowerRingContentHandler>
 {
     public class PowerRingAssets(DuskMod mod, string filePath) : AssetBundleLoader<PowerRingAssets>(mod, filePath)
     {
+        [LoadFromBundle("EnergyBubbleShield.prefab")]
+        public GameObject EnergyBubbleShieldPrefab { get; private set; } = null!;
+
         [LoadFromBundle("ShieldCustomPass.prefab")]
         public GameObject ShieldCustomPassPrefab { get; private set; } = null!;
 

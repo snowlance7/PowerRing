@@ -59,7 +59,7 @@ internal partial class PowerRing : WearableObject
         energyBlastParticleSystem.Play();
         audioSource.PlayOneShot(energyBlastSFX);
         UsePower(EnergyBlastPowerUsageOnCast);
-
+        SetCooldown(Ability.EnergyBlast, EnergyBlastCooldown);
 
         if (netObjIds == null || netObjIds.Length <= 0) { return; }
 

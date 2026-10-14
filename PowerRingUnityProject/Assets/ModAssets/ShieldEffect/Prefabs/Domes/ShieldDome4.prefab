@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1161196256280264, guid: cbfc1de5709fdf04da887197c2c75651, type: 3}
@@ -94,7 +95,7 @@ PrefabInstance:
     - target: {fileID: 108443333443049420, guid: cbfc1de5709fdf04da887197c2c75651,
         type: 3}
       propertyPath: m_Intensity
-      value: 3
+      value: 47.746483
       objectReference: {fileID: 0}
     - target: {fileID: 114419908011736386, guid: cbfc1de5709fdf04da887197c2c75651,
         type: 3}
@@ -431,7 +432,19 @@ PrefabInstance:
       propertyPath: hitDecalSizeAnimation.m_Curve.Array.data[1].outWeight
       value: 0.33333334
       objectReference: {fileID: 0}
+    - target: {fileID: 4092361463443048740, guid: cbfc1de5709fdf04da887197c2c75651,
+        type: 3}
+      propertyPath: shieldLight
+      value: 
+      objectReference: {fileID: 3996358288959832121}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1161196256280264, guid: cbfc1de5709fdf04da887197c2c75651,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 809625341}
   m_SourcePrefab: {fileID: 100100000, guid: cbfc1de5709fdf04da887197c2c75651, type: 3}
 --- !u!1 &3958820243960031549 stripped
 GameObject:
@@ -453,3 +466,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   amplitude: 1
   speed: 1
+--- !u!108 &3996358288959832121 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 108443333443049420, guid: cbfc1de5709fdf04da887197c2c75651,
+    type: 3}
+  m_PrefabInstance: {fileID: 3959981371417581557}
+  m_PrefabAsset: {fileID: 0}

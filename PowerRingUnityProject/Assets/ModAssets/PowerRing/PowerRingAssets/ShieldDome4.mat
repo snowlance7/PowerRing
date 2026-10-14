@@ -190,6 +190,6 @@ Material:
     - _PatternColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShieldBounds: {r: 1, g: 1, b: 1, a: 0}
     - _ShieldDirection: {r: 1, g: 0, b: 0, a: 0}
-    - _TextureColor: {r: 0.15327638, g: 0.8537167, b: 0, a: 1}
+    - _TextureColor: {r: 0.15327635, g: 0.8537167, b: 0, a: 0.7882353}
     - _WorldScale: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
