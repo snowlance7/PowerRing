@@ -3,20 +3,39 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using static PowerRing.Plugin;
 using UnityEngine;
+using SnowyLib;
+using System;
+using static PowerRing.PowerRing;
 
-namespace PowerRing.Ring
+namespace PowerRing
 {
     internal abstract class PowerRingAbility : NetworkBehaviour
     {
         public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
 
-        public abstract float PowerUsagePerSecond { get; }
-        public abstract float Duration { get; }
+        public abstract PowerRing.Ability Ability { get; }
+        public float PowerUsageOnCast => AbilityPowerUsageOnCast[(int)Ability];
+        public float PowerUsagePerSecond => AbilityPowerUsagePerSecond[(int)Ability];
+        public float Duration => AbilityDuration[(int)Ability];
 
         public PowerRing? ring;
 
         float timeActivated;
         public bool IsActive { get; private set; }
+
+        [StaticInit]
+        public static void Init()
+        {
+
+        }
+
+        private static void InitConfigs()
+        {
+            foreach (var ability in Enum.GetValues(typeof(PowerRing.Ability)))
+            {
+
+            }
+        }
 
         public virtual void Start()
         {
@@ -56,6 +75,8 @@ namespace PowerRing.Ring
             ring = sourceRing;
             IsActive = true;
             timeActivated = 0f;
+            ring.UsePower(PowerUsageOnCast);
+            ring.SetCooldown(Ability);
             ring.powerUsage += PowerUsagePerSecond;
             OnActivatePower();
         }

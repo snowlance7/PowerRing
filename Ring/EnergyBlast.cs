@@ -11,8 +11,6 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
-    public static float EnergyBlastPowerUsageOnCast => PluginInstance.Config.Bind("Energy Blast", "Power Usage On Cast", 0f, "How much power the energy blast consumes when fired.").Value;
-    public static float EnergyBlastCooldown => PluginInstance.Config.Bind("Energy Blast", "Cooldown", 0f, "How long before the energy blast can be fired again.").Value;
     public static float EnergyBlastEnemyKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Enemy Knockback Force", 0f, "How much knockback force the energy blast applies to enemies.").Value;
     public static float EnergyBlastPlayerKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Player Knockback Force", 0f, "How much knockback force the energy blast applies to players.").Value;
     public static int EnergyBlastEnemyDamage => PluginInstance.Config.Bind("Energy Blast", "Enemy Damage", 0, "How much damage the energy blast deals to enemies.").Value;

@@ -11,36 +11,25 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
-    public static bool BubbleShieldEnabled => PluginInstance.Config.Bind("Bubble Shield", "Enabled", true, "If the Bubble Shield ability should be enabled").Value;
-    public static bool BubbleShieldSharedToggle => PluginInstance.Config.Bind("Bubble Shield", "Shared Toggle", true, "If the bubble shield ability should toggle or require holding the button down to cast on another player.").Value;
-    public static bool BubbleShieldToggle => PluginInstance.Config.Bind("Bubble Shield", "Toggle", true, "If the bubble shield ability should toggle or require holding the button down to cast.").Value;
-    public static float BubbleShieldPowerUsageOnCast => PluginInstance.Config.Bind("Bubble Shield", "Power Usage On Cast", 0f, "How much power the bubble shield ability consumes when activated.").Value;
-    public static float BubbleShieldPowerUsagePerSecond => PluginInstance.Config.Bind("Bubble Shield", "Power Usage Per Second", 0f, "How much power the bubble shield ability consumes every second while active.").Value;
-    public static float BubbleShieldDuration => PluginInstance.Config.Bind("Bubble Shield", "Duration", 0f, "How long the bubble shield remains active after being activated.").Value;
-    public static float BubbleShieldCooldown => PluginInstance.Config.Bind("Bubble Shield", "Cooldown", 0f, "How long before the bubble shield ability can be used again.").Value;
-
-    public PlayerControllerB? playerShielding;
+    BubbleShield? lastBubbleShield;
 
     private void BubbleShieldKeyPressed(InputAction.CallbackContext context) // Bubble Shield
     {
-        if (!BubbleShieldEnabled) { return; }
-
         logger.LogDebug("Self cast");
 
-        if (BubbleShieldToggle)
+        if (AbilityToggle[(int)Ability.BubbleShield])
         {
             if (context.canceled) { return; }
 
-            var shield = BubbleShield.GetShield(localPlayer);
-
-            if (shield.IsActive)
+            if (lastBubbleShield != null && lastBubbleShield.IsActive)
             {
-                shield.DeactivatePowerRpc();
+                lastBubbleShield.DeactivatePowerRpc();
                 return;
             }
 
@@ -50,7 +39,10 @@ internal partial class PowerRing : WearableObject
                 return;
             }
 
+            var shield = BubbleShield.GetShield(localPlayer);
+
             shield.ActivatePowerRpc(NetworkObject);
+            lastBubbleShield = shield;
         }
         else
         {
@@ -64,12 +56,15 @@ internal partial class PowerRing : WearableObject
 
                 var shield = BubbleShield.GetShield(localPlayer);
                 shield.ActivatePowerRpc(NetworkObject);
+                lastBubbleShield = shield;
             }
             else
             {
-                var shield = BubbleShield.GetShield(localPlayer);
-                if (!shield.IsActive) { return; }
-                shield.DeactivatePowerRpc();
+                if (lastBubbleShield != null && lastBubbleShield.IsActive)
+                {
+                    lastBubbleShield.DeactivatePowerRpc();
+                    return;
+                }
             }
         }
     }
@@ -82,9 +77,12 @@ internal partial class PowerRing : WearableObject
 
         if (BubbleShieldSharedToggle)
         {
-            if (playerShielding != null)
-            {
+            if (context.canceled) { return; }
 
+            if (lastBubbleShield != null && lastBubbleShield.IsActive)
+            {
+                lastBubbleShield.DeactivatePowerRpc();
+                return;
             }
         }
         else

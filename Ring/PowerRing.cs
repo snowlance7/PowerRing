@@ -13,6 +13,7 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
+using static PowerRing.Ring.;
 
 namespace PowerRing;
 
@@ -49,71 +50,32 @@ internal partial class PowerRing : WearableObject
 
     public enum Ability
     {
-        GreenLight,
-        BubbleShield,
-        EnergyConstruct,
-        EnergyBlast,
-        Flight,
-        EnergyCage,
-        EnergyShield,
-        Oath
+        GreenLight = 0,
+        BubbleShield = 1,
+        EnergyConstruct = 2,
+        EnergyBlast = 3,
+        Flight = 4,
+        EnergyCage = 5,
+        EnergyShield = 6
     }
 
     // TODO: Configs to add:
     // ring usable when holding one handed item
     // ring usable when holding two handed item
 
-    public static ulong[] RingRestrictedSteamIDs => ParseSteamIds(PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Restricted Steam IDs", "", "List of steam ids separated by commas of players who can use the Power Ring. Leave blank to allow all players to use it.").Value);
+    public static ulong[] RingRestrictedSteamIDs => ParseSteamIds(PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Restricted Steam IDs", "", "List of steam ids separated by commas of players who can use the Power Ring. Leave blank to allow all players to use it.").Value); // TODO
 
     [StaticInit]
     public static void Init()
     {
         _ = RingRestrictedSteamIDs;
 
-        _ = GreenLightToggle;
-        _ = GreenLightPowerUsageOnCast;
-        _ = GreenLightPowerUsagePerSecond;
-
-        _ = BubbleShieldToggle;
-        _ = BubbleShieldPowerUsageOnCast;
-        _ = BubbleShieldPowerUsagePerSecond;
-        _ = BubbleShieldDuration;
-        _ = BubbleShieldCooldown;
-
-        _ = EnergyConstructToggle;
-        _ = EnergyConstructPowerUsageOnCast;
-        _ = EnergyConstructPowerUsagePerSecond;
-        _ = EnergyConstructDeactivateOnDiscard;
-        _ = EnergyConstructDuration;
-        _ = EnergyConstructCooldown;
-
-        _ = EnergyBlastPowerUsageOnCast;
-        _ = EnergyBlastCooldown;
         _ = EnergyBlastEnemyKnockbackForce;
         _ = EnergyBlastPlayerKnockbackForce;
         _ = EnergyBlastEnemyDamage;
         _ = EnergyBlastPlayerDamage;
 
-        _ = FlightToggle;
-        _ = FlightPowerUsageOnCast;
-        _ = FlightPowerUsagePerSecond;
-        _ = FlightDeactivateOnDiscard;
-        _ = FlightDuration;
-        _ = FlightCooldown;
         _ = FlightHover;
-
-        _ = EnergyTrapToggle;
-        _ = EnergyTrapPowerUsageOnCast;
-        _ = EnergyTrapPowerUsagePerSecond;
-        _ = EnergyTrapDeactivateOnDiscard;
-        _ = EnergyTrapDuration;
-        _ = EnergyTrapCooldown;
-
-        _ = EnergyShieldToggle;
-        _ = EnergyShieldPowerUsageOnCast;
-        _ = EnergyShieldPowerUsagePerSecond;
-        _ = EnergyShieldDuration;
-        _ = EnergyShieldCooldown;
 
         SetUpShieldVisualization();
     }
@@ -284,19 +246,10 @@ internal partial class PowerRing : WearableObject
 
     public bool CanCastAbility(Ability ability)
     {
-        if (!IsOffCooldown(ability)) { return false; }
-
-        return ability switch
-        {
-            Ability.GreenLight => CanUsePower(GreenLightPowerUsageOnCast),
-            Ability.BubbleShield => CanUsePower(BubbleShieldPowerUsageOnCast),
-            Ability.EnergyConstruct => CanUsePower(EnergyConstructPowerUsageOnCast),
-            Ability.EnergyBlast => CanUsePower(EnergyBlastPowerUsageOnCast),
-            Ability.Flight => CanUsePower(FlightPowerUsageOnCast),
-            Ability.EnergyCage => CanUsePower(EnergyTrapPowerUsageOnCast),
-            Ability.EnergyShield => CanUsePower(EnergyShieldPowerUsageOnCast),
-            _ => true
-        };
+        return
+            AbilityEnabled[(int)ability] &&
+            IsOffCooldown(ability) &&
+            CanUsePower(AbilityPowerUsageOnCast[(int)ability]);
     }
 
     public void UsedUpPowerOnLocalClient()
@@ -322,9 +275,9 @@ internal partial class PowerRing : WearableObject
         power = Mathf.Clamp01(powerAmount);
     }
 
-    public void SetCooldown(Ability ability, float value)
+    public void SetCooldown(Ability ability)
     {
-        cooldowns[(int)ability] = value;
+        cooldowns[(int)ability] = AbilityCooldown[(int)ability];
     }
 
     public bool IsOffCooldown(Ability ability)
