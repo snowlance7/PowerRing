@@ -9,13 +9,12 @@ namespace PowerRing;
 
 internal partial class PowerRing
 {
-    //public static float[] AbilityPowerUsageOnCast = [0, 0, 0, 0, 0, 0, 0] // TODO: Do this for setting defaults
-    public static bool[] AbilityEnabled = new bool[7];
-    public static bool[] AbilityToggle = new bool[7];
-    public static float[] AbilityPowerUsageOnCast = new float[7];
-    public static float[] AbilityPowerUsagePerSecond = new float[7];
-    public static float[] AbilityDuration = new float[7];
-    public static float[] AbilityCooldown = new float[7];
+    public static bool[] AbilityEnabled = [true, true, true, true, true, true, true];
+    public static bool[] AbilityToggle = [true, true, true, true, true, true, true];
+    public static float[] AbilityPowerUsageOnCast = [0, 0, 0, 0, 0, 0, 0];
+    public static float[] AbilityPowerUsagePerSecond = [0, 0, 0, 0, 0, 0, 0];
+    public static float[] AbilityDuration = [0, 0, 0, 0, 0, 0, 0];
+    public static float[] AbilityCooldown = [0, 0, 0, 0, 0, 0, 0];
 
     [StaticInit]
     public static void InitConfigs()

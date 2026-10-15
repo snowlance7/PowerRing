@@ -9,6 +9,6 @@ internal partial class PowerRing : WearableObject
 {
     private void EnergyShieldKeyPressed(InputAction.CallbackContext context) // Energy Shield
     {
-        return;
+        if (playerWornBy == null || playerWornBy != localPlayer) { return; }
     }
 }

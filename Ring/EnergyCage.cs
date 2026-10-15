@@ -9,6 +9,6 @@ internal partial class PowerRing : WearableObject
 {
     private void EnergyCageKeyPressed(InputAction.CallbackContext context) // Energy Cage
     {
-        return;
+        if (playerWornBy == null || playerWornBy != localPlayer) { return; }
     }
 }

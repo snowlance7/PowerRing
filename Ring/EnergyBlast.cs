@@ -20,8 +20,7 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyBlastKeyPressed(InputAction.CallbackContext context) // Energy Blast
     {
-        if (context.canceled) { return; }
-        if (playerWornBy == null || playerWornBy != localPlayer) { return; }
+        if (playerWornBy == null || playerWornBy != localPlayer || !AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
 
         if (!CanCastAbility(Ability.EnergyBlast))
         {
@@ -56,8 +55,8 @@ internal partial class PowerRing : WearableObject
     {
         energyBlastParticleSystem.Play();
         audioSource.PlayOneShot(energyBlastSFX);
-        UsePower(EnergyBlastPowerUsageOnCast);
-        SetCooldown(Ability.EnergyBlast, EnergyBlastCooldown);
+        //UsePower(EnergyBlastPowerUsageOnCast);
+        //SetCooldown(Ability.EnergyBlast, EnergyBlastCooldown);
 
         if (netObjIds == null || netObjIds.Length <= 0) { return; }
 

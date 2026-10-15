@@ -72,6 +72,7 @@ namespace PowerRing
 
         public void ActivatePower(PowerRing sourceRing)
         {
+            logger.LogDebug($"Activating {Ability.ToString()} ability casted from {sourceRing.lastPlayerWornBy!.playerUsername}");
             ring = sourceRing;
             IsActive = true;
             timeActivated = 0f;
@@ -98,8 +99,10 @@ namespace PowerRing
         [Rpc(SendTo.Everyone, RequireOwnership = false)]
         public void ActivatePowerRpc(NetworkObjectReference powerRingRef)
         {
+            logger.LogDebug("ActivatePowerRpc");
             if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
-            ActivatePower(netObj.GetComponent<PowerRing>());
+            if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
+            ActivatePower(ring);
         }
 
         [Rpc(SendTo.Everyone, RequireOwnership = false)]

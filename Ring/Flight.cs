@@ -11,6 +11,6 @@ internal partial class PowerRing : WearableObject
 
     private void FlightKeyPressed(InputAction.CallbackContext context) // Flight
     {
-        return;
+        if (playerWornBy == null || playerWornBy != localPlayer) { return; }
     }
 }

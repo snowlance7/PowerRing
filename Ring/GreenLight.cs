@@ -9,6 +9,6 @@ internal partial class PowerRing : WearableObject
 {
     private void GreenLightKeyPressed(InputAction.CallbackContext context) // Green Light
     {
-        return;
+        if (playerWornBy == null || playerWornBy != localPlayer) { return; }
     }
 }

@@ -1,27 +1,84 @@
 ﻿using FXV;
 using GameNetcodeStuff;
 using HarmonyLib;
-using PowerRing.Ring;
 using SnowyLib;
-using System;
-using System.Linq;
 using Unity.Netcode;
-using Unity.Services.Authentication.Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
-using static UnityEngine.Rendering.DebugUI;
+using static PowerRing.PowerRing;
 
 namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
+    public static bool ShowShieldOnClient = PluginInstance.Config.Bind("Bubble Shield", "Show Shield On Client", true, "If the shield effect should be visible on the client. Does not prevent you from seeing other players shield, just your own. \n CLIENT SIDE CONFIG").Value;
+
     BubbleShield? lastBubbleShield;
 
     private void BubbleShieldKeyPressed(InputAction.CallbackContext context) // Bubble Shield
     {
-        logger.LogDebug("Self cast");
+        if (!CanUseAbility(Ability.BubbleShield)) { logger.LogDebug("Cant use ability"); return; }
+
+        if (AbilityToggle[(int)Ability.BubbleShield])
+        {
+            if (context.canceled) { return; }
+
+            if (lastBubbleShield != null && lastBubbleShield.IsActive)
+            {
+                logger.LogDebug("Deactivating shield");
+                lastBubbleShield.DeactivatePowerRpc();
+                return;
+            }
+
+            if (!CanCastAbility(Ability.BubbleShield))
+            {
+                logger.LogDebug("Cast failed");
+                DoCastFailedEffectsRpc();
+                return;
+            }
+
+            var shield = BubbleShield.GetShield(localPlayer);
+            if (shield == null) { logger.LogDebug("SHIELD IS NULL"); return; }
+            logger.LogDebug("Activating shield");
+            shield.ActivatePowerRpc(NetworkObject);
+            lastBubbleShield = shield;
+        }
+        else
+        {
+            if (context.started)
+            {
+                if (!CanCastAbility(Ability.BubbleShield))
+                {
+                    logger.LogDebug("Cast failed");
+                    DoCastFailedEffectsRpc();
+                    return;
+                }
+
+                var shield = BubbleShield.GetShield(localPlayer);
+                if (shield == null) { logger.LogDebug("SHIELD IS NULL"); return; }
+                logger.LogDebug("Activating shield");
+                shield.ActivatePowerRpc(NetworkObject);
+                lastBubbleShield = shield;
+            }
+            else
+            {
+                if (lastBubbleShield != null && lastBubbleShield.IsActive)
+                {
+                    logger.LogDebug("Deactivating shield");
+                    lastBubbleShield.DeactivatePowerRpc();
+                    return;
+                }
+            }
+        }
+    }
+
+    private void SharedBubbleShieldKeyPressed(InputAction.CallbackContext context) // Shared Bubble Shield
+    {
+        if (!CanUseAbility(Ability.BubbleShield)) { return; }
+
+        logger.LogDebug("Shared cast");
 
         if (AbilityToggle[(int)Ability.BubbleShield])
         {
@@ -33,14 +90,12 @@ internal partial class PowerRing : WearableObject
                 return;
             }
 
-            if (!CanCastAbility(Ability.BubbleShield))
-            {
-                DoCastFailedEffectsRpc();
-                return;
-            }
+            if (!CanCastAbility(Ability.BubbleShield)) { DoCastFailedEffectsRpc(); return; }
 
-            var shield = BubbleShield.GetShield(localPlayer);
+            PlayerControllerB? player = GetPlayerLookingAt(20f);
+            if (player == null) { DoCastFailedEffectsRpc(); return; }
 
+            var shield = BubbleShield.GetShield(player);
             shield.ActivatePowerRpc(NetworkObject);
             lastBubbleShield = shield;
         }
@@ -48,11 +103,10 @@ internal partial class PowerRing : WearableObject
         {
             if (context.started)
             {
-                if (!CanCastAbility(Ability.BubbleShield))
-                {
-                    DoCastFailedEffectsRpc();
-                    return;
-                }
+                if (!CanCastAbility(Ability.BubbleShield)) { DoCastFailedEffectsRpc(); return; }
+
+                PlayerControllerB? player = GetPlayerLookingAt(20f);
+                if (player == null) { DoCastFailedEffectsRpc(); return; }
 
                 var shield = BubbleShield.GetShield(localPlayer);
                 shield.ActivatePowerRpc(NetworkObject);
@@ -68,28 +122,6 @@ internal partial class PowerRing : WearableObject
             }
         }
     }
-
-    private void SharedBubbleShieldKeyPressed(InputAction.CallbackContext context) // Shared Bubble Shield
-    {
-        if (!BubbleShieldEnabled) { return; }
-
-        logger.LogDebug("Shared cast");
-
-        if (BubbleShieldSharedToggle)
-        {
-            if (context.canceled) { return; }
-
-            if (lastBubbleShield != null && lastBubbleShield.IsActive)
-            {
-                lastBubbleShield.DeactivatePowerRpc();
-                return;
-            }
-        }
-        else
-        {
-
-        }
-    }
 }
 
 internal class BubbleShield : PowerRingAbility, IHittable // TODO: Test this
@@ -98,14 +130,12 @@ internal class BubbleShield : PowerRingAbility, IHittable // TODO: Test this
     Light light = null!;
     Collider collider = null!;
 
-    public override float PowerUsagePerSecond => PowerRing.BubbleShieldPowerUsagePerSecond;
-
-    public override float Duration => PowerRing.BubbleShieldDuration;
-
     public PlayerControllerB? player;
 
     public float YOffset = 1.2f;
     public Transform? parentObject => player?.transform;
+
+    public override PowerRing.Ability Ability => PowerRing.Ability.BubbleShield;
 
     public void Awake()
     {
@@ -144,9 +174,13 @@ internal class BubbleShield : PowerRingAbility, IHittable // TODO: Test this
     public override void OnActivatePower()
     {
         logger.LogDebug("OnActivatePower");
+
         shield.SetShieldActive(true);
+
         if (localPlayer != player) { return; }
+
         light.enabled = false;
+        shield.SetShieldVisuallyActive(ShowShieldOnClient);
         return;
     }
 

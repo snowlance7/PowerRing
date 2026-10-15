@@ -13,7 +13,6 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
-using static PowerRing.Ring.;
 
 namespace PowerRing;
 
@@ -76,6 +75,8 @@ internal partial class PowerRing : WearableObject
         _ = EnergyBlastPlayerDamage;
 
         _ = FlightHover;
+
+        _ = ShowShieldOnClient;
 
         SetUpShieldVisualization();
     }
@@ -246,10 +247,12 @@ internal partial class PowerRing : WearableObject
 
     public bool CanCastAbility(Ability ability)
     {
-        return
-            AbilityEnabled[(int)ability] &&
-            IsOffCooldown(ability) &&
-            CanUsePower(AbilityPowerUsageOnCast[(int)ability]);
+        return IsOffCooldown(ability) && CanUsePower(AbilityPowerUsageOnCast[(int)ability]);
+    }
+
+    public bool CanUseAbility(Ability ability)
+    {
+        return playerWornBy != null && playerWornBy == localPlayer && AbilityEnabled[(int)ability];
     }
 
     public void UsedUpPowerOnLocalClient()
