@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: ShieldDome8
   m_Shader: {fileID: 4800000, guid: 698d80be1edae534d88a3eb185ddaa31, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - ACTIVATION_EFFECT_ON
   - RIM_SOURCE_NORMAL
@@ -25,8 +27,6 @@ Material:
   - _FEATURE_COLORRIM_ON
   - _FEATURE_DEPTHOVERLAPRIM_ON
   - _FEATURE_DIRECTIONALVISIBILITY_ON
-  - _FEATURE_MAINTEXTUREANIMATION_ON
-  - _FEATURE_PATTERNTEXTUREANIMATION_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -34,6 +34,7 @@ Material:
   stringTagMap: {}
   disabledShaderPasses:
   - Postprocess
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:

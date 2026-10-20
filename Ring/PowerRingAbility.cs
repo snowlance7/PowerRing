@@ -19,23 +19,11 @@ namespace PowerRing
         public float Duration => AbilityDuration[(int)Ability];
 
         public PowerRing? ring;
+        public PlayerControllerB? player;
+        public EnemyAI? enemy;
 
         float timeActivated;
         public bool IsActive { get; private set; }
-
-        [StaticInit]
-        public static void Init()
-        {
-
-        }
-
-        private static void InitConfigs()
-        {
-            foreach (var ability in Enum.GetValues(typeof(PowerRing.Ability)))
-            {
-
-            }
-        }
 
         public virtual void Start()
         {
@@ -102,6 +90,26 @@ namespace PowerRing
             logger.LogDebug("ActivatePowerRpc");
             if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
             if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
+            ActivatePower(ring);
+        }
+
+        [Rpc(SendTo.Everyone, RequireOwnership = false)]
+        public void ActivatePowerRpc(NetworkObjectReference powerRingRef, ulong clientId)
+        {
+            logger.LogDebug("ActivatePowerRpc");
+            if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
+            if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
+            player = PlayerFromId(clientId);
+            ActivatePower(ring);
+        }
+
+        [Rpc(SendTo.Everyone, RequireOwnership = false)]
+        public void ActivatePowerRpc(NetworkObjectReference powerRingRef, NetworkObjectReference enemyNetRef)
+        {
+            logger.LogDebug("ActivatePowerRpc");
+            if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
+            if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
+            if (enemyNetRef.TryGet(out NetworkObject enemyNetObj)) { enemy = enemyNetObj.GetComponent<EnemyAI>(); }
             ActivatePower(ring);
         }
 

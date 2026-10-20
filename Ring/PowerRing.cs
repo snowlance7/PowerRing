@@ -352,11 +352,11 @@ internal static class PowerRingPatches
                 ShieldPostprocess shield = localPlayer.gameplayCamera.gameObject.AddComponent<ShieldPostprocess>();
                 shield.blurMethod = ShieldPostprocess.BlurMethod.GaussianOnly;
                 shield.postprocessPower = 4;
-                shield.globalIllumination = true;
-                shield.giSampleRadius = 2;
-                shield.giIntensity = 0.25f;
-                shield.giDenoiseStepWidth = 2;
-                shield.giAtIteration = 2;
+                shield.globalIllumination = false;
+                //shield.giSampleRadius = 2;
+                //shield.giIntensity = 0.25f;
+                //shield.giDenoiseStepWidth = 2;
+                //shield.giAtIteration = 2;
             }
         }
         catch (System.Exception e)

@@ -40,27 +40,26 @@ public static class TESTING
     public static void DoHitTest()
     {
         logger.LogDebug("DoHitTest");
-        Vector3 firePos = Utils.GetRandomPositionOnSphere(localPlayer.bodyParts[5].position, 3f);
-        Vector3 directionToPlayer = (localPlayer.bodyParts[5].position - firePos).normalized;
-        if (!Physics.Raycast(firePos, directionToPlayer, out RaycastHit hit, 5f, LayerMask.GetMask("Colliders"))) { return; }
-        logger.LogDebug("Collider hit");
-        Shield shield = hit.collider.GetComponent<Shield>();
+        var shield = BubbleShield.GetShield(localPlayer);
         if (shield == null) { return; }
+        Vector3 firePos = Utils.GetRandomPositionOnSphere(shield.transform.position, 2f);
+        Vector3 directionToPlayer = (shield.transform.position - firePos).normalized;
         logger.LogDebug("Triggering");
-        shield.OnHit(hit.point, directionToPlayer, 1f, 1f);
+        shield.HitRpc(firePos, directionToPlayer, 5f, 5f);
     }
 
-    [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
-    public static void PingScan_performedPostFix()
+    [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
+    public static bool HUDManager_PingScan_performed_PreFix()
     {
         try
         {
-            if (!Utils.testing) { return; }
+            if (!Utils.testing) { return true; }
             DoHitTest();
+            return false;
         }
         catch
         {
-            return;
+            return true;
         }
     }
 
