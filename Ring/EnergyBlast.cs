@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using SnowyLib;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,8 +12,8 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
-    public static float EnergyBlastEnemyKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Enemy Knockback Force", 0f, "How much knockback force the energy blast applies to enemies.").Value;
-    public static float EnergyBlastPlayerKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Player Knockback Force", 0f, "How much knockback force the energy blast applies to players.").Value;
+    public static float EnergyBlastEnemyKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Enemy Knockback Force", 5, "How much knockback force the energy blast applies to enemies.").Value;
+    public static float EnergyBlastPlayerKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Player Knockback Force", 5, "How much knockback force the energy blast applies to players.").Value;
     public static int EnergyBlastEnemyDamage => PluginInstance.Config.Bind("Energy Blast", "Enemy Damage", 0, "How much damage the energy blast deals to enemies.").Value;
     public static int EnergyBlastPlayerDamage => PluginInstance.Config.Bind("Energy Blast", "Player Damage", 0, "How much damage the energy blast deals to players.").Value;
     
@@ -28,26 +29,35 @@ internal partial class PowerRing : WearableObject
             return;
         }
 
-        energyBlastParticleSystem.Play();
+        DoCastAnimationRpc();
 
-        List<ulong> netObjIds = [];
-        RaycastHit[] hits = Physics.SphereCastAll(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, 1f, localPlayer.gameplayCamera.transform.forward, energyBlastDistance, enemiesAndPlayersMask);
-
-        foreach (var hit in hits)
+        IEnumerator energyBlast()
         {
-            if (hit.collider.CompareTag("Enemies"))
+            yield return null;
+
+            energyBlastParticleSystem.Play();
+
+            List<ulong> netObjIds = [];
+            RaycastHit[] hits = Physics.SphereCastAll(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, 2f, localPlayer.gameplayCamera.transform.forward, energyBlastDistance, enemiesAndPlayersMask);
+
+            foreach (var hit in hits)
             {
-                EnemyAI enemy = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>().mainScript;
-                netObjIds.Add(enemy.NetworkObjectId);
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    EnemyAI enemy = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>().mainScript;
+                    netObjIds.Add(enemy.NetworkObjectId);
+                }
+                else if (hit.collider.CompareTag("Player"))
+                {
+                    PlayerControllerB player = hit.collider.gameObject.GetComponent<PlayerControllerB>();
+                    netObjIds.Add(player.NetworkObjectId);
+                }
             }
-            else if (hit.collider.CompareTag("Player"))
-            {
-                PlayerControllerB player = hit.collider.gameObject.GetComponent<PlayerControllerB>();
-                netObjIds.Add(player.NetworkObjectId);
-            }
+
+            EnergyBlastRpc(netObjIds.ToArray(), localPlayer.gameplayCamera.transform.forward);
         }
 
-        EnergyBlastRpc(netObjIds.ToArray(), localPlayer.gameplayCamera.transform.forward);
+        StartCoroutine(energyBlast());
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]

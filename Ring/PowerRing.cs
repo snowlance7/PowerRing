@@ -42,8 +42,14 @@ internal partial class PowerRing : WearableObject
 
     float[] cooldowns = new float[7];
 
-    int enemiesAndPlayersMask;
-    int playerMask;
+    public static int enemiesAndPlayersMask;
+    public static int playerMask;
+
+    public bool inCastingAnimation;
+    public readonly Vector3 castLocalPositionOffset = new Vector3(-0.0141f, 0.0376f, 0.0576f);
+    public readonly Vector3 castLocalRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
+    public readonly Vector3 castPositionOffset = new Vector3(-0.0453f, 0.0147f, 0.051f);
+    public readonly Vector3 castRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
 
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
 
@@ -226,6 +232,32 @@ internal partial class PowerRing : WearableObject
         }
     }
 
+    public override void LateUpdate()
+    {
+        if (inCastingAnimation && parentObject != null && playerWornBy != null)
+        {
+            transform.rotation = parentObject.rotation;
+            transform.Rotate(wearableItemProperties.useLocalOffsets && localPlayer == playerWornBy ? castLocalRotationOffset : castRotationOffset);
+            transform.position = parentObject.position;
+            Vector3 positionOffset = wearableItemProperties.useLocalOffsets && localPlayer == playerWornBy ? castLocalPositionOffset : castPositionOffset;
+            positionOffset = parentObject.rotation * positionOffset;
+            transform.position += positionOffset;
+
+            if (rotateObject)
+            {
+                base.transform.Rotate(new Vector3(0f, Time.deltaTime * 60f, 0f), Space.World);
+            }
+            if (radarIcon != null)
+            {
+                radarIcon.position = transform.position;
+            }
+        }
+        else
+        {
+            base.LateUpdate();
+        }
+    }
+
     public override void PocketItem()
     {
         SetPowerRpc(power);
@@ -302,6 +334,16 @@ internal partial class PowerRing : WearableObject
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void DoCastAnimationRpc(float startTime = 0.5f) // TODO: Test this
+    {
+        if (playerWornBy == null) { return; }
+        inCastingAnimation = true;
+        playerWornBy.PlayQuickSpecialAnimation(1f);
+        playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, startTime);
+        Utils.InvokeAfterDelay(() => inCastingAnimation = false, 1f);
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void UsedUpPowerRpc()
     {
         UsedUpPowerOnLocalClient();
@@ -353,10 +395,6 @@ internal static class PowerRingPatches
                 shield.blurMethod = ShieldPostprocess.BlurMethod.GaussianOnly;
                 shield.postprocessPower = 4;
                 shield.globalIllumination = false;
-                //shield.giSampleRadius = 2;
-                //shield.giIntensity = 0.25f;
-                //shield.giDenoiseStepWidth = 2;
-                //shield.giAtIteration = 2;
             }
         }
         catch (System.Exception e)

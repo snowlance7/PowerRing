@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Serialization;
 using System;
 using UnityEditor;
+using PowerRing;
 
 namespace FXV
 {
@@ -793,6 +794,7 @@ namespace FXV
                 shieldMaterials.hitMaterial.SetTexture("_HitRippleTex", hitDecalTexture);
                 shieldMaterials.hitMaterial.SetFloat("_HitRippleDistortion", hitEffectDistortion);
                 shieldMaterials.hitMaterial.SetFloat("_HitColorAffect", hitAffectsColor ? 1.0f : 0.0f);
+                Plugin.logger.LogDebug("HIT DECAL TEXTURE SET");
             }
 
             if (hitVariationTexture != null)

@@ -256,8 +256,6 @@ MonoBehaviour:
   audioSource: {fileID: 4417028755508985538}
   oathSFX: {fileID: 0}
   energyBlastSFX: {fileID: 0}
-  bubbleShieldPrefab: {fileID: 3958820243960031549, guid: 774633948652b524ab5dbfcbaa433461,
-    type: 3}
   energyConstructPrefab: {fileID: 0}
   energyCagePrefab: {fileID: 0}
   energyShieldObj: {fileID: 0}
@@ -373,7 +371,7 @@ Transform:
   m_GameObject: {fileID: 6169806118998979654}
   serializedVersion: 2
   m_LocalRotation: {x: 0.17414886, y: 0.0000021941962, z: 0.00000020382137, w: -0.9847194}
-  m_LocalPosition: {x: 0, y: 0.0394, z: 0.0609}
+  m_LocalPosition: {x: 0, y: 0.0279, z: 0.0295}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -452,7 +450,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0
@@ -4032,7 +4030,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     type: 1
     collisionMode: 0
@@ -5270,7 +5268,7 @@ Transform:
   m_GameObject: {fileID: 6288430904557575857}
   serializedVersion: 2
   m_LocalRotation: {x: 0.17414886, y: 0.0000021941962, z: 0.00000020382137, w: -0.9847194}
-  m_LocalPosition: {x: 0, y: 0.0394, z: 0.0609}
+  m_LocalPosition: {x: 0, y: 0.0279, z: 0.0295}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5349,7 +5347,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0
@@ -8929,7 +8927,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     type: 1
     collisionMode: 0
@@ -10164,13 +10162,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7153798991610713592}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0000021069013, y: 0.1741488, z: 0.9847194, w: -0.0000003084029}
+  m_LocalRotation: {x: -0.17414652, y: 0, z: 0, w: 0.98471975}
   m_LocalPosition: {x: -0, y: 0.0254, z: 0.0326}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6609095836196536865}
-  m_LocalEulerAnglesHint: {x: -20.058, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: -20.058, y: 0, z: 0}
 --- !u!1 &8225499610725317071
 GameObject:
   m_ObjectHideFlags: 0

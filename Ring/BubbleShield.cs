@@ -154,18 +154,16 @@ internal partial class PowerRing : WearableObject
 internal class BubbleShield : PowerRingAbility, IHittable // TODO: Test this // TODO: Works but hit effect doesnt show correctly
 {
     Shield shield = null!;
-    Light light = null!;
     Collider collider = null!;
 
     public float YOffset = 1.2f;
     public Transform? parentObject => player?.transform;
 
-    public override PowerRing.Ability Ability => PowerRing.Ability.BubbleShield;
+    public override Ability Ability => Ability.BubbleShield;
 
     public void Awake()
     {
         shield = gameObject.GetComponent<Shield>();
-        light = gameObject.GetComponentInChildren<Light>();
         collider = gameObject.GetComponent<Collider>();
     }
 
@@ -198,7 +196,6 @@ internal class BubbleShield : PowerRingAbility, IHittable // TODO: Test this // 
 
         if (localPlayer != player) { return; }
 
-        light.enabled = false;
         shield.SetShieldVisuallyActive(ShowShieldOnClient);
         return;
     }
@@ -313,7 +310,7 @@ internal static class BubbleShieldPatches
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Turret), nameof(Turret.CheckForPlayersInLineOfSight))]
-    static void Turret_CheckForPlayersInLineOfSight_Postfix(Turret __instance, ref PlayerControllerB? __result) // TODO: Test this
+    static void Turret_CheckForPlayersInLineOfSight_Postfix(Turret __instance, ref PlayerControllerB? __result)
     {
         try
         {
