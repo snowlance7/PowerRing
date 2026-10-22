@@ -4,6 +4,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using SnowyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -44,6 +45,7 @@ internal partial class PowerRing : WearableObject
 
     public static int enemiesAndPlayersMask;
     public static int playerMask;
+    public static int enemiesMask = LayerMask.GetMask("Enemies");
 
     public bool inCastingAnimation;
     public readonly Vector3 castLocalPositionOffset = new Vector3(-0.0141f, 0.0376f, 0.0576f);
@@ -370,30 +372,67 @@ internal partial class PowerRing : WearableObject
         renderer.material.SetFloat("_EmissiveIntensity", Mathf.Lerp(0, 10, strength));
     }
 
-    public void StartCastingAnimation(float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
+    public void StartCastAnimation(float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
     {
-        if (playerWornBy == null) { return; }
         inCastingAnimation = true;
+        if (playerWornBy == null) { return; }
         playerWornBy.playingQuickSpecialAnimation = true;
         playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, animationStartTime);
 
-        IEnumerator startCastingAnimation(float maxGlowTime)
+        IEnumerator startCastAnimation(float maxGlowTime)
         {
+            float elapsedTime = 0f;
 
+            while (elapsedTime <= maxGlowTime)
+            {
+                elapsedTime += Time.deltaTime;
+                SetRingGlow(elapsedTime / maxGlowTime);
+                yield return null;
+            }
         }
+
+        StartCoroutine(startCastAnimation(maxGlowTime));
     }
 
-    public void StopCastingAnimation(float minGlowTime = 1f)
+    public void StopCastAnimation(float minGlowTime = 1f)
     {
         inCastingAnimation = false;
+        if (playerWornBy == null) { return; }
+        playerWornBy.playingQuickSpecialAnimation = false;
+
+        IEnumerator stopCastAnimation(float minGlowTime)
+        {
+            float elapsedTime = 0f;
+
+            while (elapsedTime <= minGlowTime)
+            {
+                elapsedTime += Time.deltaTime;
+                SetRingGlow(1 - (elapsedTime / minGlowTime));
+                yield return null;
+            }
+        }
+
+        StartCoroutine(stopCastAnimation(minGlowTime));
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void StartCastAnimationRpc(float animationStartTime = 0.5f, float maxGlowTime = 0.1f) // TODO: Test this
+    {
+        StartCastAnimation(animationStartTime, maxGlowTime);
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void StopCastAnimationRpc(float minGlowTime = 1f) // TODO: Test this
+    {
+        StopCastAnimation(minGlowTime);
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void DoQuickCastAnimationRpc() // TODO: Test this
     {
         if (playerWornBy == null) { return; }
-        StartCastingAnimation();
-        Utils.InvokeAfterDelay(() => StopCastingAnimation(), 1f);
+        StartCastAnimation();
+        Utils.InvokeAfterDelay(() => StopCastAnimation(), 1f);
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
