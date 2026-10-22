@@ -230,6 +230,38 @@ internal partial class PowerRing : WearableObject
 
             cooldowns[i] -= Time.deltaTime;
         }
+
+        if (playerWornBy != null)
+        {
+            if (inCastingAnimation)
+            {
+                if (localPlayer == playerWornBy)
+                {
+                    playerWornBy.playerBodyAnimator.speed = 0f;
+                }
+                else
+                {
+                    if (playerWornBy.isWalking)
+                    {
+                        if (playerWornBy.playingQuickSpecialAnimation)
+                        {
+                            playerWornBy.playerBodyAnimator.StopPlayback(); // TODO: Test this
+                            playerWornBy.playingQuickSpecialAnimation = false;
+                        }
+                    }
+                    else
+                    {
+                        if (!playerWornBy.playingQuickSpecialAnimation)
+                        {
+                            playerWornBy.playingQuickSpecialAnimation = true;
+                            playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, 0.5f);
+                        }
+
+                        playerWornBy.playerBodyAnimator.speed = 0f;
+                    }
+                }
+            }
+        }
     }
 
     public override void LateUpdate()
@@ -333,14 +365,35 @@ internal partial class PowerRing : WearableObject
         return hit.collider.GetComponent<PlayerControllerB>();
     }
 
-    [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void DoCastAnimationRpc(float startTime = 0.5f) // TODO: Test this
+    public void SetRingGlow(float strength)
+    {
+        renderer.material.SetFloat("_EmissiveIntensity", Mathf.Lerp(0, 10, strength));
+    }
+
+    public void StartCastingAnimation(float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
     {
         if (playerWornBy == null) { return; }
         inCastingAnimation = true;
-        playerWornBy.PlayQuickSpecialAnimation(1f);
-        playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, startTime);
-        Utils.InvokeAfterDelay(() => inCastingAnimation = false, 1f);
+        playerWornBy.playingQuickSpecialAnimation = true;
+        playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, animationStartTime);
+
+        IEnumerator startCastingAnimation(float maxGlowTime)
+        {
+
+        }
+    }
+
+    public void StopCastingAnimation(float minGlowTime = 1f)
+    {
+        inCastingAnimation = false;
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void DoQuickCastAnimationRpc() // TODO: Test this
+    {
+        if (playerWornBy == null) { return; }
+        StartCastingAnimation();
+        Utils.InvokeAfterDelay(() => StopCastingAnimation(), 1f);
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]

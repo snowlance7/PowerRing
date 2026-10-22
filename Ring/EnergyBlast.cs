@@ -7,15 +7,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
+using static UnityEngine.LightAnchor;
 
 namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
-    public static float EnergyBlastEnemyKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Enemy Knockback Force", 5, "How much knockback force the energy blast applies to enemies.").Value;
-    public static float EnergyBlastPlayerKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Player Knockback Force", 5, "How much knockback force the energy blast applies to players.").Value;
-    public static int EnergyBlastEnemyDamage => PluginInstance.Config.Bind("Energy Blast", "Enemy Damage", 0, "How much damage the energy blast deals to enemies.").Value;
-    public static int EnergyBlastPlayerDamage => PluginInstance.Config.Bind("Energy Blast", "Player Damage", 0, "How much damage the energy blast deals to players.").Value;
+    public static float EnergyBlastEnemyKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Enemy Knockback Force", 50f, "How much knockback force the energy blast applies to enemies.").Value;
+    public static float EnergyBlastPlayerKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Player Knockback Force", 50f, "How much knockback force the energy blast applies to players.").Value;
+    public static int EnergyBlastEnemyDamage => PluginInstance.Config.Bind("Energy Blast", "Enemy Damage", 1, "How much damage the energy blast deals to enemies.").Value;
+    public static int EnergyBlastPlayerDamage => PluginInstance.Config.Bind("Energy Blast", "Player Damage", 10, "How much damage the energy blast deals to players.").Value;
     
     const float energyBlastDistance = 5f;
 
@@ -23,17 +24,17 @@ internal partial class PowerRing : WearableObject
     {
         if (playerWornBy == null || playerWornBy != localPlayer || !AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
 
-        if (!CanCastAbility(Ability.EnergyBlast))
-        {
-            DoCastFailedEffectsRpc();
-            return;
-        }
-
-        DoCastAnimationRpc();
+        DoQuickCastAnimationRpc();
 
         IEnumerator energyBlast()
         {
             yield return null;
+
+            if (!CanCastAbility(Ability.EnergyBlast))
+            {
+                DoCastFailedEffectsRpc();
+                yield break;
+            }
 
             energyBlastParticleSystem.Play();
 
@@ -44,17 +45,26 @@ internal partial class PowerRing : WearableObject
             {
                 if (hit.collider.CompareTag("Enemy"))
                 {
-                    EnemyAI enemy = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>().mainScript;
+                    var collisionDetect = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>();
+                    if (collisionDetect == null) { continue; }
+                    EnemyAI enemy = collisionDetect.mainScript;
+                    logger.LogDebug($"{enemy.enemyType.enemyName} hit");
                     netObjIds.Add(enemy.NetworkObjectId);
                 }
                 else if (hit.collider.CompareTag("Player"))
                 {
                     PlayerControllerB player = hit.collider.gameObject.GetComponent<PlayerControllerB>();
+                    if (player == playerWornBy) { continue; }
+                    logger.LogDebug($"{player.playerUsername} hit");
                     netObjIds.Add(player.NetworkObjectId);
                 }
             }
 
-            EnergyBlastRpc(netObjIds.ToArray(), localPlayer.gameplayCamera.transform.forward);
+            Vector3 forwardDirection = localPlayer.transform.TransformDirection(Vector3.forward).normalized;
+            Vector3 upDirection = localPlayer.transform.TransformDirection(Vector3.up).normalized * 2;
+            Vector3 throwDirection = (forwardDirection + upDirection).normalized;
+
+            EnergyBlastRpc(netObjIds.ToArray(), throwDirection); // TODO: Test this
         }
 
         StartCoroutine(energyBlast());
@@ -63,36 +73,44 @@ internal partial class PowerRing : WearableObject
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
     public void EnergyBlastRpc(ulong[] netObjIds, Vector3 direction)
     {
+        logger.LogDebug("EnergyBlastRpc");
         energyBlastParticleSystem.Play();
         audioSource.PlayOneShot(energyBlastSFX);
-        //UsePower(EnergyBlastPowerUsageOnCast);
-        //SetCooldown(Ability.EnergyBlast, EnergyBlastCooldown);
+        UsePower(AbilityPowerUsageOnCast[(int)Ability.EnergyBlast]);
+        SetCooldown(Ability.EnergyBlast);
 
         if (netObjIds == null || netObjIds.Length <= 0) { return; }
 
         foreach (var netObjId in netObjIds)
         {
-            if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(netObjId, out NetworkObject netObj))
-                if (netObj.TryGetComponent(out PlayerControllerB player))
+            if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(netObjId, out NetworkObject netObj)) { continue; }
+
+            if (netObj.TryGetComponent(out PlayerControllerB player))
+            {
+                GameObject energyHitObj = Instantiate(energyHitPrefab, player.bodyParts[5]);
+                Destroy(energyHitObj, 1f);
+
+                player.DamagePlayer(EnergyBlastPlayerDamage, callRPC: false, causeOfDeath: CauseOfDeath.Blast, force: direction * EnergyBlastPlayerKnockbackForce);
+
+                if (!player.isPlayerDead && !player.isPlayerControlled)
                 {
-                    GameObject energyHitObj = Instantiate(energyHitPrefab, player.bodyParts[5]);
-                    Destroy(energyHitObj, 1f);
-
-                    player.DamagePlayer(EnergyBlastPlayerDamage, callRPC: false, causeOfDeath: CauseOfDeath.Blast, force: direction * EnergyBlastPlayerKnockbackForce);
-
-                    if (!player.isPlayerDead && !player.isPlayerControlled)
-                        player.AddForce(direction, EnergyBlastPlayerKnockbackForce);
+                    logger.LogDebug($"Adding force to {player.playerUsername}");
+                    player.AddForce(direction, EnergyBlastPlayerKnockbackForce);
                 }
-                else if (netObj.TryGetComponent(out EnemyAI enemy))
+            }
+            else if (netObj.TryGetComponent(out EnemyAI enemy))
+            {
+                GameObject energyHitObj = Instantiate(energyHitPrefab, enemy.eye);
+                Destroy(energyHitObj, 1f);
+
+                enemy.HitEnemy(EnergyBlastEnemyDamage, lastPlayerWornBy);
+
+                if (!enemy.isEnemyDead)
                 {
-                    GameObject energyHitObj = Instantiate(energyHitPrefab, enemy.eye);
-                    Destroy(energyHitObj, 1f);
-
-                    enemy.HitEnemy(EnergyBlastEnemyDamage, lastPlayerWornBy);
-
-                    if (!enemy.isEnemyDead)
-                        enemy.AddForce(direction, EnergyBlastEnemyKnockbackForce);
+                    logger.LogDebug($"Adding force to {enemy.enemyType.enemyName}");
+                    enemy.AddForce(direction, EnergyBlastEnemyKnockbackForce);
                 }
+            }
         }
     }
 }
