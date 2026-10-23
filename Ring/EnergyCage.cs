@@ -29,7 +29,7 @@ internal partial class PowerRing : WearableObject
 
             if (!CanCastAbility(Ability.EnergyCage))
             {
-                DoCastFailedEffectsRpc();
+                CastAbilityFailedRpc();
                 yield break;
             }
 
@@ -46,7 +46,7 @@ internal partial class PowerRing : WearableObject
                 yield break;
             }
 
-            DoCastFailedEffectsRpc();
+            CastAbilityFailedRpc();
         }
 
         StartCoroutine(energyCage());
@@ -73,7 +73,14 @@ internal class EnergyCage : PowerRingAbility // TODO
     public override void Update()
     {
         base.Update();
+        if (enemy == null) { return; }
         transform.position = enemyBounds.center;
+        enemy?.agent.enabled = false;
+        
+        if (enemy == null || enemy.isEnemyDead)
+        {
+            DeactivatePower();
+        }
     }
 
     public override void OnActivatePower()
@@ -85,6 +92,7 @@ internal class EnergyCage : PowerRingAbility // TODO
     public override void OnDeactivatePower()
     {
         if (!IsServer) { return; }
+        enemy?.agent.enabled = true;
         NetworkObject.Despawn(destroy: true);
     }
 

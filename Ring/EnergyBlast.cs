@@ -22,18 +22,14 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyBlastKeyPressed(InputAction.CallbackContext context) // Energy Blast
     {
-        if (playerWornBy == null || playerWornBy != localPlayer || !AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
+        if (!CanUseAbility(Ability.EnergyBlast) || context.canceled) { return; }
 
-        DoQuickCastAnimationRpc();
-
-        IEnumerator energyBlast()
+        QuickCastAbilitySynced(() =>
         {
-            yield return null;
-
             if (!CanCastAbility(Ability.EnergyBlast))
             {
-                DoCastFailedEffectsRpc();
-                yield break;
+                CastAbilityFailedRpc();
+                return;
             }
 
             energyBlastParticleSystem.Play();
@@ -65,9 +61,7 @@ internal partial class PowerRing : WearableObject
             Vector3 throwDirection = (forwardDirection + upDirection).normalized;
 
             EnergyBlastRpc(netObjIds.ToArray(), throwDirection); // TODO: Test this
-        }
-
-        StartCoroutine(energyBlast());
+        });
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]

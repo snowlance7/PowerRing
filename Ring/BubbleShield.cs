@@ -19,43 +19,39 @@ internal partial class PowerRing : WearableObject
 
     private void BubbleShieldKeyPressed(InputAction.CallbackContext context) // Bubble Shield
     {
-        if (!CanUseAbility(Ability.BubbleShield)) { logger.LogDebug("Cant use ability"); return; }
+        if (!CanUseAbility(Ability.BubbleShield)) { return; }
 
         if (AbilityToggle[(int)Ability.BubbleShield])
         {
             if (context.canceled) { return; }
 
-            if (lastBubbleShield != null && lastBubbleShield.IsActive)
+            QuickCastAbilitySynced(() =>
             {
-                logger.LogDebug("Deactivating shield");
-                lastBubbleShield.DeactivatePowerRpc();
-                return;
-            }
+                if (lastBubbleShield != null && lastBubbleShield.IsActive)
+                {
+                    logger.LogDebug("Deactivating shield");
+                    lastBubbleShield.DeactivatePowerRpc();
+                    return;
+                }
 
-            if (!CanCastAbility(Ability.BubbleShield))
-            {
-                logger.LogDebug("Cast failed");
-                DoCastFailedEffectsRpc();
-                return;
-            }
-
-            CastBubbleShield(localPlayer);
+                if (!CanCastAbility(Ability.BubbleShield)) { CastAbilityFailedRpc(); return; }
+                CastBubbleShield(localPlayer);
+            });
         }
         else
         {
             if (context.started)
             {
-                if (!CanCastAbility(Ability.BubbleShield))
+                CastAbilitySynced(() =>
                 {
-                    logger.LogDebug("Cast failed");
-                    DoCastFailedEffectsRpc();
-                    return;
-                }
-
-                CastBubbleShield(localPlayer);
+                    if (!CanCastAbility(Ability.BubbleShield)) { CastAbilityFailedRpc(); return; }
+                    CastBubbleShield(localPlayer);
+                });
             }
             else
             {
+                StopCastAnimationRpc();
+
                 if (lastBubbleShield != null && lastBubbleShield.IsActive)
                 {
                     logger.LogDebug("Deactivating shield");
@@ -76,32 +72,40 @@ internal partial class PowerRing : WearableObject
         {
             if (context.canceled) { return; }
 
-            if (lastBubbleShield != null && lastBubbleShield.IsActive)
+            QuickCastAbilitySynced(() =>
             {
-                lastBubbleShield.DeactivatePowerRpc();
-                return;
-            }
+                if (lastBubbleShield != null && lastBubbleShield.IsActive)
+                {
+                    lastBubbleShield.DeactivatePowerRpc();
+                    return;
+                }
 
-            if (!CanCastAbility(Ability.BubbleShield)) { DoCastFailedEffectsRpc(); return; }
+                if (!CanCastAbility(Ability.BubbleShield)) { CastAbilityFailedRpc(); return; }
 
-            PlayerControllerB? player = GetPlayerLookingAt(20f);
-            if (player == null) { DoCastFailedEffectsRpc(); return; }
+                PlayerControllerB? player = GetPlayerLookingAt(20f);
+                if (player == null) { CastAbilityFailedRpc(); return; }
 
-            CastBubbleShield(player);
+                CastBubbleShield(player);
+            });
         }
         else
         {
             if (context.started)
             {
-                if (!CanCastAbility(Ability.BubbleShield)) { DoCastFailedEffectsRpc(); return; }
+                CastAbilitySynced(() =>
+                {
+                    if (!CanCastAbility(Ability.BubbleShield)) { CastAbilityFailedRpc(); return; }
 
-                PlayerControllerB? player = GetPlayerLookingAt(20f);
-                if (player == null) { DoCastFailedEffectsRpc(); return; }
+                    PlayerControllerB? player = GetPlayerLookingAt(20f);
+                    if (player == null) { CastAbilityFailedRpc(); return; }
 
-                CastBubbleShield(player);
+                    CastBubbleShield(player);
+                });
             }
             else
             {
+                StopCastAnimationRpc();
+
                 if (lastBubbleShield != null && lastBubbleShield.IsActive)
                 {
                     lastBubbleShield.DeactivatePowerRpc();

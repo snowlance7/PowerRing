@@ -45,9 +45,10 @@ internal partial class PowerRing : WearableObject
 
     public static int enemiesAndPlayersMask;
     public static int playerMask;
-    public static int enemiesMask = LayerMask.GetMask("Enemies");
+    public static int enemiesMask;
 
     public bool inCastingAnimation;
+    private bool inQuickCastingAnimation;
     public readonly Vector3 castLocalPositionOffset = new Vector3(-0.0141f, 0.0376f, 0.0576f);
     public readonly Vector3 castLocalRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
     public readonly Vector3 castPositionOffset = new Vector3(-0.0453f, 0.0147f, 0.051f);
@@ -140,6 +141,7 @@ internal partial class PowerRing : WearableObject
         itemProperties.rotationOffset = new Vector3(45, 110, 0);
         enemiesAndPlayersMask = LayerMask.GetMask("Enemies", "Player");
         playerMask = LayerMask.GetMask("Player");
+        enemiesMask = LayerMask.GetMask("Enemies");
 
         wearableItemProperties.showWearableOnClient = true; // .7
         wearableItemProperties.showWearable = true;
@@ -318,13 +320,13 @@ internal partial class PowerRing : WearableObject
 
     public bool CanUseAbility(Ability ability)
     {
-        return playerWornBy != null && playerWornBy == localPlayer && AbilityEnabled[(int)ability];
-    }
-
-    public void UsedUpPowerOnLocalClient()
-    {
-        DoCastFailedEffects();
-        power = 0f;
+        return playerWornBy != null
+            && playerWornBy == localPlayer 
+            && playerWornBy.CheckConditionsForEmote() 
+            && !playerWornBy.twoHanded 
+            && !playerWornBy.twoHandedAnimation 
+            && AbilityEnabled[(int)ability] 
+            && !inCastingAnimation;
     }
 
     public bool CanUsePower(float powerAmount)
@@ -337,6 +339,32 @@ internal partial class PowerRing : WearableObject
     public void UsePower(float powerAmount)
     {
         SetPower(power - powerAmount);
+    }
+
+    public void CastAbilitySynced(Action action, float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
+    {
+        StartCastAnimationRpc(animationStartTime, maxGlowTime);
+
+        IEnumerator castAbility(Action action)
+        {
+            yield return null;
+            action.Invoke();
+        }
+
+        StartCoroutine(castAbility(action));
+    }
+
+    public void QuickCastAbilitySynced(Action action)
+    {
+        DoQuickCastAnimationRpc();
+
+        IEnumerator quickCastAbility(Action action)
+        {
+            yield return null;
+            action.Invoke();
+        }
+
+        StartCoroutine(quickCastAbility(action));
     }
 
     public void SetPower(float powerAmount)
@@ -352,11 +380,6 @@ internal partial class PowerRing : WearableObject
     public bool IsOffCooldown(Ability ability)
     {
         return cooldowns[(int)ability] <= 0;
-    }
-
-    public void DoCastFailedEffects()
-    {
-        noPowerParticleSystem.Play();
     }
 
     public PlayerControllerB? GetPlayerLookingAt(float maxDistance)
@@ -431,20 +454,30 @@ internal partial class PowerRing : WearableObject
     public void DoQuickCastAnimationRpc() // TODO: Test this
     {
         if (playerWornBy == null) { return; }
+        inQuickCastingAnimation = true;
         StartCastAnimation();
-        Utils.InvokeAfterDelay(() => StopCastAnimation(), 1f);
+        Utils.InvokeAfterDelay(() =>
+        {
+            StopCastAnimation();
+            inQuickCastingAnimation = false;
+        }, 1f);
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void UsedUpPowerRpc()
+    private void CastAbilityFailedRpc()
     {
-        UsedUpPowerOnLocalClient();
-    }
+        noPowerParticleSystem.Play();
 
-    [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void DoCastFailedEffectsRpc()
-    {
-        DoCastFailedEffects();
+        if (inCastingAnimation && !inQuickCastingAnimation)
+        {
+            IEnumerator castAbilityFailed()
+            {
+                yield return null;
+                StopCastAnimation();
+            }
+
+            StartCoroutine(castAbilityFailed());
+        }
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
