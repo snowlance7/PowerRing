@@ -1,13 +1,11 @@
 ﻿using GameNetcodeStuff;
 using SnowyLib;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
-using static UnityEngine.LightAnchor;
 
 namespace PowerRing;
 
@@ -69,7 +67,7 @@ internal partial class PowerRing : WearableObject
     {
         logger.LogDebug("EnergyBlastRpc");
         energyBlastParticleSystem.Play();
-        audioSource.PlayOneShot(energyBlastSFX);
+        //audioSource.PlayOneShot(energyBlastSFX);
         UsePower(AbilityPowerUsageOnCast[(int)Ability.EnergyBlast]);
         SetCooldown(Ability.EnergyBlast);
 

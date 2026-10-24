@@ -1,1 +1,6 @@
-{}
+{
+  "PowerRingItemKeys": {
+    "__type": "DawnItemInfo",
+    "PowerRing": "power_ring:power_ring"
+  }
+}

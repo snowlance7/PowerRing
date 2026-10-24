@@ -1,9 +1,5 @@
-﻿using FXV;
-using GameNetcodeStuff;
-using SnowyLib;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SnowyLib;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,40 +12,68 @@ namespace PowerRing;
 internal partial class PowerRing : WearableObject
 {
     public const float energyCageCastDistance = 5f;
+    public static int MaxEnergyCages => PluginInstance.Config.Bind("Energy Cage", "Max Energy Cages", 2, "The max amount of energy cages that can be active at once. If AbilityToggle is off, this is always 1.").Value;
 
     private void EnergyCageKeyPressed(InputAction.CallbackContext context) // Energy Cage
     {
-        if (playerWornBy == null || playerWornBy != localPlayer || !AbilityEnabled[(int)Ability.EnergyCage] || context.canceled) { return; }
+        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyCage]) { return; }
 
-        DoQuickCastAnimationRpc();
-
-        IEnumerator energyCage()
+        if (AbilityToggle[(int)Ability.EnergyCage])
         {
-            yield return null;
+            if (context.canceled) { return; }
 
-            if (!CanCastAbility(Ability.EnergyCage))
+            QuickCastAbilitySynced(() =>
             {
-                CastAbilityFailedRpc();
-                yield break;
-            }
+                EnemyAI? enemy = GetEnemyLookingAt(energyCageCastDistance);
+                if (enemy == null) { CastAbilityFailedRpc(); return; }
 
-            RaycastHit[] hits = Physics.SphereCastAll(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, 2f, localPlayer.gameplayCamera.transform.forward, energyCageCastDistance, enemiesMask);
+                var cage = enemy.GetConstruct<EnergyCage>();
+                if (cage != null)
+                {
+                    cage.DeactivateRpc();
+                    return;
+                }
 
-            foreach (var hit in hits)
+                if (!CanCastAbility(Ability.EnergyCage)) { CastAbilityFailedRpc(); return; }
+
+                CastEnergyCage(enemy);
+            });
+        }
+        else
+        {
+            if (context.started)
             {
-                if (!hit.collider.CompareTag("Enemy")) { continue; }
-                var collisionDetect = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>();
-                if (collisionDetect == null) { continue; }
-                EnemyAI enemy = collisionDetect.mainScript;
-                logger.LogDebug($"{enemy.enemyType.enemyName} hit");
-                SpawnEnergyCageRpc(enemy.NetworkObject);
-                yield break;
-            }
+                CastAbilitySynced(() =>
+                {
+                    if (!CanCastAbility(Ability.EnergyCage)) { CastAbilityFailedRpc(); return; }
 
-            CastAbilityFailedRpc();
+                    EnemyAI? enemy = GetEnemyLookingAt(energyCageCastDistance);
+                    if (enemy == null) { CastAbilityFailedRpc(); return; }
+
+                    CastEnergyCage(enemy);
+                });
+            }
+            else
+            {
+                StopCastAnimationRpc();
+                lastConstruct?.DeactivateRpc(); // TODO: Test this
+            }
+        }
+    }
+
+    public void CastEnergyCage(EnemyAI enemy)
+    {
+        if (AbilityToggle[(int)Ability.EnergyCage])
+        {
+            var otherCages = PowerRingConstruct.Instances.Where(x => x is EnergyCage && x.ring == this);
+
+            if (otherCages.Count() >= MaxEnergyCages)
+            {
+                otherCages.First().DeactivateRpc();
+            }
         }
 
-        StartCoroutine(energyCage());
+        SpawnEnergyCageRpc(enemy.NetworkObject);
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
@@ -57,9 +81,8 @@ internal partial class PowerRing : WearableObject
     {
         if (!netRef.TryGet(out NetworkObject netObj)) { logger.LogError("EnergyCageRpc: Failed to get netObj from netRef"); return; }
         EnemyAI enemy = netObj.GetComponent<EnemyAI>();
-        var cageObj = Instantiate(energyCagePrefab, enemy.transform);
-        var cageNetObj = cageObj.GetComponent<NetworkObject>();
-        cageNetObj.Spawn(destroyWithScene: true, (cageNetObj) => cageNetObj.GetComponent<EnergyCage>().ActivateRpc(this.NetworkObject, netRef));
+        var cageObj = Instantiate(energyCagePrefab, enemy.transform.position, Quaternion.identity);
+        cageObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (cageNetObj) => cageNetObj.GetComponent<EnergyCage>().ActivateRpc(this.NetworkObject, netRef));
     }
 }
 
@@ -67,16 +90,23 @@ internal class EnergyCage : PowerRingConstruct // TODO
 {
     public override Ability Ability => Ability.EnergyCage;
 
-    Bounds enemyBounds;
+    Vector3 centerPosition;
 
     public override void Update()
     {
         base.Update();
-        if (enemy == null) { return; }
-        transform.position = enemyBounds.center;
-        enemy?.agent.enabled = false;
+
+        if (enemy == null)
+        {
+            if (IsActivated)
+                Deactivate();
+            return;
+        }
+
+        transform.position = centerPosition;
+        enemy.agent.enabled = false;
         
-        if (enemy == null || enemy.isEnemyDead)
+        if (enemy.isEnemyDead)
         {
             Deactivate();
         }
@@ -84,58 +114,23 @@ internal class EnergyCage : PowerRingConstruct // TODO
 
     public override void OnActivate()
     {
-        enemyBounds = GetEnemyBounds(enemy!.gameObject);
-        FitCageToEnemy();
+        SetCenterPositionAndSize();
     }
 
     public override void OnDeactivate()
     {
         if (!IsServer) { return; }
         enemy?.agent.enabled = true;
-        NetworkObject.Despawn(destroy: true);
     }
 
-    private Bounds GetEnemyBounds(GameObject enemyObj)
+    public void SetCenterPositionAndSize()
     {
-        Renderer[] renderers = enemyObj.GetComponentsInChildren<Renderer>();
+        var colliders = enemy!.gameObject.GetComponentsInChildren<EnemyAICollisionDetect>().Select(x => x.gameObject.GetComponent<Collider>());
+        if (colliders.Count() == 0) { centerPosition = enemy.eye.position; return; }
 
-        Bounds bounds = new Bounds();
-        bool initialized = false;
-
-        foreach (Renderer renderer in renderers)
-        {
-            if (!renderer.enabled)
-                continue;
-
-            if (!initialized)
-            {
-                bounds = renderer.bounds;
-                initialized = true;
-            }
-            else
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-        }
-
-        return bounds;
-    }
-
-    private void FitCageToEnemy()
-    {
-        Vector3 baseCageSize = new Vector3(1f, 1f, 1f);
-
-        if (enemyBounds.size == Vector3.zero)
-            return;
-
-        Vector3 enemySize = enemyBounds.size;
-
-        Vector3 scale = new Vector3(
-            enemySize.x / baseCageSize.x,
-            enemySize.y / baseCageSize.y,
-            enemySize.z / baseCageSize.z
-        );
-
-        transform.localScale = scale;
+        var largestCollider = Utils.GetLargestCollider(colliders.ToArray());
+        centerPosition = largestCollider.bounds.center;
+        //float scaleToUse = Mathf.Max(largestCollider.bounds.size.x, largestCollider.bounds.size.y, largestCollider.bounds.size.z);
+        //transform.localScale = new Vector3(scaleToUse, scaleToUse, scaleToUse);
     }
 }

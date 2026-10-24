@@ -1,5 +1,9 @@
-﻿using System;
+﻿using SnowyLib;
+using System;
 using System.Collections;
+using System.Linq;
+using Unity.Netcode;
+using Unity.Services.Authentication.Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
@@ -10,136 +14,91 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
-    private void EnergyConstructKeyPressed(InputAction.CallbackContext context) // Energy Construct
+    const float energyConstructCastDistance = 10f;
+    public static int MaxEnergyConstructs => PluginInstance.Config.Bind("Energy Construct", "Max Energy Constructs", 2, "The max amount of energy constructs that can be active at once. If AbilityToggle is off, this is always 1.").Value;
+
+    private void EnergyConstructKeyPressed(InputAction.CallbackContext context)
     {
-        //if (playerWornBy == null || playerWornBy != localPlayer || !AbilityEnabled[(int)Ability.EnergyCage] || context.canceled) { return; }
+        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyConstruct]) { return; }
 
-        //DoQuickCastAnimationRpc();
+        if (AbilityToggle[(int)Ability.EnergyConstruct])
+        {
+            if (context.canceled) { return; }
 
-        //IEnumerator energyCage()
-        //{
-        //    yield return null;
+            QuickCastAbilitySynced(() =>
+            {
+                if (Physics.Raycast(localPlayer.gameplayCamera.transform.position, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, energyConstructCastDistance, collidersMask, QueryTriggerInteraction.Ignore))
+                {
+                    var construct = hit.collider.gameObject.GetComponent<EnergyConstruct>();
+                    if (construct != null)
+                    {
+                        construct.DeactivateRpc();
+                        return;
+                    }
+                }
 
-        //    if (!CanCastAbility(Ability.EnergyCage))
-        //    {
-        //        DoCastFailedEffectsRpc();
-        //        yield break;
-        //    }
+                if (!CanCastAbility(Ability.EnergyConstruct)) { CastAbilityFailedRpc(); return; }
 
-        //    RaycastHit[] hits = Physics.SphereCastAll(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, 2f, localPlayer.gameplayCamera.transform.forward, energyCageCastDistance, enemiesMask);
+                CastEnergyConstruct();
+            });
+        }
+        else
+        {
+            if (context.started)
+            {
+                CastAbilitySynced(() =>
+                {
+                    if (!CanCastAbility(Ability.EnergyConstruct)) { CastAbilityFailedRpc(); return; }
+                    CastEnergyConstruct();
+                });
+            }
+            else
+            {
+                StopCastAnimationRpc();
+                lastConstruct?.DeactivateRpc(); // TODO: Test this
+            }
+        }
+    }
 
-        //    foreach (var hit in hits)
-        //    {
-        //        if (!hit.collider.CompareTag("Enemy")) { continue; }
-        //        var collisionDetect = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>();
-        //        if (collisionDetect == null) { continue; }
-        //        EnemyAI enemy = collisionDetect.mainScript;
-        //        logger.LogDebug($"{enemy.enemyType.enemyName} hit");
-        //        SpawnEnergyCageRpc(enemy.NetworkObject);
-        //        yield break;
-        //    }
+    private void CastEnergyConstruct()
+    {
+        if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, energyConstructCastDistance, roomMask, QueryTriggerInteraction.Ignore)) { CastAbilityFailedRpc(); return; }
 
-        //    DoCastFailedEffectsRpc();
-        //}
+        if (AbilityToggle[(int)Ability.EnergyConstruct])
+        {
+            var otherConstructs = PowerRingConstruct.Instances.Where(x => x is EnergyConstruct && x.ring == this);
 
-        //StartCoroutine(energyCage());
+            if (otherConstructs.Count() >= MaxEnergyConstructs)
+            {
+                otherConstructs.First().DeactivateRpc();
+            }
+        }
+
+        SpawnEnergyConstructRpc(hit.point, playerWornBy!.transform.rotation);
+    }
+
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    private void SpawnEnergyConstructRpc(Vector3 position, Quaternion rotation)
+    {
+        var constructObj = Instantiate(energyConstructPrefab, position, rotation, RoundManager.Instance.mapPropsContainer.transform);
+        constructObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
+        {
+            netObj.GetComponent<EnergyConstruct>().ActivateRpc(this.NetworkObject);
+        });
     }
 }
 
-internal class EnergyConstruct : PowerRingConstruct
+internal class EnergyConstruct : PowerRingConstruct // TODO
 {
-    public override PowerRing.Ability Ability => PowerRing.Ability.EnergyConstruct;
+    public override Ability Ability => Ability.EnergyConstruct;
 
     public override void OnActivate()
     {
-        throw new NotImplementedException();
+        return;
     }
 
     public override void OnDeactivate()
     {
-        throw new NotImplementedException();
+        return;
     }
 }
-
-//internal class EnergyCage : PowerRingAbility // TODO
-//{
-//    public override Ability Ability => Ability.EnergyCage;
-
-//    Bounds enemyBounds;
-
-//    public override void Update()
-//    {
-//        base.Update();
-//        if (enemy == null) { return; }
-//        transform.position = enemyBounds.center;
-//        enemy?.agent.enabled = false;
-
-//        if (enemy == null || enemy.isEnemyDead)
-//        {
-//            DeactivatePower();
-//        }
-//    }
-
-//    public override void OnActivatePower()
-//    {
-//        enemyBounds = GetEnemyBounds(enemy!.gameObject);
-//        FitCageToEnemy();
-//    }
-
-//    public override void OnDeactivatePower()
-//    {
-//        if (!IsServer) { return; }
-//        enemy?.agent.enabled = true;
-//        NetworkObject.Despawn(destroy: true);
-//    }
-
-//    public override void OnUsedUpPower()
-//    {
-//        if (!IsServer) { return; }
-//        NetworkObject.Despawn(destroy: true);
-//    }
-
-//    private Bounds GetEnemyBounds(GameObject enemyObj)
-//    {
-//        Renderer[] renderers = enemyObj.GetComponentsInChildren<Renderer>();
-
-//        Bounds bounds = new Bounds();
-//        bool initialized = false;
-
-//        foreach (Renderer renderer in renderers)
-//        {
-//            if (!renderer.enabled)
-//                continue;
-
-//            if (!initialized)
-//            {
-//                bounds = renderer.bounds;
-//                initialized = true;
-//            }
-//            else
-//            {
-//                bounds.Encapsulate(renderer.bounds);
-//            }
-//        }
-
-//        return bounds;
-//    }
-
-//    private void FitCageToEnemy()
-//    {
-//        Vector3 baseCageSize = new Vector3(1f, 1f, 1f);
-
-//        if (enemyBounds.size == Vector3.zero)
-//            return;
-
-//        Vector3 enemySize = enemyBounds.size;
-
-//        Vector3 scale = new Vector3(
-//            enemySize.x / baseCageSize.x,
-//            enemySize.y / baseCageSize.y,
-//            enemySize.z / baseCageSize.z
-//        );
-
-//        transform.localScale = scale;
-//    }
-//}

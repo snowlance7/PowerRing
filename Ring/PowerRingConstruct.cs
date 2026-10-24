@@ -1,14 +1,16 @@
-﻿using GameNetcodeStuff;
-using System.Collections.Generic;
-using Unity.Netcode;
-using static PowerRing.Plugin;
-using UnityEngine;
+﻿using FXV;
+using GameNetcodeStuff;
 using SnowyLib;
 using System;
+using System.Collections.Generic;
+using Unity.Netcode;
+using UnityEngine;
+using static PowerRing.Plugin;
 using static PowerRing.PowerRing;
 
 namespace PowerRing
 {
+    [RequireComponent(typeof(Shield))]
     internal abstract class PowerRingConstruct : NetworkBehaviour
     {
         public static List<PowerRingConstruct> Instances = new List<PowerRingConstruct>();
@@ -18,12 +20,20 @@ namespace PowerRing
         public float PowerUsagePerSecond => AbilityPowerUsagePerSecond[(int)Ability];
         public float Duration => AbilityDuration[(int)Ability];
 
-        public PowerRing? ring;
-        public PlayerControllerB? player;
-        public EnemyAI? enemy;
+        [HideInInspector] public PowerRing? ring;
+        [HideInInspector] public PlayerControllerB? player;
+        [HideInInspector] public EnemyAI? enemy;
+
+        [HideInInspector] public Shield shield = null!;
 
         float timeActivated;
-        public bool IsActivated => ring != null; 
+
+        public bool IsActivated => ring != null;
+
+        public virtual void Awake()
+        {
+            shield = GetComponent<Shield>();
+        }
 
         public virtual void Start()
         {
@@ -78,6 +88,8 @@ namespace PowerRing
             ring.SetCooldown(Ability);
             ring.powerUsage += PowerUsagePerSecond;
             ring.lastConstruct = this;
+            shield.enabled = true;
+            shield.SetShieldActive(true);
             OnActivate();
         }
 
@@ -85,6 +97,7 @@ namespace PowerRing
         {
             ring?.powerUsage -= PowerUsagePerSecond;
             ring = null;
+            shield.SetShieldActive(false);
             OnDeactivate();
             NetworkObject.Despawn(destroy: true, 1f);
         }

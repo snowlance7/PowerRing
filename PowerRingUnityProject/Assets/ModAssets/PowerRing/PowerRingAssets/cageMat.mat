@@ -16,17 +16,16 @@ Material:
   - RIM_SOURCE_NORMAL
   - USE_DISTORTION_FOR_MAIN_TEXTURE
   - USE_MAIN_TEXTURE
-  m_InvalidKeywords:
-  - _FEATURE_COLORRIM_ON
-  - _FEATURE_DEPTHOVERLAPRIM_ON
+  - USE_TEXTURE_UV1
+  m_InvalidKeywords: []
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses:
   - Postprocess
-  m_LockedProperties: 
+  m_LockedProperties: _RimVariationScale
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -67,8 +66,8 @@ Material:
     - _BlendDstMode: 10
     - _BlendSrcMode: 5
     - _ColorRimHitInfluence: 1
-    - _ColorRimMax: 1.23
-    - _ColorRimMin: 0.35
+    - _ColorRimMax: 1
+    - _ColorRimMin: 0.6
     - _CullMode: 2
     - _DirVisActivationInfluence: 1
     - _DirectionVisibility: 1
@@ -77,9 +76,9 @@ Material:
     - _DistortionSpeedY: 1
     - _FEATURE_ActivationType: 6
     - _FEATURE_ColorRim: 1
-    - _FEATURE_DepthOverlapRim: 1
+    - _FEATURE_DepthOverlapRim: 0
     - _FEATURE_DirectionalVisibility: 0
-    - _FEATURE_MainTextureAnimation: 0
+    - _FEATURE_MainTextureAnimation: 1
     - _FEATURE_PatternTextureAnimation: 0
     - _FadePow: 1
     - _FadeScale: 0

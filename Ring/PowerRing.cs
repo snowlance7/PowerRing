@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
@@ -21,42 +19,45 @@ internal partial class PowerRing : WearableObject
 {
     public static bool IsEnabled => LethalContent.Items[PowerRingKeys.PowerRing] != null;
 
-    public MeshRenderer renderer = null!;
     public Transform castDirection = null!;
     public ParticleSystem energyBlastParticleSystem = null!;
     public GameObject energyHitPrefab = null!;
     public ParticleSystem noPowerParticleSystem = null!;
-    public AudioSource audioSource = null!;
-    public AudioClip oathSFX = null!;
-    public AudioClip energyBlastSFX = null!;
+    //public AudioClip oathSFX = null!;
+    //public AudioClip energyBlastSFX = null!;
+
+    public GameObject bubbleShieldPrefab = null!;
 
     public GameObject energyConstructPrefab = null!;
 
     public GameObject energyCagePrefab = null!;
 
-    public GameObject energyShieldObj = null!;
+    public GameObject energyShieldPrefab = null!;
 
-    [HideInInspector]
-    public float power = 1f;
-    [HideInInspector]
-    public float powerUsage;
+    MeshRenderer renderer = null!;
+    AudioSource audioSource = null!;
+
+    [HideInInspector] public float power = 1f;
+    [HideInInspector] public float powerUsage;
 
     float[] cooldowns = new float[7];
 
     public static int enemiesAndPlayersMask;
     public static int playerMask;
     public static int enemiesMask;
+    public static int roomMask;
+    public static int collidersMask;
 
-    public bool isCasting;
-    public bool inQuickCastingAnimation;
-    public bool inCastingAnimation;
+    [HideInInspector] public bool isCasting;
+    [HideInInspector] public bool inQuickCastingAnimation;
+    [HideInInspector] public bool inCastingAnimation;
 
     public readonly Vector3 castLocalPositionOffset = new Vector3(-0.0141f, 0.0376f, 0.0576f);
     public readonly Vector3 castLocalRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
     public readonly Vector3 castPositionOffset = new Vector3(-0.0453f, 0.0147f, 0.051f);
     public readonly Vector3 castRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
 
-    public PowerRingConstruct? lastConstruct;
+    [HideInInspector] public PowerRingConstruct? lastConstruct;
 
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
 
@@ -137,11 +138,15 @@ internal partial class PowerRing : WearableObject
 
     public void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        renderer = GetComponentInChildren<MeshRenderer>();
         itemProperties.positionOffset = new Vector3(0.06f, 0.1f, 0.01f);
         itemProperties.rotationOffset = new Vector3(45, 110, 0);
         enemiesAndPlayersMask = LayerMask.GetMask("Enemies", "Player");
         playerMask = LayerMask.GetMask("Player");
         enemiesMask = LayerMask.GetMask("Enemies");
+        roomMask = LayerMask.GetMask("Room");
+        collidersMask = LayerMask.GetMask("Colliders");
     }
 
     public void OnEnable()
@@ -203,6 +208,7 @@ internal partial class PowerRing : WearableObject
     public override void Update()
     {
         base.Update();
+        EnergyShieldUpdate();
 
         UsePower(powerUsage);
 
@@ -381,13 +387,35 @@ internal partial class PowerRing : WearableObject
         return cooldowns[(int)ability] <= 0;
     }
 
-    public PlayerControllerB? GetPlayerLookingAt(float maxDistance)
+    public PlayerControllerB? GetPlayerLookingAt(float distance, float radius = 2f)
     {
-        int playerMask = LayerMask.GetMask("Player");
-
-        //if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, maxDistance, playerMask)) { return null; }
-        if (!Physics.SphereCast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, 2f, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, maxDistance, playerMask)) { return null; } // TODO: Test this
+        //if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, distance, playerMask)) { return null; }
+        if (!Physics.SphereCast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, radius, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, distance, playerMask)) { return null; } // TODO: Test this
         return hit.collider.GetComponent<PlayerControllerB>();
+    }
+
+    public EnemyAI? GetEnemyLookingAt(float distance, float radius = 2f)
+    {
+        //if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, distance, enemiesMask)) { return null; }
+        if (!Physics.SphereCast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, radius, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, distance, enemiesMask)) { return null; } // TODO: Test this
+        var enemyCollision = hit.collider.GetComponent<EnemyAICollisionDetect>();
+        if (enemyCollision == null) { return null; }
+        return enemyCollision.mainScript;
+    }
+
+    public List<EnemyAI> GetEnemiesLookingAt(float distance, float radius = 2f)
+    {
+        List<EnemyAI> enemies = [];
+        RaycastHit[] hits = Physics.SphereCastAll(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, radius, localPlayer.gameplayCamera.transform.forward, distance, enemiesMask);
+
+        foreach (var hit in hits)
+        {
+            var collisionDetect = hit.collider.gameObject.GetComponent<EnemyAICollisionDetect>();
+            if (collisionDetect == null) { continue; }
+            enemies.Add(collisionDetect.mainScript);
+        }
+
+        return enemies;
     }
 
     public void SetRingGlow(float strength)

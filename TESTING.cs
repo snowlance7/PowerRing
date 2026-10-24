@@ -40,7 +40,7 @@ public static class TESTING
     public static void DoHitTest()
     {
         logger.LogDebug("DoHitTest");
-        var shield = localPlayer.GetBubbleShield();
+        var shield = localPlayer.GetConstruct<BubbleShield>();
         if (shield == null) { return; }
         Vector3 firePos = Utils.GetRandomPositionOnSphere(shield.transform.position, 2f);
         Vector3 directionToPlayer = (shield.transform.position - firePos).normalized;
@@ -54,7 +54,8 @@ public static class TESTING
         try
         {
             if (!Utils.testing) { return true; }
-            DoHitTest();
+            //DoHitTest();
+            //Utils.LogLayerNames(1051400); // Turret raycast: Player, Room, InteractableObject, Colliders, PlayerRagdoll
             return false;
         }
         catch

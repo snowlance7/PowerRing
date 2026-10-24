@@ -19,7 +19,7 @@ internal partial class PowerRing : WearableObject
     public static bool ShowBubbleShieldOnClient => PluginInstance.Config.Bind("Bubble Shield", "Show Shield On Client", true, "If the shield effect should be visible on the client. Does not prevent you from seeing other players shield, just your own.").Value;
     public static int MaxSharedBubbleShields => PluginInstance.Config.Bind("Bubble Shield", "Max Shared Shields", 2, "The max amount of shared bubble shields that can be active at once. If AbilityToggle is off, this is always 1.").Value;
 
-    public const float BubbleShieldCastDistance = 20f;
+    public const float bubbleShieldCastDistance = 20f;
 
     private void BubbleShieldKeyPressed(InputAction.CallbackContext context) // SELF CAST
     {
@@ -31,7 +31,7 @@ internal partial class PowerRing : WearableObject
 
             QuickCastAbilitySynced(() =>
             {
-                var shield = localPlayer.GetBubbleShield();
+                var shield = localPlayer.GetConstruct<BubbleShield>();
                 if (shield != null && shield.IsActivated)
                 {
                     shield.DeactivateRpc();
@@ -56,7 +56,7 @@ internal partial class PowerRing : WearableObject
             {
                 StopCastAnimationRpc();
 
-                var shield = localPlayer.GetBubbleShield();
+                var shield = localPlayer.GetConstruct<BubbleShield>();
                 if (shield != null && shield.IsActivated)
                 {
                     shield.DeactivateRpc();
@@ -77,10 +77,10 @@ internal partial class PowerRing : WearableObject
 
             QuickCastAbilitySynced(() =>
             {
-                PlayerControllerB? player = GetPlayerLookingAt(BubbleShieldCastDistance);
+                PlayerControllerB? player = GetPlayerLookingAt(bubbleShieldCastDistance);
                 if (player == null) { CastAbilityFailedRpc(); return; }
 
-                var shield = player.GetBubbleShield();
+                var shield = player.GetConstruct<BubbleShield>();
                 if (shield != null)
                 {
                     shield.DeactivateRpc();
@@ -100,7 +100,7 @@ internal partial class PowerRing : WearableObject
                 {
                     if (!CanCastAbility(Ability.BubbleShield)) { CastAbilityFailedRpc(); return; }
 
-                    PlayerControllerB? player = GetPlayerLookingAt(BubbleShieldCastDistance);
+                    PlayerControllerB? player = GetPlayerLookingAt(bubbleShieldCastDistance);
                     if (player == null) { CastAbilityFailedRpc(); return; }
 
                     CastBubbleShield(player);
@@ -122,7 +122,7 @@ internal partial class PowerRing : WearableObject
 
             if (otherShields.Count() >= MaxSharedBubbleShields)
             {
-                otherShields.Last().DeactivateRpc();
+                otherShields.First().DeactivateRpc();
             }
         }
 
@@ -133,29 +133,26 @@ internal partial class PowerRing : WearableObject
     private void SpawnBubbleShieldRpc(ulong shieldedClientId)
     {
         PlayerControllerB player = PlayerFromId(shieldedClientId)!;
-        var shieldObj = Instantiate(PowerRingContentHandler.Instance.PowerRing!.EnergyBubbleShieldPrefab, player.transform);
-        var shield = shieldObj.GetComponent<BubbleShield>();
-        shield.NetworkObject.Spawn(destroyWithScene: false);
-        shield.DoActionAfterSpawn((shield) =>
+        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform);
+        shieldObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
         {
-            ((BubbleShield)shield).ActivateRpc(NetworkObject, player.actualClientId);
+            netObj.GetComponent<BubbleShield>().ActivateRpc(this.NetworkObject, player.actualClientId);
         });
     }
 }
 
 internal class BubbleShield : PowerRingConstruct, IHittable // TODO: Test this // TODO: Works but hit effect doesnt show correctly
 {
-    Shield shield = null!; // TODO: Set this up on base? 
     Collider collider = null!;
 
-    public float YOffset = 1.2f;
+    const float YOffset = 1.2f;
     public Transform? parentObject => player?.transform;
 
     public override Ability Ability => Ability.BubbleShield;
 
-    public void Awake()
+    public override void Awake()
     {
-        shield = gameObject.GetComponent<Shield>();
+        base.Awake();
         collider = gameObject.GetComponent<Collider>();
     }
 
@@ -172,19 +169,13 @@ internal class BubbleShield : PowerRingConstruct, IHittable // TODO: Test this /
 
     public override void OnActivate()
     {
-        logger.LogDebug("OnActivatePower");
-
-        shield.SetShieldActive(true);
-
-        if (localPlayer != player) { return; }
-
+        if (localPlayer != player || ShowBubbleShieldOnClient) { return; }
         shield.SetShieldVisuallyActive(ShowBubbleShieldOnClient);
-        return;
     }
 
     public override void OnDeactivate()
     {
-        shield.SetShieldActive(false);
+        return;
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
@@ -237,7 +228,7 @@ internal static class BubbleShieldPatches
             if (collidedWith == null || enemyColliding == null) { return true; }
             if (__instance != collidedWith) { return true; }
 
-            var shield = __instance.GetBubbleShield();
+            var shield = __instance.GetConstruct<BubbleShield>();
             if (shield == null || !shield.IsActivated) { return true; }
             Vector3 hitPoint = enemyColliding.eye != null ? enemyColliding.eye.position : enemyColliding.transform.position;
             shield.HitRpc(hitPoint, (shield.transform.position - hitPoint).normalized, 5f, 1f); // TODO: Test this
@@ -274,7 +265,7 @@ internal static class BubbleShieldPatches
     {
         try
         {
-            var shield = __instance.GetBubbleShield();
+            var shield = __instance.GetConstruct<BubbleShield>();
             if (shield == null || !shield.IsActivated) { return; }
             __result = false;
         }
@@ -293,7 +284,7 @@ internal static class BubbleShieldPatches
         {
             if (__instance.turretMode == TurretMode.Detection || __instance.turretMode == TurretMode.Charging) { return; }
             if (__result != localPlayer) { return; }
-            var shield = localPlayer.GetBubbleShield();
+            var shield = localPlayer.GetConstruct<BubbleShield>();
             if (shield == null || !shield.IsActivated) { return; }
             shield.HitRpc(__instance.hit.point, __instance.hit.normal, 2.5f, 2f);
             __result = null;
