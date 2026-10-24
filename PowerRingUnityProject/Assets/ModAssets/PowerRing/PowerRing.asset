@@ -65,4 +65,4 @@ MonoBehaviour:
   materialVariants: []
   clinkAudios: []
   usableInSpecialAnimations: 0
-  canBeInspected: 0
+  canBeInspected: 1

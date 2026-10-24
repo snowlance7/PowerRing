@@ -22,7 +22,7 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyBlastKeyPressed(InputAction.CallbackContext context) // Energy Blast
     {
-        if (!CanUseAbility(Ability.EnergyBlast) || context.canceled) { return; }
+        if (!CanUseRing() || AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
 
         QuickCastAbilitySynced(() =>
         {

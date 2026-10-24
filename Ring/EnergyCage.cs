@@ -59,12 +59,11 @@ internal partial class PowerRing : WearableObject
         EnemyAI enemy = netObj.GetComponent<EnemyAI>();
         var cageObj = Instantiate(energyCagePrefab, enemy.transform);
         var cageNetObj = cageObj.GetComponent<NetworkObject>();
-        cageNetObj.Spawn(destroyWithScene: true);
-        cageNetObj.DoActionAfterSpawn((cageNetObj) => cageNetObj.GetComponent<EnergyCage>().ActivatePowerRpc(this.NetworkObject, netRef));
+        cageNetObj.Spawn(destroyWithScene: true, (cageNetObj) => cageNetObj.GetComponent<EnergyCage>().ActivateRpc(this.NetworkObject, netRef));
     }
 }
 
-internal class EnergyCage : PowerRingAbility // TODO
+internal class EnergyCage : PowerRingConstruct // TODO
 {
     public override Ability Ability => Ability.EnergyCage;
 
@@ -79,26 +78,20 @@ internal class EnergyCage : PowerRingAbility // TODO
         
         if (enemy == null || enemy.isEnemyDead)
         {
-            DeactivatePower();
+            Deactivate();
         }
     }
 
-    public override void OnActivatePower()
+    public override void OnActivate()
     {
         enemyBounds = GetEnemyBounds(enemy!.gameObject);
         FitCageToEnemy();
     }
 
-    public override void OnDeactivatePower()
+    public override void OnDeactivate()
     {
         if (!IsServer) { return; }
         enemy?.agent.enabled = true;
-        NetworkObject.Despawn(destroy: true);
-    }
-
-    public override void OnUsedUpPower()
-    {
-        if (!IsServer) { return; }
         NetworkObject.Despawn(destroy: true);
     }
 

@@ -9,9 +9,9 @@ using static PowerRing.PowerRing;
 
 namespace PowerRing
 {
-    internal abstract class PowerRingAbility : NetworkBehaviour
+    internal abstract class PowerRingConstruct : NetworkBehaviour
     {
-        public static List<PowerRingAbility> Instances = new List<PowerRingAbility>();
+        public static List<PowerRingConstruct> Instances = new List<PowerRingConstruct>();
 
         public abstract PowerRing.Ability Ability { get; }
         public float PowerUsageOnCast => AbilityPowerUsageOnCast[(int)Ability];
@@ -23,7 +23,7 @@ namespace PowerRing
         public EnemyAI? enemy;
 
         float timeActivated;
-        public bool IsActive { get; private set; }
+        public bool IsActivated => ring != null; 
 
         public virtual void Start()
         {
@@ -37,13 +37,13 @@ namespace PowerRing
 
         public virtual void Update()
         {
-            if (IsActive && Duration > 0)
+            if (IsActivated && Duration > 0)
             {
                 timeActivated += Time.deltaTime;
 
                 if (timeActivated > Duration)
                 {
-                    DeactivatePower();
+                    Deactivate();
                     return;
                 }
             }
@@ -52,71 +52,80 @@ namespace PowerRing
 
             if (ring.power <= 0)
             {
-                DeactivatePower();
-                OnUsedUpPower();
+                Deactivate();
                 return;
             }
         }
 
-        public void ActivatePower(PowerRing sourceRing)
+        public void Activate(PowerRing sourceRing)
         {
             logger.LogDebug($"Activating {Ability.ToString()} ability casted from {sourceRing.lastPlayerWornBy!.playerUsername}");
+
+            if (IsActivated && ring != null)
+            {
+                if (ring == sourceRing)
+                {
+                    timeActivated = 0f;
+                    ring.UsePower(PowerUsageOnCast);
+                    ring.SetCooldown(Ability);
+                }
+                return;
+            }
+
             ring = sourceRing;
-            IsActive = true;
             timeActivated = 0f;
             ring.UsePower(PowerUsageOnCast);
             ring.SetCooldown(Ability);
             ring.powerUsage += PowerUsagePerSecond;
-            OnActivatePower();
+            ring.lastConstruct = this;
+            OnActivate();
         }
 
-        public void DeactivatePower()
+        public void Deactivate()
         {
-            IsActive = false;
             ring?.powerUsage -= PowerUsagePerSecond;
             ring = null;
-            OnDeactivatePower();
+            OnDeactivate();
+            NetworkObject.Despawn(destroy: true, 1f);
         }
 
-        public abstract void OnUsedUpPower();
+        public abstract void OnActivate();
 
-        public abstract void OnActivatePower();
-
-        public abstract void OnDeactivatePower();
+        public abstract void OnDeactivate();
 
         [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void ActivatePowerRpc(NetworkObjectReference powerRingRef)
+        public void ActivateRpc(NetworkObjectReference powerRingRef)
         {
             logger.LogDebug("ActivatePowerRpc");
             if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
             if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
-            ActivatePower(ring);
+            Activate(ring);
         }
 
         [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void ActivatePowerRpc(NetworkObjectReference powerRingRef, ulong clientId)
+        public void ActivateRpc(NetworkObjectReference powerRingRef, ulong clientId)
         {
             logger.LogDebug("ActivatePowerRpc");
             if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
             if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
             player = PlayerFromId(clientId);
-            ActivatePower(ring);
+            Activate(ring);
         }
 
         [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void ActivatePowerRpc(NetworkObjectReference powerRingRef, NetworkObjectReference enemyNetRef)
+        public void ActivateRpc(NetworkObjectReference powerRingRef, NetworkObjectReference enemyNetRef)
         {
             logger.LogDebug("ActivatePowerRpc");
             if (!powerRingRef.TryGet(out NetworkObject netObj)) { logger.LogError("ActivatePowerRpc: Unable to get networkobject from networkobjectreference"); return; }
             if (!netObj.TryGetComponent(out PowerRing ring)) { logger.LogError("ActivatePowerRpc: Failed to get ring from networkobject"); return; }
             if (enemyNetRef.TryGet(out NetworkObject enemyNetObj)) { enemy = enemyNetObj.GetComponent<EnemyAI>(); }
-            ActivatePower(ring);
+            Activate(ring);
         }
 
         [Rpc(SendTo.Everyone, RequireOwnership = false)]
-        public void DeactivatePowerRpc()
+        public void DeactivateRpc()
         {
-            DeactivatePower();
+            Deactivate();
         }
     }
 }

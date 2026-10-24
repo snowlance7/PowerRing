@@ -47,12 +47,16 @@ internal partial class PowerRing : WearableObject
     public static int playerMask;
     public static int enemiesMask;
 
+    public bool isCasting;
+    public bool inQuickCastingAnimation;
     public bool inCastingAnimation;
-    private bool inQuickCastingAnimation;
+
     public readonly Vector3 castLocalPositionOffset = new Vector3(-0.0141f, 0.0376f, 0.0576f);
     public readonly Vector3 castLocalRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
     public readonly Vector3 castPositionOffset = new Vector3(-0.0453f, 0.0147f, 0.051f);
     public readonly Vector3 castRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
+
+    public PowerRingConstruct? lastConstruct;
 
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
 
@@ -66,10 +70,6 @@ internal partial class PowerRing : WearableObject
         EnergyCage = 5,
         EnergyShield = 6
     }
-
-    // TODO: Configs to add:
-    // ring usable when holding one handed item
-    // ring usable when holding two handed item
 
     public static ulong[] RingRestrictedSteamIDs => ParseSteamIds(PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Restricted Steam IDs", "", "List of steam ids separated by commas of players who can use the Power Ring. Leave blank to allow all players to use it.").Value); // TODO
 
@@ -85,7 +85,7 @@ internal partial class PowerRing : WearableObject
 
         _ = FlightHover;
 
-        _ = ShowShieldOnClient;
+        _ = ShowBubbleShieldOnClient;
 
         SetUpShieldVisualization();
     }
@@ -142,24 +142,6 @@ internal partial class PowerRing : WearableObject
         enemiesAndPlayersMask = LayerMask.GetMask("Enemies", "Player");
         playerMask = LayerMask.GetMask("Player");
         enemiesMask = LayerMask.GetMask("Enemies");
-
-        wearableItemProperties.showWearableOnClient = true; // .7
-        wearableItemProperties.showWearable = true;
-
-        wearableItemProperties.useLocalOffsets = true;
-
-        wearableItemProperties.boneTransform = "spine.001/spine.002/spine.003/shoulder.R/arm.R_upper/arm.R_lower/hand.R/finger4.R";
-        wearableItemProperties.boneTransformLocal = "metarig/spine.003/shoulder.R/arm.R_upper/arm.R_lower/hand.R/finger4.R";
-
-        wearableItemProperties.wornScaleLocal = new Vector3(0.7f, 0.7f, 0.7f);
-        wearableItemProperties.wornPositionOffsetLocal = new Vector3(-0.0079f, 0.0024f, 0.0003f);
-        wearableItemProperties.wornRotationOffsetLocal = new Vector3(14.245f, -92.178f, -0.946f);
-        //wearableItemProperties.wornPositionOffsetLocal = new Vector3(0.03f, -0.05f, 0f);
-        //wearableItemProperties.wornRotationOffsetLocal = new Vector3(30, -90, 0);
-
-        wearableItemProperties.wornScale = new Vector3(0.7f, 0.7f, 0.7f);
-        wearableItemProperties.wornPositionOffset = new Vector3(-0.0067f, 0.0013f, 0.0016f);
-        wearableItemProperties.wornRotationOffset = new Vector3(8.992f, -80.749f, 1.765f);
     }
 
     public void OnEnable()
@@ -313,20 +295,32 @@ internal partial class PowerRing : WearableObject
         WearItem();
     }
 
-    public bool CanCastAbility(Ability ability)
+    public bool CanCastAbility(Ability ability, bool withAnimation)
     {
-        return IsOffCooldown(ability) && CanUsePower(AbilityPowerUsageOnCast[(int)ability]);
+        return CanUseRing()
+            && IsOffCooldown(ability) 
+            && CanUsePower(AbilityPowerUsageOnCast[(int)ability])
+            && (!withAnimation || (!playerWornBy!.twoHanded && !playerWornBy.twoHandedAnimation && !playerWornBy.inSpecialInteractAnimation && !playerWornBy.isClimbingLadder && !playerWornBy.isGrabbingObjectAnimation)); // TODO: Test this
     }
 
-    public bool CanUseAbility(Ability ability)
+    public bool CanCastAbility(Ability ability)
+    {
+        return CanUseRing()
+            && IsOffCooldown(ability)
+            && CanUsePower(AbilityPowerUsageOnCast[(int)ability])
+            && (!inCastingAnimation || (!playerWornBy!.twoHanded && !playerWornBy.twoHandedAnimation && !playerWornBy.inSpecialInteractAnimation && !playerWornBy.isClimbingLadder && !playerWornBy.isGrabbingObjectAnimation)); // TODO: Test this
+    }
+
+    public bool CanUseRing()
     {
         return playerWornBy != null
-            && playerWornBy == localPlayer 
-            && playerWornBy.CheckConditionsForEmote() 
-            && !playerWornBy.twoHanded 
-            && !playerWornBy.twoHandedAnimation 
-            && AbilityEnabled[(int)ability] 
-            && !inCastingAnimation;
+            && playerWornBy == localPlayer
+            && !playerWornBy.isPlayerDead
+            && playerWornBy.isPlayerControlled
+            && !playerWornBy.inSpecialMenu
+            && !playerWornBy.inShockingMinigame
+            && !playerWornBy.inTerminalMenu
+            && !playerWornBy.isTypingChat;
     }
 
     public bool CanUsePower(float powerAmount)
@@ -341,9 +335,14 @@ internal partial class PowerRing : WearableObject
         SetPower(power - powerAmount);
     }
 
-    public void CastAbilitySynced(Action action, float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
+    public void LowPowerEffects()
     {
-        StartCastAnimationRpc(animationStartTime, maxGlowTime);
+        // TODO: in the show, the ring flashes on and off to notify them its low power
+    }
+
+    public void CastAbilitySynced(Action action, bool doPlayerCastAnimation = true, float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
+    {
+        StartCastAnimationRpc(doPlayerCastAnimation, animationStartTime, maxGlowTime);
 
         IEnumerator castAbility(Action action)
         {
@@ -354,9 +353,9 @@ internal partial class PowerRing : WearableObject
         StartCoroutine(castAbility(action));
     }
 
-    public void QuickCastAbilitySynced(Action action)
+    public void QuickCastAbilitySynced(Action action, bool doPlayerCastAnimation = true)
     {
-        DoQuickCastAnimationRpc();
+        DoQuickCastAnimationRpc(doPlayerCastAnimation);
 
         IEnumerator quickCastAbility(Action action)
         {
@@ -386,7 +385,8 @@ internal partial class PowerRing : WearableObject
     {
         int playerMask = LayerMask.GetMask("Player");
 
-        if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, maxDistance, playerMask)) { return null; }
+        //if (!Physics.Raycast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, maxDistance, playerMask)) { return null; }
+        if (!Physics.SphereCast(localPlayer.gameplayCamera.transform.position + localPlayer.gameplayCamera.transform.forward, 2f, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, maxDistance, playerMask)) { return null; } // TODO: Test this
         return hit.collider.GetComponent<PlayerControllerB>();
     }
 
@@ -395,12 +395,15 @@ internal partial class PowerRing : WearableObject
         renderer.material.SetFloat("_EmissiveIntensity", Mathf.Lerp(0, 10, strength));
     }
 
-    public void StartCastAnimation(float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
+    public void StartCastAnimation(bool doCastingAnimation = true, float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
     {
-        inCastingAnimation = true;
-        if (playerWornBy == null) { return; }
-        playerWornBy.playingQuickSpecialAnimation = true;
-        playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, animationStartTime);
+        isCasting = true;
+        if (playerWornBy != null && doCastingAnimation)
+        {
+            inCastingAnimation = true;
+            playerWornBy.playingQuickSpecialAnimation = true;
+            playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, animationStartTime);
+        }
 
         IEnumerator startCastAnimation(float maxGlowTime)
         {
@@ -419,9 +422,12 @@ internal partial class PowerRing : WearableObject
 
     public void StopCastAnimation(float minGlowTime = 1f)
     {
+        isCasting = false;
+        if (playerWornBy != null && inCastingAnimation)
+        {
+            playerWornBy.playingQuickSpecialAnimation = false;
+        }
         inCastingAnimation = false;
-        if (playerWornBy == null) { return; }
-        playerWornBy.playingQuickSpecialAnimation = false;
 
         IEnumerator stopCastAnimation(float minGlowTime)
         {
@@ -439,9 +445,9 @@ internal partial class PowerRing : WearableObject
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void StartCastAnimationRpc(float animationStartTime = 0.5f, float maxGlowTime = 0.1f) // TODO: Test this
+    public void StartCastAnimationRpc(bool doCastingAnimation = true, float animationStartTime = 0.5f, float maxGlowTime = 0.1f) // TODO: Test this
     {
-        StartCastAnimation(animationStartTime, maxGlowTime);
+        StartCastAnimation(doCastingAnimation, animationStartTime, maxGlowTime);
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
@@ -451,11 +457,11 @@ internal partial class PowerRing : WearableObject
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    public void DoQuickCastAnimationRpc() // TODO: Test this
+    public void DoQuickCastAnimationRpc(bool doCastingAnimation = true) // TODO: Test this
     {
         if (playerWornBy == null) { return; }
         inQuickCastingAnimation = true;
-        StartCastAnimation();
+        StartCastAnimation(doCastingAnimation);
         Utils.InvokeAfterDelay(() =>
         {
             StopCastAnimation();
@@ -466,9 +472,12 @@ internal partial class PowerRing : WearableObject
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
     private void CastAbilityFailedRpc()
     {
-        noPowerParticleSystem.Play();
+        if (inCastingAnimation)
+        {
+            noPowerParticleSystem.Play();
+        }
 
-        if (inCastingAnimation && !inQuickCastingAnimation)
+        if (isCasting && !inQuickCastingAnimation)
         {
             IEnumerator castAbilityFailed()
             {

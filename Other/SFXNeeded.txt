@@ -1,0 +1,15 @@
+- Ring humming?
+- Low power (ring flashes on and off to notify the player its low power)
+- No power remaining (rings power is at 0)
+- Not enough power (the power needed to cast an ability exceeds the power remaining in the ring)
+- Bubble shield / construct hum (i already found a lightsaber humming sound we could use but if you find better i can use that)
+- Bubble shield activate/deactivate
+- Energy blast
+- Energy blast hit (when a player/enemy is hit by the energy blast)
+- Energy cage activate/deactivate
+- Energy construct activate/deactivate
+- Energy shield activate/deactivate
+- Flight activate/deactivate
+- Flight flying noises?
+- Green light activate/deactivate
+- Oath sfx

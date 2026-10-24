@@ -40,7 +40,7 @@ public static class TESTING
     public static void DoHitTest()
     {
         logger.LogDebug("DoHitTest");
-        var shield = BubbleShield.GetShield(localPlayer);
+        var shield = localPlayer.GetBubbleShield();
         if (shield == null) { return; }
         Vector3 firePos = Utils.GetRandomPositionOnSphere(shield.transform.position, 2f);
         Vector3 directionToPlayer = (shield.transform.position - firePos).normalized;

@@ -46,21 +46,16 @@ internal partial class PowerRing : WearableObject
     }
 }
 
-internal class EnergyConstruct : PowerRingAbility
+internal class EnergyConstruct : PowerRingConstruct
 {
     public override PowerRing.Ability Ability => PowerRing.Ability.EnergyConstruct;
 
-    public override void OnActivatePower()
+    public override void OnActivate()
     {
         throw new NotImplementedException();
     }
 
-    public override void OnDeactivatePower()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void OnUsedUpPower()
+    public override void OnDeactivate()
     {
         throw new NotImplementedException();
     }
