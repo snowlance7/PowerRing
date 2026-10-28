@@ -12,18 +12,43 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
     {
         if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyShield]) { return; }
 
-        if (AbilityToggle[(int)Ability.EnergyShield])
+        if (AbilityToggle[(int)Ability.EnergyShield]) // SELF CAST TOGGLE
         {
             if (context.canceled) { return; }
 
-            CastAbilitySynced(() =>
+            QuickCastAbilitySynced(() =>
             {
-                return;
+                var shield = localPlayer.GetConstruct<EnergyShield>();
+                if (shield != null && shield.IsActivated)
+                {
+                    shield.DeactivateRpc();
+                    return;
+                }
+
+                if (!CanCastAbility(Ability.EnergyShield)) { CastAbilityFailedRpc(); return; }
+                CastEnergyShield();
             });
         }
-        else
+        else // SELF CAST HOLD
         {
+            if (context.started)
+            {
+                CastAbilitySynced(() =>
+                {
+                    if (!CanCastAbility(Ability.EnergyShield)) { CastAbilityFailedRpc(); return; }
+                    CastEnergyShield();
+                }, doPlayerCastAnimation: false);
+            }
+            else
+            {
+                StopCastAnimationRpc();
 
+                var shield = localPlayer.GetConstruct<EnergyShield>();
+                if (shield != null && shield.IsActivated)
+                {
+                    shield.DeactivateRpc();
+                }
+            }
         }
     }
 
