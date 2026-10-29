@@ -47,10 +47,13 @@
     <ItemGroup>
       <Compile Remove="LethalDiseasesUnityProject\**" />
       <Compile Remove="PowerRingUnityProject\**" />
+      <Compile Remove="Shield\**" />
       <EmbeddedResource Remove="LethalDiseasesUnityProject\**" />
       <EmbeddedResource Remove="PowerRingUnityProject\**" />
+      <EmbeddedResource Remove="Shield\**" />
       <None Remove="LethalDiseasesUnityProject\**" />
       <None Remove="PowerRingUnityProject\**" />
+      <None Remove="Shield\**" />
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="Ring\BubbleShield - Copy.cs" />
@@ -81,6 +84,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="EnergyShieldEffect">
+        <HintPath>..\..\EnergyShieldEffect\bin\Debug\netstandard2.1\EnergyShieldEffect.dll</HintPath>
+      </Reference>
       <Reference Include="Snowlance.SnowyLib">
         <HintPath>..\SnowyLib\bin\Debug\netstandard2.1\Snowlance.SnowyLib.dll</HintPath>
       </Reference>

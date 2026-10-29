@@ -39,6 +39,10 @@ internal class Plugin : BaseUnityPlugin
 
         InitializeNetworkBehaviours();
 
+        logger.LogError("Initializing EnergyShieldAssets");
+        EnergyShieldEffect.EnergyShieldAssets.Initialize();
+        logger.LogError("Finished initializing EnergyShieldAssets");
+
         // Finished
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }

@@ -1,4 +1,3 @@
-using FXV;
 using GameNetcodeStuff;
 using HarmonyLib;
 using SnowyLib;
@@ -45,7 +44,7 @@ public static class TESTING
         Vector3 firePos = Utils.GetRandomPositionOnSphere(shield.transform.position, 2f);
         Vector3 directionToPlayer = (shield.transform.position - firePos).normalized;
         logger.LogDebug("Triggering");
-        shield.HitRpc(firePos, directionToPlayer, 5f, 5f);
+        //shield.HitRpc(firePos, directionToPlayer, 5f, 5f);
     }
 
     [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
@@ -56,6 +55,7 @@ public static class TESTING
             if (!Utils.testing) { return true; }
             //DoHitTest();
             //Utils.LogLayerNames(1051400); // Turret raycast: Player, Room, InteractableObject, Colliders, PlayerRagdoll
+            Utils.LogLayerNames(1084754248); // Knife hit cast: Player, Props, Room, Colliders, Enemies, MapHazards, EnemiesNotRendered, Vehicle
             return false;
         }
         catch

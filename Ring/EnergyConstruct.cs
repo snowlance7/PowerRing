@@ -91,14 +91,4 @@ internal partial class PowerRing : WearableObject
 internal class EnergyConstruct : PowerRingConstruct // TODO
 {
     public override Ability Ability => Ability.EnergyConstruct;
-
-    public override void OnActivate()
-    {
-        return;
-    }
-
-    public override void OnDeactivate()
-    {
-        return;
-    }
 }

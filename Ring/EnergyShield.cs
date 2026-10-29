@@ -1,4 +1,8 @@
-﻿using System;
+﻿using GameNetcodeStuff;
+using SnowyLib;
+using System;
+using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
@@ -26,7 +30,7 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
                 }
 
                 if (!CanCastAbility(Ability.EnergyShield)) { CastAbilityFailedRpc(); return; }
-                CastEnergyShield();
+                CastEnergyShieldRpc();
             });
         }
         else // SELF CAST HOLD
@@ -36,7 +40,7 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
                 CastAbilitySynced(() =>
                 {
                     if (!CanCastAbility(Ability.EnergyShield)) { CastAbilityFailedRpc(); return; }
-                    CastEnergyShield();
+                    CastEnergyShieldRpc();
                 }, doPlayerCastAnimation: false);
             }
             else
@@ -52,14 +56,15 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
         }
     }
 
-    public void CastEnergyShield()
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    public void CastEnergyShieldRpc()
     {
-
-    }
-
-    public void EnergyShieldUpdate()
-    {
-
+        if (!IsServer) { return; }
+        var shieldObj = Instantiate(energyShieldPrefab, transform);
+        shieldObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
+        {
+            netObj.GetComponent<BubbleShield>().ActivateRpc(this.NetworkObject);
+        });
     }
 }
 
@@ -67,13 +72,27 @@ internal class EnergyShield : PowerRingConstruct
 {
     public override Ability Ability => Ability.EnergyShield;
 
-    public override void OnActivate()
+    readonly Vector3 rotationOffset = new Vector3(0, 0, 0);
+    readonly Vector3 positionOffset = new Vector3(0, 0, 0);
+
+    public Transform? parentObject => ring?.transform;
+
+    public override void Awake()
     {
-        return;
+        base.Awake();
+        collider = gameObject.GetComponent<Collider>();
     }
 
-    public override void OnDeactivate()
+    public virtual void LateUpdate()
     {
-        throw new NotImplementedException();
+        if (parentObject != null)
+        {
+            base.transform.rotation = parentObject.rotation;
+            base.transform.Rotate(rotationOffset);
+            base.transform.position = parentObject.position;
+            Vector3 _positionOffset = positionOffset;
+            _positionOffset = parentObject.rotation * _positionOffset;
+            base.transform.position += _positionOffset;
+        }
     }
 }

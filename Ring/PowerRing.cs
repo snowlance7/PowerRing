@@ -1,5 +1,4 @@
 ﻿using Dawn;
-using FXV;
 using GameNetcodeStuff;
 using HarmonyLib;
 using SnowyLib;
@@ -11,6 +10,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
+using EnergyShieldEffect;
 using static PowerRing.Plugin;
 
 namespace PowerRing;
@@ -123,10 +123,7 @@ internal partial class PowerRing : WearableObject
         {
             logger.LogDebug("Creating ShieldCustomPass");
 
-            var instance = Instantiate(
-                PowerRingContentHandler.Instance.PowerRing!
-                    .ShieldCustomPassPrefab,
-                renderingRoot);
+            var instance = Instantiate(PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab, renderingRoot);
 
             instance.name = "ShieldCustomPass";
         }
@@ -208,7 +205,6 @@ internal partial class PowerRing : WearableObject
     public override void Update()
     {
         base.Update();
-        EnergyShieldUpdate();
 
         UsePower(powerUsage);
 
@@ -537,32 +533,5 @@ internal partial class PowerRing : WearableObject
         }
 
         return ulongs.ToArray();
-    }
-}
-
-[HarmonyPatch]
-internal static class PowerRingPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
-    public static void PlayerControllerB_ConnectClientToPlayerObject_Postfix(PlayerControllerB __instance)
-    {
-        try
-        {
-            if (localPlayer != __instance || !PowerRing.IsEnabled) { return; }
-            if (localPlayer.gameplayCamera.gameObject.GetComponent<ShieldPostprocess>() == null)
-            {
-                logger.LogDebug("Adding ShieldPostprocess script to player camera");
-                ShieldPostprocess shield = localPlayer.gameplayCamera.gameObject.AddComponent<ShieldPostprocess>();
-                shield.blurMethod = ShieldPostprocess.BlurMethod.GaussianOnly;
-                shield.postprocessPower = 4;
-                shield.globalIllumination = false;
-            }
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return;
-        }
     }
 }
