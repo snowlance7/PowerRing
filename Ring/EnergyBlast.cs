@@ -11,6 +11,8 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
+    public AudioClip energyBlastSFX = null!;
+
     public static float EnergyBlastEnemyKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Enemy Knockback Force", 50f, "How much knockback force the energy blast applies to enemies.").Value;
     public static float EnergyBlastPlayerKnockbackForce => PluginInstance.Config.Bind("Energy Blast", "Player Knockback Force", 50f, "How much knockback force the energy blast applies to players.").Value;
     public static int EnergyBlastEnemyDamage => PluginInstance.Config.Bind("Energy Blast", "Enemy Damage", 1, "How much damage the energy blast deals to enemies.").Value;
@@ -20,7 +22,7 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyBlastKeyPressed(InputAction.CallbackContext context) // Energy Blast
     {
-        if (!CanUseRing() || AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
+        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
 
         QuickCastAbilitySynced(() =>
         {
@@ -67,7 +69,7 @@ internal partial class PowerRing : WearableObject
     {
         logger.LogDebug("EnergyBlastRpc");
         energyBlastParticleSystem.Play();
-        //audioSource.PlayOneShot(energyBlastSFX);
+        audioSource.PlayOneShot(energyBlastSFX);
         UsePower(AbilityPowerUsageOnCast[(int)Ability.EnergyBlast]);
         SetCooldown(Ability.EnergyBlast);
 

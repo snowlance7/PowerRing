@@ -26,6 +26,10 @@ internal abstract class PowerRingConstruct : NetworkBehaviour
 
     [HideInInspector] public Shield shield = null!;
     [HideInInspector] public Collider collider = null!;
+    [HideInInspector] public AudioSource audioSource = null!;
+
+    public AudioClip activateSFX = null!;
+    public AudioClip deactivateSFX = null!;
 
     float timeActivated;
 
@@ -35,6 +39,7 @@ internal abstract class PowerRingConstruct : NetworkBehaviour
     {
         shield = GetComponent<Shield>();
         collider = GetComponent<Collider>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public virtual void Start()

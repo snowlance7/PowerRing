@@ -23,8 +23,11 @@ internal partial class PowerRing : WearableObject
     public ParticleSystem energyBlastParticleSystem = null!;
     public GameObject energyHitPrefab = null!;
     public ParticleSystem noPowerParticleSystem = null!;
-    //public AudioClip oathSFX = null!;
-    //public AudioClip energyBlastSFX = null!;
+    public GameObject greenLightObj = null!;
+
+    public AudioClip lowPowerSFX = null!;
+    public AudioClip noPowerSFX = null!;
+    public AudioClip notEnoughPowerSFX = null!;
 
     public GameObject bubbleShieldPrefab = null!;
 
@@ -39,6 +42,8 @@ internal partial class PowerRing : WearableObject
 
     [HideInInspector] public float power = 1f;
     [HideInInspector] public float powerUsage;
+    bool noPowerTriggered;
+    bool lowPowerTriggered;
 
     float[] cooldowns = new float[7];
 
@@ -60,6 +65,7 @@ internal partial class PowerRing : WearableObject
     [HideInInspector] public PowerRingConstruct? lastConstruct;
 
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
+    public bool localPlayerRecitedOath = false;
 
     public enum Ability
     {
@@ -72,6 +78,7 @@ internal partial class PowerRing : WearableObject
         EnergyShield = 6
     }
 
+    public static float LowPowerWarning => PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Low Power Warning", 0.25f, "When the rings power is lower than this, it will trigger a low power warning to warn the player").Value;
     public static ulong[] RingRestrictedSteamIDs => ParseSteamIds(PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Restricted Steam IDs", "", "List of steam ids separated by commas of players who can use the Power Ring. Leave blank to allow all players to use it.").Value); // TODO
 
     [StaticInit]
@@ -208,6 +215,18 @@ internal partial class PowerRing : WearableObject
 
         UsePower(powerUsage);
 
+        if (power < LowPowerWarning && !lowPowerTriggered)
+        {
+            lowPowerTriggered = true;
+            OnLowPower();
+        }
+
+        if (power <= 0 && !noPowerTriggered)
+        {
+            noPowerTriggered = true;
+            OnNoPower();
+        }
+
         for (int i = 0; i < cooldowns.Length; i++)
         {
             if (cooldowns[i] <= 0)
@@ -313,7 +332,7 @@ internal partial class PowerRing : WearableObject
             && (!inCastingAnimation || (!playerWornBy!.twoHanded && !playerWornBy.twoHandedAnimation && !playerWornBy.inSpecialInteractAnimation && !playerWornBy.isClimbingLadder && !playerWornBy.isGrabbingObjectAnimation)); // TODO: Test this
     }
 
-    public bool CanUseRing()
+    public bool CanUseRing(bool overrideOath = false)
     {
         return playerWornBy != null
             && playerWornBy == localPlayer
@@ -322,13 +341,23 @@ internal partial class PowerRing : WearableObject
             && !playerWornBy.inSpecialMenu
             && !playerWornBy.inShockingMinigame
             && !playerWornBy.inTerminalMenu
-            && !playerWornBy.isTypingChat;
+            && !playerWornBy.isTypingChat
+            && (overrideOath || OathRequirementMet());
+    }
+
+    public bool OathRequirementMet()
+    {
+        return OathRequired ? localPlayerRecitedOath : true;
     }
 
     public bool CanUsePower(float powerAmount)
     {
         float newPowerAmount = power - powerAmount;
-        if (newPowerAmount < 0) { return false; }
+        if (newPowerAmount < 0)
+        {
+            audioSource.PlayOneShot(notEnoughPowerSFX);
+            return false;
+        }
         return true;
     }
 
@@ -337,9 +366,25 @@ internal partial class PowerRing : WearableObject
         SetPower(power - powerAmount);
     }
 
-    public void LowPowerEffects()
+    public void ChargeRing()
+    {
+        lowPowerTriggered = false;
+        noPowerTriggered = false;
+        power = 1f;
+    }
+
+    public void OnNoPower()
+    {
+        // TODO
+        ToggleFlight(false);
+        ToggleGreenLight(false);
+        audioSource.PlayOneShot(noPowerSFX);
+    }
+
+    public void OnLowPower()
     {
         // TODO: in the show, the ring flashes on and off to notify them its low power
+        audioSource.PlayOneShot(lowPowerSFX);
     }
 
     public void CastAbilitySynced(Action action, bool doPlayerCastAnimation = true, float animationStartTime = 0.5f, float maxGlowTime = 0.1f)
