@@ -1,7 +1,5 @@
-﻿using EnergyShieldEffect;
-using GameNetcodeStuff;
+﻿using GameNetcodeStuff;
 using HarmonyLib;
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,8 +10,8 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
-    public static readonly bool FlightHover = PluginInstance.Config.Bind("Flight", "Hover", true, "If the flight ability should allow hovering instead of requiring continuous movement.").Value;
-    public static readonly float FlightSpeed = PluginInstance.Config.Bind("Flight", "Speed", 1f, "How fast the player should move while flying").Value;
+    public static bool FlightHover => PluginInstance.Config.Bind("Flight", "Hover", true, "If the flight ability should allow hovering instead of requiring continuous movement.").Value;
+    public static float FlightSpeed => PluginInstance.Config.Bind("Flight", "Speed", 1f, "How fast the player should move while flying").Value;
 
     private static readonly int Walking = Animator.StringToHash("Walking");
     private static readonly int Sprinting = Animator.StringToHash("Sprinting");

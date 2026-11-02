@@ -2,9 +2,6 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using SnowyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using static PowerRing.Plugin;
 

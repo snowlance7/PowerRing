@@ -48,15 +48,15 @@ MonoBehaviour:
   fadeRadius: 0
   priority: 0
   customPasses:
-  - rid: 7768709646053539843
+  - rid: 4123013613991755776
   injectionPoint: 2
   m_TargetCamera: {fileID: 0}
   useTargetCamera: 0
   references:
     version: 2
     RefIds:
-    - rid: 7768709646053539843
-      type: {class: ShieldPostprocessHDRPPass, ns: FXV, asm: Snowlance.PowerRing}
+    - rid: 4123013613991755776
+      type: {class: ShieldPostprocessHDRPPass, ns: EnergyShieldEffect, asm: EnergyShieldEffect}
       data:
         m_Name: ShieldPostprocess
         enabled: 1
@@ -65,3 +65,5 @@ MonoBehaviour:
         clearFlags: 0
         passFoldout: 0
         m_Version: 0
+        blendAddMaterial: {fileID: 0}
+        postprocessMaterial: {fileID: 0}

@@ -4,7 +4,6 @@ using Dawn;
 using Dusk;
 using GameNetcodeStuff;
 using HarmonyLib;
-using SnowyLib;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +23,7 @@ internal class Plugin : BaseUnityPlugin
 
     private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
     public static PlayerControllerB localPlayer => StartOfRound.Instance.localPlayerController;
-    public static PlayerControllerB? PlayerFromId(ulong id) => StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).FirstOrDefault();
+    public static PlayerControllerB PlayerFromId(ulong id) => StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).First();
     public static bool IsServerOrHost => NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost;
 
     private void Awake()

@@ -1,6 +1,6 @@
 {
-  "PowerRingItemKeys": {
+  "<None>ItemKeys": {
     "__type": "DawnItemInfo",
-    "PowerRing": "power_ring:power_ring"
+    "PowerRing": "<None>:power_ring"
   }
 }

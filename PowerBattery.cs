@@ -1,22 +1,28 @@
 ﻿using Dawn;
-using Unity.Netcode;
-using static PowerRing.Plugin;
+using System.Linq;
 
 namespace PowerRing;
 
-internal class PowerBattery : NetworkBehaviour
+internal class PowerBattery : PhysicsProp
 {
     public static bool IsEnabled => LethalContent.Unlockables[PowerRingKeys.PowerBattery] != null;
 
     public InteractTrigger interactTrigger = null!;
 
-    public void Update()
+    public override void Update()
     {
-        interactTrigger.interactable = localPlayer.currentlyHeldObjectServer != null && localPlayer.currentlyHeldObjectServer is PowerRing;
+        base.Update();
+        interactTrigger.interactable = PowerRing.Instances.Any(x => x.CanUseRing());
     }
 
-    public void ChargeRing()
+    public void ChargeRing() // InteractTrigger
     {
-        throw new System.NotImplementedException();
+        var ring = PowerRing.Instances.FirstOrDefault(x => x.CanUseRing());
+        if (ring == null) { return; }
+
+        ring.QuickCastAbilitySynced(() =>
+        {
+            ring.ChargeRingRpc();
+        });
     }
 }

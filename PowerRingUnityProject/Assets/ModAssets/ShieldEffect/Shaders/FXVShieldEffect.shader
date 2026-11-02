@@ -427,7 +427,7 @@ Shader "FXV/FXVShieldEffect"
         }
 	}
 
-	CustomEditor "FXV.ShieldEditorUtils.fxvShieldMaterialEditor"
+	CustomEditor "EnergyShieldEffect.Editor.fxvShieldMaterialEditor"
 
 	FallBack "Diffuse"
 }

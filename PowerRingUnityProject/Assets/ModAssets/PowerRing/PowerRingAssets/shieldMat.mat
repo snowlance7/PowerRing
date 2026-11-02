@@ -24,7 +24,7 @@ Material:
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses:
   - Postprocess
@@ -103,13 +103,13 @@ Material:
     - _ActivationTime: 1
     - _ActivationTime01: 1
     - _BackfacesIntensity: 1
-    - _BlendDstMode: 10
+    - _BlendDstMode: 1
     - _BlendSrcMode: 5
     - _BumpScale: 1
     - _ColorRimHitInfluence: 1
     - _ColorRimMax: 1.23
     - _ColorRimMin: 0.35
-    - _CullMode: 2
+    - _CullMode: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DirVisActivationInfluence: 1
@@ -190,6 +190,6 @@ Material:
     - _PatternColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShieldBounds: {r: 1, g: 1, b: 1, a: 0}
     - _ShieldDirection: {r: 1, g: 0, b: 0, a: 0}
-    - _TextureColor: {r: 0.15327635, g: 0.8537167, b: 0, a: 0.7882353}
+    - _TextureColor: {r: 0.15327638, g: 0.8537167, b: 0, a: 1}
     - _WorldScale: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

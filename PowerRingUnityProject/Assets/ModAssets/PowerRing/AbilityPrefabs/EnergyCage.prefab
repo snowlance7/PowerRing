@@ -11,11 +11,13 @@ GameObject:
   - component: {fileID: 3995570479445962963}
   - component: {fileID: 2473497389089094054}
   - component: {fileID: 157362474405959592}
-  - component: {fileID: 1100600817222772988}
-  - component: {fileID: 2837325817164276586}
   - component: {fileID: 497082783219473189}
   - component: {fileID: 2820568743850268839}
-  m_Layer: 0
+  - component: {fileID: 1710638645940184727}
+  - component: {fileID: 7920103312176211686}
+  - component: {fileID: 3238110173462133343}
+  - component: {fileID: 4652923098473951272}
+  m_Layer: 11
   m_Name: EnergyCage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,129 +89,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1100600817222772988
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1524795999770629034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -193455897, guid: 7d4a7f39fe81c244fb5fbcab406764c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shieldActive: 0
-  shieldActivationSpeed: 1
-  shieldActivationRange: {x: 0, y: 1}
-  materialVariants: []
-  shieldCollider: {fileID: 0}
-  shieldColliders: []
-  followObject: {fileID: 0}
-  shieldLight: {fileID: 0}
-  sortingLayer: Default
-  sortingOrder: 0
-  isVisuallyActive: 1
-  hitDecalTexture: {fileID: 0}
-  hitEffectDistortion: 1
-  hitVariationTexture: {fileID: 0}
-  hitVariationScale: 1
-  hitVariationColor: 0
-  hitColorPower: 1
-  hitShieldAnimation:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  hitDecalFadeAnimation:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: -1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -1
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  hitDecalSizeAnimation:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: -1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -1
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  hitDurationModifier: 1
-  hitAffectsColor: 0
-  hitColor: {r: 1, g: 1, b: 1, a: 1}
-  hitAffectsRimTexture: 1
-  hitAffectsPatternTexture: 1
-  hitTextureColor: {r: 1, g: 1, b: 1, a: 1}
-  ShieldFadePoint: {x: 0, y: 1, z: 0}
-  activationAnimationPreview: 1
---- !u!114 &2837325817164276586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1524795999770629034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd3ce7087c0f41b4a8c0587ea016718a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  amplitude: 1
-  speed: 1
 --- !u!114 &497082783219473189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,10 +119,268 @@ MonoBehaviour:
   m_GameObject: {fileID: 1524795999770629034}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2133297891, guid: 7d4a7f39fe81c244fb5fbcab406764c3, type: 3}
+  m_Script: {fileID: -2133297891, guid: 7dc4da97034a23d43904874095062649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ring: {fileID: 0}
   player: {fileID: 0}
   enemy: {fileID: 0}
   shield: {fileID: 0}
+  collider: {fileID: 0}
+  audioSource: {fileID: 0}
+  activateSFX: {fileID: 0}
+  deactivateSFX: {fileID: 0}
+--- !u!114 &1710638645940184727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524795999770629034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1578404566, guid: 7dc4da97034a23d43904874095062649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScript: {fileID: 2820568743850268839}
+--- !u!114 &7920103312176211686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524795999770629034}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1896129856, guid: bf696085b9e48c04b9e93c541179513e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shieldActive: 0
+  shieldActivationSpeed: 0.5
+  shieldActivationRange: {x: -0.18, y: 1.4}
+  materialVariants: []
+  shieldCollider: {fileID: 0}
+  shieldColliders: []
+  followObject: {fileID: 0}
+  shieldLight: {fileID: 0}
+  sortingLayer: Default
+  sortingOrder: 0
+  isVisuallyActive: 1
+  hitDecalTexture: {fileID: 2800000, guid: ae0173d52f84492489b0a29dde26013f, type: 3}
+  hitEffectDistortion: 6
+  hitVariationTexture: {fileID: 0}
+  hitVariationScale: 1
+  hitVariationColor: 0
+  hitColorPower: 5
+  hitShieldAnimation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.46417338
+      value: 1.2436768
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hitDecalFadeAnimation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0041656494
+      value: 1.0047302
+      inSlope: -2.7677236
+      outSlope: -2.7677236
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.036883842
+    - serializedVersion: 3
+      time: 1.0125122
+      value: -0.0070762634
+      inSlope: -0.035013545
+      outSlope: -0.035013545
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.3975486
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hitDecalSizeAnimation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hitDurationModifier: 1
+  hitAffectsColor: 1
+  hitColor: {r: 0, g: 1, b: 0, a: 1}
+  hitAffectsRimTexture: 1
+  hitAffectsPatternTexture: 1
+  hitTextureColor: {r: 1, g: 1, b: 1, a: 1}
+  ShieldFadePoint: {x: 0, y: 1, z: 0}
+  activationAnimationPreview: 1
+  hitEffectPreviewEnabled: 1
+  hitEffectPreviewTime: 0
+  hitEffectPreviewSize: 1
+  copyHitParamsFrom: {fileID: 0}
+--- !u!64 &3238110173462133343
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524795999770629034}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 524288
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 2146959359
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 1
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2432090755550338912, guid: 1f17087d6f001564aa75411be762f91e, type: 3}
+--- !u!82 &4652923098473951272
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524795999770629034}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
+    type: 2}
+  m_audioClip: {fileID: 8300000, guid: b8e6cd28526e109479c6524119a3654b, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 10
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

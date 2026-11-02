@@ -1,9 +1,6 @@
 ﻿using SnowyLib;
-using System;
-using System.Collections;
 using System.Linq;
 using Unity.Netcode;
-using Unity.Services.Authentication.Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WearableItemsAPI;
@@ -74,7 +71,7 @@ internal partial class PowerRing : WearableObject
             }
         }
 
-        SpawnEnergyConstructRpc(hit.point, playerWornBy!.transform.rotation);
+        SpawnEnergyConstructRpc(hit.point + (Vector3.up * 1.5f), playerWornBy!.transform.rotation);
     }
 
     [Rpc(SendTo.Server, RequireOwnership = false)]

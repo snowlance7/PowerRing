@@ -15,7 +15,7 @@ MonoBehaviour:
   _configEntries: []
   _tags: []
   <Key>k__BackingField:
-    _namespace: power_ring
+    _namespace: <None>
     _key: power_ring
   <Item>k__BackingField: {fileID: 11400000, guid: cf5831d7607c6a6408bb7ab977abe025,
     type: 2}

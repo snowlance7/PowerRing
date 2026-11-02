@@ -1,16 +1,15 @@
-﻿using GameNetcodeStuff;
+﻿using EnergyShieldEffect;
+using GameNetcodeStuff;
 using SnowyLib;
-using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using static PowerRing.Plugin;
-using EnergyShieldEffect;
 using static PowerRing.PowerRing;
 
 namespace PowerRing;
 
-[RequireComponent(typeof(Shield), typeof(Collider))]
+[RequireComponent(typeof(ShieldCollisionDetect), typeof(Collider))]
 internal abstract class PowerRingConstruct : NetworkBehaviour
 {
     public static List<PowerRingConstruct> Instances = new List<PowerRingConstruct>();

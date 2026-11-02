@@ -1,6 +1,5 @@
 ﻿using Dawn;
 using GameNetcodeStuff;
-using HarmonyLib;
 using SnowyLib;
 using System;
 using System.Collections;
@@ -10,13 +9,13 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
-using EnergyShieldEffect;
 using static PowerRing.Plugin;
 
 namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
+    public static List<PowerRing> Instances { get; private set; } = [];
     public static bool IsEnabled => LethalContent.Items[PowerRingKeys.PowerRing] != null;
 
     public Transform castDirection = null!;
@@ -65,7 +64,6 @@ internal partial class PowerRing : WearableObject
     [HideInInspector] public PowerRingConstruct? lastConstruct;
 
     public bool LocalPlayerUsing => playerHeldBy != null && localPlayer == playerHeldBy && !isPocketed;
-    public bool localPlayerRecitedOath = false;
 
     public enum Ability
     {
@@ -86,14 +84,22 @@ internal partial class PowerRing : WearableObject
     {
         _ = RingRestrictedSteamIDs;
 
+        _ = ShowBubbleShieldOnClient;
+        _ = MaxSharedBubbleShields;
+
         _ = EnergyBlastEnemyKnockbackForce;
         _ = EnergyBlastPlayerKnockbackForce;
         _ = EnergyBlastEnemyDamage;
         _ = EnergyBlastPlayerDamage;
 
-        _ = FlightHover;
+        _ = MaxEnergyCages;
 
-        _ = ShowBubbleShieldOnClient;
+        _ = MaxEnergyConstructs;
+
+        _ = FlightHover;
+        _ = FlightSpeed;
+
+        _ = OathRequired;
 
         SetUpShieldVisualization();
     }
@@ -153,8 +159,21 @@ internal partial class PowerRing : WearableObject
         collidersMask = LayerMask.GetMask("Colliders");
     }
 
+    public override void Start()
+    {
+        base.Start();
+        Instances.Add(this);
+    }
+
+    public override void OnDestroy()
+    {
+        Instances.Remove(this);
+        base.OnDestroy();
+    }
+
     public void OnEnable()
     {
+        logger.LogDebug("Enabling ring keybinds"); // TODO: Test this
         PowerRingInputs.Instance.GreenLightKey.started += GreenLightKeyPressed;
         PowerRingInputs.Instance.GreenLightKey.canceled += GreenLightKeyPressed;
 
@@ -183,6 +202,7 @@ internal partial class PowerRing : WearableObject
 
     public void OnDisable()
     {
+        logger.LogDebug("Disabling ring keybinds"); // TODO: Test this
         PowerRingInputs.Instance.GreenLightKey.started -= GreenLightKeyPressed;
         PowerRingInputs.Instance.GreenLightKey.canceled -= GreenLightKeyPressed;
 
@@ -345,11 +365,6 @@ internal partial class PowerRing : WearableObject
             && (overrideOath || OathRequirementMet());
     }
 
-    public bool OathRequirementMet()
-    {
-        return OathRequired ? localPlayerRecitedOath : true;
-    }
-
     public bool CanUsePower(float powerAmount)
     {
         float newPowerAmount = power - powerAmount;
@@ -364,13 +379,6 @@ internal partial class PowerRing : WearableObject
     public void UsePower(float powerAmount)
     {
         SetPower(power - powerAmount);
-    }
-
-    public void ChargeRing()
-    {
-        lowPowerTriggered = false;
-        noPowerTriggered = false;
-        power = 1f;
     }
 
     public void OnNoPower()
@@ -562,6 +570,14 @@ internal partial class PowerRing : WearableObject
     public void SetPowerRpc(float powerAmount)
     {
         SetPower(powerAmount);
+    }
+
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void ChargeRingRpc()
+    {
+        lowPowerTriggered = false;
+        noPowerTriggered = false;
+        power = 1f;
     }
 
     public static ulong[] ParseSteamIds(string input)

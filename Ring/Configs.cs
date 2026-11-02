@@ -1,8 +1,5 @@
 ﻿using SnowyLib;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using static PowerRing.PowerRing;
 using static PowerRing.Plugin;
 
 namespace PowerRing;

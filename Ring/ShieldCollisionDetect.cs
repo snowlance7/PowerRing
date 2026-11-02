@@ -1,18 +1,17 @@
-﻿using EnergyShieldEffect;
-using GameNetcodeStuff;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using GameNetcodeStuff;
 using UnityEngine;
 
 namespace PowerRing;
 
 internal class ShieldCollisionDetect : MonoBehaviour, IHittable
 {
-    [SerializeField] Shield mainScript = null!;
+    [SerializeField] PowerRingConstruct mainScript = null!;
 
     public bool Hit(int force, Vector3 hitDirection, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)
     {
-        throw new System.NotImplementedException();
+        if (playerWhoHit == null || mainScript.collider == null) { return false; }
+        Vector3 hitPoint = mainScript.collider.ClosestPoint(playerWhoHit.gameplayCamera.transform.position);
+        mainScript.HitShieldRpc(hitPoint, hitDirection, force, force);
+        return true;
     }
 }
