@@ -1,4 +1,8 @@
 {
+  "LethalDiseasesItemKeys": {
+    "__type": "DawnItemInfo",
+    "PowerBattery": "lethal_diseases:power_battery"
+  },
   "<None>ItemKeys": {
     "__type": "DawnItemInfo",
     "PowerRing": "<None>:power_ring"

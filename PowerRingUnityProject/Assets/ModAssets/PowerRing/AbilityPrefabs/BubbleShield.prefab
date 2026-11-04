@@ -249,8 +249,8 @@ MonoBehaviour:
   hitTextureColor: {r: 1, g: 1, b: 1, a: 1}
   ShieldFadePoint: {x: 0, y: 1, z: 0}
   activationAnimationPreview: 1
-  hitEffectPreviewEnabled: 0
-  hitEffectPreviewTime: 0
+  hitEffectPreviewEnabled: 1
+  hitEffectPreviewTime: 1
   hitEffectPreviewSize: 1
   copyHitParamsFrom: {fileID: 0}
 --- !u!114 &4285327752475822033

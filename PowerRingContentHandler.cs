@@ -8,7 +8,6 @@ public class PowerRingContentHandler : ContentHandler<PowerRingContentHandler>
 {
     public class PowerRingAssets(DuskMod mod, string filePath) : AssetBundleLoader<PowerRingAssets>(mod, filePath)
     {
-
         [LoadFromBundle("ShieldCustomPass.prefab")]
         public GameObject ShieldCustomPassPrefab { get; private set; } = null!;
 
@@ -35,6 +34,6 @@ public class PowerRingContentHandler : ContentHandler<PowerRingContentHandler>
     public PowerRingContentHandler(DuskMod mod) : base(mod)
     {
         RegisterContent("power_ring", out PowerRing);
-        //RegisterContent("power_battery", out PowerBattery);
+        RegisterContent("power_battery", out PowerBattery);
     }
 }

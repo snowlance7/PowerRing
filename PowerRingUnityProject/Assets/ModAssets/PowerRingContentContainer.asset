@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   assetBundles:
   - assetBundleName: power_ring
+    enabledByDefault: 1
     configName: Power Ring
+  - assetBundleName: power_battery
+    enabledByDefault: 1
+    configName: Power Battery
