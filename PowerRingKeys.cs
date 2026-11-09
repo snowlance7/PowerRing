@@ -5,5 +5,5 @@ namespace PowerRing;
 public static class PowerRingKeys
 {
     public static readonly NamespacedKey<DawnItemInfo> PowerRing = NamespacedKey<DawnItemInfo>.From("power_ring", "power_ring");
-    public static readonly NamespacedKey<DawnUnlockableItemInfo> PowerBattery = NamespacedKey<DawnUnlockableItemInfo>.From("power_ring", "power_battery");
+    public static readonly NamespacedKey<DawnItemInfo> PowerBattery = NamespacedKey<DawnItemInfo>.From("power_ring", "power_battery");
 }

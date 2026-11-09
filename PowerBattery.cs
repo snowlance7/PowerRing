@@ -1,13 +1,24 @@
 ﻿using Dawn;
 using System.Linq;
+using UnityEngine;
 
 namespace PowerRing;
 
 internal class PowerBattery : PhysicsProp
 {
-    public static bool IsEnabled => LethalContent.Unlockables[PowerRingKeys.PowerBattery] != null;
+    public static bool IsEnabled => LethalContent.Items[PowerRingKeys.PowerBattery] != null;
 
-    public InteractTrigger interactTrigger = null!;
+    [SerializeField] AudioClip insertRingSFX = null!; // TODO
+    [SerializeField] AudioClip chargeRingSFX = null!; // TODO
+
+    InteractTrigger interactTrigger = null!;
+    AudioSource audioSource = null!;
+
+    public void Awake()
+    {
+        interactTrigger = gameObject.GetComponentInChildren<InteractTrigger>();
+        audioSource = gameObject.GetComponent<AudioSource>();
+    }
 
     public override void Update()
     {
@@ -20,8 +31,11 @@ internal class PowerBattery : PhysicsProp
         var ring = PowerRing.Instances.FirstOrDefault(x => x.CanUseRing());
         if (ring == null) { return; }
 
+        audioSource.PlayOneShot(insertRingSFX);
+
         ring.QuickCastAbilitySynced(() =>
         {
+            audioSource.PlayOneShot(chargeRingSFX);
             ring.ChargeRingRpc();
         });
     }

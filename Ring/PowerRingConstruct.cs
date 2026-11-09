@@ -95,7 +95,9 @@ internal abstract class PowerRingConstruct : NetworkBehaviour
         ring.powerUsage += PowerUsagePerSecond;
         ring.lastConstruct = this;
         shield.enabled = true;
+        logger.LogDebug("Setting shield active");
         shield.SetShieldActive(true);
+        logger.LogDebug("Set shield active");
         OnActivate();
     }
 

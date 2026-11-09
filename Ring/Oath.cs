@@ -13,7 +13,7 @@ internal partial class PowerRing : WearableObject
     public static bool OathRequired => PluginInstance.Config.Bind("Power Ring Options", "Power Ring | Oath Required", true, "If true, you will not be able to use the ring until you recite the oath").Value;
 
     public bool LocalPlayerRecitedOath => ringOwner != null && ringOwner == localPlayer;
-    public PlayerControllerB? ringOwner;
+    [HideInInspector] public PlayerControllerB? ringOwner;
     public AudioSource oathAudioSource = null!;
     public AudioClip oathSFX = null!;
     private Coroutine? oathRoutine;

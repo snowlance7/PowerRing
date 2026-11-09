@@ -193,6 +193,13 @@ internal static class ShieldPatches
         try
         {
             if (localPlayer != __instance || !PowerRing.IsEnabled) { return; }
+
+            if (PowerRing.CustomPassVolume != null)
+            {
+                PowerRing.CustomPassVolume.targetCamera = localPlayer.gameplayCamera;
+                PowerRing.CustomPassVolume.useTargetCamera = true;
+            }
+
             if (localPlayer.gameplayCamera.gameObject.GetComponent<ShieldPostprocess>() == null)
             {
                 logger.LogDebug("Adding ShieldPostprocess script to player camera");

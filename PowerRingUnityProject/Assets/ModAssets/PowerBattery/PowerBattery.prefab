@@ -466,10 +466,12 @@ MonoBehaviour:
   heldByPlayerOnServer: 0
   radarIcon: {fileID: 0}
   reachedFloorTarget: 0
-  grabbableToEnemies: 0
+  grabbableToEnemies: 1
   hasBeenHeld: 0
   rotateObject: 0
   interactTrigger: {fileID: 7244097047178664251}
+  insertRingSFX: {fileID: 8300000, guid: 80ccb6846046ba0408fd0d17ad8988ce, type: 3}
+  chargeRingSFX: {fileID: 8300000, guid: f0f2dd88e9d4cc44b8519727a1eb5e4e, type: 3}
 --- !u!1 &6961908950977701351
 GameObject:
   m_ObjectHideFlags: 0

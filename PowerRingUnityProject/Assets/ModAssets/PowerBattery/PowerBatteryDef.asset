@@ -15,7 +15,7 @@ MonoBehaviour:
   _configEntries: []
   _tags: []
   <Key>k__BackingField:
-    _namespace: lethal_diseases
+    _namespace: power_ring
     _key: power_battery
   <Item>k__BackingField: {fileID: 11400000, guid: e1c3b63eb88251843a4d4bb8e374732c,
     type: 2}

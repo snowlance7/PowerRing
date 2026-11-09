@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6609095836196536865}
+  - component: {fileID: 3352740026569982518}
+  - component: {fileID: 501428960028108680}
   - component: {fileID: 8359442415356153856}
   - component: {fileID: 4417028755508985538}
   - component: {fileID: 5731914137229325160}
-  - component: {fileID: 3352740026569982518}
-  - component: {fileID: 501428960028108680}
   m_Layer: 6
   m_Name: PowerRing
   m_TagString: PhysicsProp
@@ -43,6 +43,112 @@ Transform:
   - {fileID: 4529051587257667613}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3352740026569982518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612455492156143838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2981596122
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 0
+--- !u!114 &501428960028108680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612455492156143838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -2100335427, guid: 7dc4da97034a23d43904874095062649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabbable: 1
+  isHeld: 0
+  isHeldByEnemy: 0
+  deactivated: 0
+  parentObject: {fileID: 0}
+  targetFloorPosition: {x: 0, y: 0, z: 0}
+  startFallingPosition: {x: 0, y: 0, z: 0}
+  floorYRot: 0
+  fallTime: 0
+  hasHitGround: 0
+  scrapValue: 0
+  itemUsedUp: 0
+  playerHeldBy: {fileID: 0}
+  isPocketed: 0
+  isBeingUsed: 0
+  isInElevator: 0
+  isInShipRoom: 0
+  isInFactory: 1
+  useCooldown: 0
+  currentUseCooldown: 0
+  itemProperties: {fileID: 11400000, guid: cf5831d7607c6a6408bb7ab977abe025, type: 2}
+  insertedBattery:
+    empty: 0
+    charge: 0
+  customGrabTooltip: 
+  propBody: {fileID: 0}
+  propColliders: []
+  originalScale: {x: 0, y: 0, z: 0}
+  wasOwnerLastFrame: 0
+  mainObjectRenderer: {fileID: 0}
+  scrapPersistedThroughRounds: 0
+  heldByPlayerOnServer: 0
+  radarIcon: {fileID: 0}
+  reachedFloorTarget: 0
+  grabbableToEnemies: 0
+  hasBeenHeld: 0
+  rotateObject: 0
+  wearableItemProperties: {fileID: 11400000, guid: a567b6f66c030d743b36fbdf143b2b89,
+    type: 2}
+  energyBlastSFX: {fileID: 8300000, guid: 7e611002a99d9b7488f32ab05d28b67b, type: 3}
+  isFlying: 0
+  flightActivateSFX: {fileID: 8300000, guid: 2ec299eea1d78a34182cdb69424121de, type: 3}
+  flightDeactivateSFX: {fileID: 8300000, guid: 7e611002a99d9b7488f32ab05d28b67b, type: 3}
+  greenLightActivateSFX: {fileID: 8300000, guid: 2ec299eea1d78a34182cdb69424121de,
+    type: 3}
+  greenLightDeactivateSFX: {fileID: 8300000, guid: 7e611002a99d9b7488f32ab05d28b67b,
+    type: 3}
+  ringOwner: {fileID: 0}
+  oathAudioSource: {fileID: 3244017654638360458}
+  oathSFX: {fileID: 8300000, guid: b8e6cd28526e109479c6524119a3654b, type: 3}
+  castDirection: {fileID: 7291864793515370551}
+  energyBlastParticleSystem: {fileID: 5105284358897077271}
+  energyHitPrefab: {fileID: 6823302871133167919, guid: 3138a83bedbd6ad4481ba0b061da2eb6,
+    type: 3}
+  noPowerParticleSystem: {fileID: 5599915321278935489}
+  greenLightObj: {fileID: 7739318363789201910}
+  lowPowerSFX: {fileID: 8300000, guid: a452d5610bca0d346a7559ae713c0000, type: 3}
+  noPowerSFX: {fileID: 8300000, guid: f1af7310dc8c7bf45998aed7d6e77b31, type: 3}
+  notEnoughPowerSFX: {fileID: 8300000, guid: 0fc71e685f9455349a28a4f2e49e0f0a, type: 3}
+  bubbleShieldPrefab: {fileID: 8935437450343671273, guid: 774633948652b524ab5dbfcbaa433461,
+    type: 3}
+  energyConstructPrefab: {fileID: 7222511701818959025, guid: c86385680f30ac941b40e85103dd95fd,
+    type: 3}
+  energyCagePrefab: {fileID: 1524795999770629034, guid: 647adad90d202084598140392651d296,
+    type: 3}
+  energyShieldPrefab: {fileID: 819130223891566230, guid: 3635501c41deda344820b92c81fb0a98,
+    type: 3}
+  power: 1
+  powerUsage: 0
+  isCasting: 0
+  inQuickCastingAnimation: 0
+  inCastingAnimation: 0
+  lastConstruct: {fileID: 0}
 --- !u!65 &8359442415356153856
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -177,110 +283,6 @@ MonoBehaviour:
   overridingLowPass: 0
   lowPassOverride: 20000
   debugLog: 0
---- !u!114 &3352740026569982518
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 612455492156143838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2981596122
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 1
-  AutoObjectParentSync: 0
---- !u!114 &501428960028108680
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 612455492156143838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -2100335427, guid: 7dc4da97034a23d43904874095062649, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grabbable: 1
-  isHeld: 0
-  isHeldByEnemy: 0
-  deactivated: 0
-  parentObject: {fileID: 0}
-  targetFloorPosition: {x: 0, y: 0, z: 0}
-  startFallingPosition: {x: 0, y: 0, z: 0}
-  floorYRot: 0
-  fallTime: 0
-  hasHitGround: 0
-  scrapValue: 0
-  itemUsedUp: 0
-  playerHeldBy: {fileID: 0}
-  isPocketed: 0
-  isBeingUsed: 0
-  isInElevator: 0
-  isInShipRoom: 0
-  isInFactory: 1
-  useCooldown: 0
-  currentUseCooldown: 0
-  itemProperties: {fileID: 11400000, guid: cf5831d7607c6a6408bb7ab977abe025, type: 2}
-  insertedBattery:
-    empty: 0
-    charge: 0
-  customGrabTooltip: 
-  propBody: {fileID: 0}
-  propColliders: []
-  originalScale: {x: 0, y: 0, z: 0}
-  wasOwnerLastFrame: 0
-  mainObjectRenderer: {fileID: 0}
-  scrapPersistedThroughRounds: 0
-  heldByPlayerOnServer: 0
-  radarIcon: {fileID: 0}
-  reachedFloorTarget: 0
-  grabbableToEnemies: 0
-  hasBeenHeld: 0
-  rotateObject: 0
-  wearableItemProperties: {fileID: 11400000, guid: a567b6f66c030d743b36fbdf143b2b89,
-    type: 2}
-  energyBlastSFX: {fileID: 0}
-  isFlying: 0
-  flightActivateSFX: {fileID: 0}
-  flightDeactivateSFX: {fileID: 0}
-  greenLightActivateSFX: {fileID: 0}
-  greenLightDeactivateSFX: {fileID: 0}
-  ringOwner: {fileID: 0}
-  oathAudioSource: {fileID: 3244017654638360458}
-  oathSFX: {fileID: 0}
-  castDirection: {fileID: 7291864793515370551}
-  energyBlastParticleSystem: {fileID: 5105284358897077271}
-  energyHitPrefab: {fileID: 6823302871133167919, guid: 3138a83bedbd6ad4481ba0b061da2eb6,
-    type: 3}
-  noPowerParticleSystem: {fileID: 5599915321278935489}
-  greenLightObj: {fileID: 7739318363789201910}
-  lowPowerSFX: {fileID: 0}
-  noPowerSFX: {fileID: 0}
-  notEnoughPowerSFX: {fileID: 0}
-  bubbleShieldPrefab: {fileID: 8935437450343671273, guid: 774633948652b524ab5dbfcbaa433461,
-    type: 3}
-  energyConstructPrefab: {fileID: 7222511701818959025, guid: c86385680f30ac941b40e85103dd95fd,
-    type: 3}
-  energyCagePrefab: {fileID: 1524795999770629034, guid: 647adad90d202084598140392651d296,
-    type: 3}
-  energyShieldPrefab: {fileID: 819130223891566230, guid: 3635501c41deda344820b92c81fb0a98,
-    type: 3}
-  power: 1
-  powerUsage: 0
-  isCasting: 0
-  inQuickCastingAnimation: 0
-  inCastingAnimation: 0
-  lastConstruct: {fileID: 0}
 --- !u!1 &1378073317737193971
 GameObject:
   m_ObjectHideFlags: 0

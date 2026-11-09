@@ -61,7 +61,9 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
         var shieldObj = Instantiate(energyShieldPrefab, transform);
         shieldObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
         {
-            netObj.GetComponent<BubbleShield>().ActivateRpc(this.NetworkObject);
+            if (netObj == null) { logger.LogError("netObj is null"); return; }
+            if (this.NetworkObject == null) { logger.LogError("this.NetworkObject is null"); return; }
+            netObj.GetComponent<EnergyShield>().ActivateRpc(this.NetworkObject);
         });
     }
 }

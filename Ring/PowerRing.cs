@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using WearableItemsAPI;
 using static PowerRing.Plugin;
@@ -17,6 +18,8 @@ internal partial class PowerRing : WearableObject
 {
     public static List<PowerRing> Instances { get; private set; } = [];
     public static bool IsEnabled => LethalContent.Items[PowerRingKeys.PowerRing] != null;
+
+    public static CustomPassVolume? CustomPassVolume;
 
     public Transform castDirection = null!;
     public ParticleSystem energyBlastParticleSystem = null!;
@@ -139,6 +142,7 @@ internal partial class PowerRing : WearableObject
             var instance = Instantiate(PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab, renderingRoot);
 
             instance.name = "ShieldCustomPass";
+            CustomPassVolume = instance.GetComponent<CustomPassVolume>();
         }
         else
         {
