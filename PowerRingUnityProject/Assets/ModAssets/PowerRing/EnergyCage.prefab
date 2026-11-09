@@ -17,9 +17,9 @@ GameObject:
   - component: {fileID: 3238110173462133343}
   - component: {fileID: 4652923098473951272}
   - component: {fileID: 2036444489447920231}
-  m_Layer: 11
+  m_Layer: 24
   m_Name: EnergyCage
-  m_TagString: Untagged
+  m_TagString: DoNotSet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 257
+  m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: d765136058752b344aaf23e38d0b9c5d, type: 2}
@@ -101,15 +101,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 65192994
+  GlobalObjectIdHash: 4230496731
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
+  SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  AutoObjectParentSync: 0
 --- !u!114 &2820568743850268839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_Script: {fileID: -1896129856, guid: 29c5e79239ee4a249ac676fabf4d6d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shieldActive: 1
+  shieldActive: 0
   shieldActivationSpeed: 1
   shieldActivationRange: {x: 0.3, y: 0.89}
   materialVariants: []

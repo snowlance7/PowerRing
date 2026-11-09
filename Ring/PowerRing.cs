@@ -16,6 +16,7 @@ namespace PowerRing;
 
 internal partial class PowerRing : WearableObject
 {
+    public static readonly bool UsingEnergyShieldEffect = true;
     public static List<PowerRing> Instances { get; private set; } = [];
     public static bool IsEnabled => LethalContent.Items[PowerRingKeys.PowerRing] != null;
 
@@ -53,7 +54,7 @@ internal partial class PowerRing : WearableObject
     public static int playerMask;
     public static int enemiesMask;
     public static int roomMask;
-    public static int collidersMask;
+    public static int miscLevelGeometryMask;
 
     [HideInInspector] public bool isCasting;
     [HideInInspector] public bool inQuickCastingAnimation;
@@ -104,50 +105,7 @@ internal partial class PowerRing : WearableObject
 
         _ = OathRequired;
 
-        SetUpShieldVisualization();
-    }
-
-    private static void SetUpShieldVisualization()
-    {
-        if (!IsEnabled) { return; }
-
-        var systemsRoot = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(obj => obj.name == "Systems");
-
-        if (systemsRoot == null)
-        {
-            logger.LogError("Systems root not found");
-            return;
-        }
-
-        var renderingRoot = systemsRoot.transform.Find("Rendering");
-
-        if (renderingRoot == null)
-        {
-            logger.LogError("Systems/Rendering not found");
-            return;
-        }
-
-        //var shieldCustomPass = PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab.GetComponent<CustomPassVolume>().customPasses[0];
-
-        //var customPass = renderingRoot.Find("CustomPass (1)").GetComponent<CustomPassVolume>();
-        //customPass.customPasses.Add(shieldCustomPass);
-        //return;
-
-        var shieldCustomPassTransform = renderingRoot.Find("ShieldCustomPass");
-
-        if (shieldCustomPassTransform == null)
-        {
-            logger.LogDebug("Creating ShieldCustomPass");
-
-            var instance = Instantiate(PowerRingContentHandler.Instance.PowerRing!.ShieldCustomPassPrefab, renderingRoot);
-
-            instance.name = "ShieldCustomPass";
-            CustomPassVolume = instance.GetComponent<CustomPassVolume>();
-        }
-        else
-        {
-            logger.LogDebug("ShieldCustomPass already exists");
-        }
+        ShieldVisuals.SetUpShieldVisualization();
     }
 
     public void Awake()
@@ -160,7 +118,7 @@ internal partial class PowerRing : WearableObject
         playerMask = LayerMask.GetMask("Player");
         enemiesMask = LayerMask.GetMask("Enemies");
         roomMask = LayerMask.GetMask("Room");
-        collidersMask = LayerMask.GetMask("Colliders");
+        miscLevelGeometryMask = LayerMask.GetMask("MiscLevelGeometry");
     }
 
     public override void Start()

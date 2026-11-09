@@ -99,7 +99,7 @@ internal static class ShieldPatches
             if (__instance.turretMode == TurretMode.Detection || __instance.turretMode == TurretMode.Charging) { return; }
             if (__result != localPlayer) { return; }
             Vector3 direction = Utils.GetSpreadDirection(__instance.aimPoint.forward, 1f); // TODO: Test this
-            if (!Physics.Raycast(__instance.aimPoint.position, direction, out RaycastHit hit, 30f, PowerRing.collidersMask)) { return; }
+            if (!Physics.Raycast(__instance.aimPoint.position, direction, out RaycastHit hit, 30f, PowerRing.miscLevelGeometryMask)) { return; }
             if (!hit.collider.gameObject.TryGetComponent(out PowerRingConstruct construct)) { return; }
             if (!construct.IsActivated) { return; ; }
             construct.HitShieldRpc(hit.point, hit.normal);
@@ -158,7 +158,7 @@ internal static class ShieldPatches
     {
         try
         {
-            if (!Physics.Raycast(shotgunPosition, shotgunForward, out RaycastHit hit, 30f, PowerRing.collidersMask)) { return; }
+            if (!Physics.Raycast(shotgunPosition, shotgunForward, out RaycastHit hit, 30f, PowerRing.miscLevelGeometryMask)) { return; }
             if (!hit.collider.gameObject.TryGetComponent(out PowerRingConstruct construct)) { return; }
             float force = 0f;
             if (hit.distance < 5f)
@@ -178,36 +178,6 @@ internal static class ShieldPatches
                 force = 1f;
             }
             construct.HitShield(hit.point, hit.normal, force, force);
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return;
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
-    public static void PlayerControllerB_ConnectClientToPlayerObject_Postfix(PlayerControllerB __instance)
-    {
-        try
-        {
-            if (localPlayer != __instance || !PowerRing.IsEnabled) { return; }
-
-            if (PowerRing.CustomPassVolume != null)
-            {
-                PowerRing.CustomPassVolume.targetCamera = localPlayer.gameplayCamera;
-                PowerRing.CustomPassVolume.useTargetCamera = true;
-            }
-
-            if (localPlayer.gameplayCamera.gameObject.GetComponent<ShieldPostprocess>() == null)
-            {
-                logger.LogDebug("Adding ShieldPostprocess script to player camera");
-                ShieldPostprocess shield = localPlayer.gameplayCamera.gameObject.AddComponent<ShieldPostprocess>();
-                shield.blurMethod = ShieldPostprocess.BlurMethod.GaussianOnly;
-                shield.postprocessPower = 4;
-                shield.globalIllumination = false;
-            }
         }
         catch (System.Exception e)
         {

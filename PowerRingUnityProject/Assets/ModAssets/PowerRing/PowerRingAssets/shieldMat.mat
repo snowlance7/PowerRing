@@ -22,9 +22,9 @@ Material:
   - _FEATURE_DEPTHOVERLAPRIM_ON
   - _FEATURE_DIRECTIONALVISIBILITY_ON
   m_LightmapFlags: 5
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses:
   - Postprocess
@@ -103,7 +103,7 @@ Material:
     - _ActivationTime: 1
     - _ActivationTime01: 1
     - _BackfacesIntensity: 1
-    - _BlendDstMode: 1
+    - _BlendDstMode: 10
     - _BlendSrcMode: 5
     - _BumpScale: 1
     - _ColorRimHitInfluence: 1

@@ -17,9 +17,9 @@ GameObject:
   - component: {fileID: 1513942726480894049}
   - component: {fileID: 3157241984945881557}
   - component: {fileID: 4686199341084752035}
-  m_Layer: 11
+  m_Layer: 24
   m_Name: BubbleShield
-  m_TagString: Untagged
+  m_TagString: DoNotSet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 257
+  m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 50db62613a9f85a46bd08f15e7e3d4a3, type: 2}
@@ -122,12 +122,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 146143737
+  GlobalObjectIdHash: 3797979679
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
+  SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 0
@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: -1896129856, guid: 29c5e79239ee4a249ac676fabf4d6d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shieldActive: 1
+  shieldActive: 0
   shieldActivationSpeed: 1
   shieldActivationRange: {x: 0, y: 1}
   materialVariants: []

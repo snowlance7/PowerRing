@@ -24,7 +24,7 @@ internal partial class PowerRing : WearableObject
 
             QuickCastAbilitySynced(() =>
             {
-                if (Physics.Raycast(localPlayer.gameplayCamera.transform.position, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, energyConstructCastDistance, collidersMask, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(localPlayer.gameplayCamera.transform.position, localPlayer.gameplayCamera.transform.forward, out RaycastHit hit, energyConstructCastDistance, miscLevelGeometryMask, QueryTriggerInteraction.Ignore))
                 {
                     var construct = hit.collider.gameObject.GetComponent<EnergyConstruct>();
                     if (construct != null)

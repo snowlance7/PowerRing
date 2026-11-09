@@ -23,7 +23,8 @@ internal abstract class PowerRingConstruct : NetworkBehaviour
     [HideInInspector] public PlayerControllerB? player;
     [HideInInspector] public EnemyAI? enemy;
 
-    [HideInInspector] public Shield shield = null!;
+    [HideInInspector] public Shield? shield { get; private set; }
+    [HideInInspector] public MeshRenderer? renderer { get; private set; }
     [HideInInspector] public Collider collider = null!;
     [HideInInspector] public AudioSource audioSource = null!;
 
@@ -36,9 +37,11 @@ internal abstract class PowerRingConstruct : NetworkBehaviour
 
     public virtual void Awake()
     {
-        shield = GetComponent<Shield>();
-        collider = GetComponent<Collider>();
-        audioSource = GetComponent<AudioSource>();
+        shield = gameObject.GetComponent<Shield>();
+        collider = gameObject.GetComponent<Collider>();
+        audioSource = gameObject.GetComponent<AudioSource>();
+        renderer = gameObject.GetComponent<MeshRenderer>();
+        renderer ??= gameObject.GetComponentInChildren<MeshRenderer>();
     }
 
     public virtual void Start()
@@ -94,24 +97,50 @@ internal abstract class PowerRingConstruct : NetworkBehaviour
         ring.SetCooldown(Ability);
         ring.powerUsage += PowerUsagePerSecond;
         ring.lastConstruct = this;
-        shield.enabled = true;
-        logger.LogDebug("Setting shield active");
-        shield.SetShieldActive(true);
-        logger.LogDebug("Set shield active");
+        ActivateShield(true);
         OnActivate();
+    }
+
+    public void ActivateShield(bool value)
+    {
+        if (shield == null)
+        {
+            renderer?.enabled = value;
+            return;
+        }
+
+        shield.enabled = value;
+        shield.SetShieldActive(value);
+    }
+
+    public void SetShieldVisuallyActive(bool value)
+    {
+        if (shield == null)
+        {
+            renderer?.enabled = value;
+            return;
+        }
+        shield.SetShieldVisuallyActive(value);
     }
 
     public void Deactivate()
     {
         ring?.powerUsage -= PowerUsagePerSecond;
         ring = null;
-        shield.SetShieldActive(false);
+        ActivateShield(false);
         OnDeactivate();
         NetworkObject.Despawn(destroy: true, 1f);
     }
 
     public void HitShield(Vector3 hitPos, Vector3 hitDirection, float hitScale = 1f, float hitDuration = 1f)
     {
+        if (shield == null)
+        {
+            GameObject energyHitObj = Instantiate(PowerRingContentHandler.Instance.PowerRing!.EnergyHitPrefab, hitPos, Quaternion.identity);
+            Destroy(energyHitObj, 1f);
+            return;
+        }
+
         shield.OnHit(collider.ClosestPoint(hitPos), hitDirection, hitScale, hitDuration);
     }
 

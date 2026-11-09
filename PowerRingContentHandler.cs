@@ -10,20 +10,8 @@ public class PowerRingContentHandler : ContentHandler<PowerRingContentHandler>
         [LoadFromBundle("ShieldCustomPass.prefab")]
         public GameObject ShieldCustomPassPrefab { get; private set; } = null!;
 
-        //[LoadFromBundle("FXVPostprocessBlitAdd_HDRP.shader")]
-        //public Shader FXVPostprocessBlitAdd_HDRPShader { get; private set; } = null!;
-
-        //[LoadFromBundle("FXVPostprocessShield_HDRP.shader")]
-        //public Shader FXVPostprocessShield_HDRPShader { get; private set; } = null!;
-
-        //[LoadFromBundle("FXVPostprocessBlitAdd.shader")]
-        //public Shader FXVPostprocessBlitAddShader { get; private set; } = null!;
-
-        //[LoadFromBundle("FXVPostprocessShield.shader")]
-        //public Shader FXVPostprocessShieldShader { get; private set; } = null!;
-
-        //[LoadFromBundle("RandomNoise.png")]
-        //public Texture2D RandomNoiseTexture { get; private set; } = null!;
+        [LoadFromBundle("EnergyHit.prefab")]
+        public GameObject EnergyHitPrefab { get; private set; } = null!;
     }
     public PowerRingAssets? PowerRing;
 

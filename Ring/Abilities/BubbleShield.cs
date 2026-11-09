@@ -158,6 +158,6 @@ internal class BubbleShield : PowerRingConstruct // TODO: Test this // TODO: Wor
     public override void OnActivate()
     {
         if (localPlayer != player || ShowBubbleShieldOnClient) { return; }
-        shield.SetShieldVisuallyActive(ShowBubbleShieldOnClient);
+        SetShieldVisuallyActive(ShowBubbleShieldOnClient);
     }
 }
