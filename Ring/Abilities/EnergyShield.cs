@@ -12,7 +12,7 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
 {
     private void EnergyShieldKeyPressed(InputAction.CallbackContext context)
     {
-        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyShield]) { return; }
+        if (!CanUseRing(withAnimation: true) || !AbilityEnabled[(int)Ability.EnergyShield]) { return; }
 
         if (AbilityToggle[(int)Ability.EnergyShield]) // SELF CAST TOGGLE
         {
@@ -43,7 +43,7 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
             }
             else
             {
-                StopCastAnimationRpc();
+                StopCastRpc();
 
                 var shield = localPlayer.GetConstruct<EnergyShield>();
                 if (shield != null && shield.IsActivated)
@@ -58,7 +58,7 @@ internal partial class PowerRing : WearableObject // Turret raycast: Player, Roo
     public void CastEnergyShieldRpc()
     {
         if (!IsServer) { return; }
-        var shieldObj = Instantiate(energyShieldPrefab, transform);
+        var shieldObj = Instantiate(PowerRingContentHandler.Instance.PowerRing.EnergyShieldPrefab, transform);
         shieldObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
         {
             if (netObj == null) { logger.LogError("netObj is null"); return; }
@@ -83,7 +83,17 @@ internal class EnergyShield : PowerRingConstruct
         collider = gameObject.GetComponent<Collider>();
     }
 
-    public virtual void LateUpdate()
+    public override void Update()
+    {
+        base.Update();
+        if (ring == null) { return; }
+        if (ring.playerWornBy == null || !ring.inCastingAnimation)
+        {
+            Deactivate();
+        }
+    }
+
+    public void LateUpdate()
     {
         if (parentObject != null)
         {

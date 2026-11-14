@@ -20,7 +20,9 @@ internal partial class PowerRing : WearableObject
 
     private void OathKeyPressed(InputAction.CallbackContext context) // Oath
     {
-        if (!CanReciteOath() || oathRoutine != null) { return; }
+        if (!CanReciteOath() || oathRoutine != null || context.canceled) { return; }
+
+        logger.LogDebug("Casting oath");
 
         CastAbilitySynced(() =>
         {
@@ -28,27 +30,34 @@ internal partial class PowerRing : WearableObject
             {
                 yield return null;
 
+                logger.LogDebug("Starting oath");
                 oathAudioSource.Play();
-                while (oathAudioSource.isPlaying)
+                logger.LogDebug("Starting oath");
+
+                float elapsedTime = 0f;
+                while (elapsedTime < 5f)
                 {
+                    elapsedTime += Time.deltaTime;
                     yield return null;
                     if (!CanReciteOath())
                     {
+                        logger.LogDebug("Cant recite oath, stopping animation");
                         oathAudioSource.Stop();
-                        StopCastAnimationRpc();
+                        StopCastRpc();
                         oathRoutine = null;
                         yield break;
                     }
                 }
 
+                logger.LogDebug("Changing ring ownership");
                 ChangeRingOwnershipRpc(localPlayer.actualClientId);
-                StopCastAnimationRpc();
+                StopCastRpc();
                 oathRoutine = null;
             }
 
             oathRoutine = StartCoroutine(Oath());
 
-        }, animationStartTime: 0f, maxGlowTime: 1f);
+        }, maxGlowTime: 1f);
     }
 
     public bool OathRequirementMet()
@@ -58,7 +67,7 @@ internal partial class PowerRing : WearableObject
 
     public bool CanReciteOath()
     {
-        return CanUseRing(overrideOath: true)
+        return CanUseRing(withAnimation: true, overrideOath: true)
             && !playerWornBy!.twoHanded
             && !playerWornBy.twoHandedAnimation
             && !playerWornBy.inSpecialInteractAnimation

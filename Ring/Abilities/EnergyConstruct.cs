@@ -16,7 +16,7 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyConstructKeyPressed(InputAction.CallbackContext context)
     {
-        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyConstruct]) { return; }
+        if (!CanUseRing(withAnimation: true) || !AbilityEnabled[(int)Ability.EnergyConstruct]) { return; }
 
         if (AbilityToggle[(int)Ability.EnergyConstruct])
         {
@@ -51,7 +51,7 @@ internal partial class PowerRing : WearableObject
             }
             else
             {
-                StopCastAnimationRpc();
+                StopCastRpc();
                 lastConstruct?.DeactivateRpc(); // TODO: Test this
             }
         }
@@ -77,7 +77,7 @@ internal partial class PowerRing : WearableObject
     [Rpc(SendTo.Server, RequireOwnership = false)]
     private void SpawnEnergyConstructRpc(Vector3 position, Quaternion rotation)
     {
-        var constructObj = Instantiate(energyConstructPrefab, position, rotation, RoundManager.Instance.mapPropsContainer.transform);
+        var constructObj = Instantiate(PowerRingContentHandler.Instance.PowerRing.EnergyConstructPrefab, position, rotation, RoundManager.Instance.mapPropsContainer.transform);
         constructObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
         {
             netObj.GetComponent<EnergyConstruct>().ActivateRpc(this.NetworkObject);

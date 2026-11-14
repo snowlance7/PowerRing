@@ -77,13 +77,13 @@ internal partial class PowerRing : WearableObject
         {
             isFlying = false;
             powerUsage -= AbilityPowerUsagePerSecond[(int)Ability.Flight];
-            StopCastAnimationRpc();
+            StopCastRpc();
         }
     }
 
     public void FlightUpdate()
     {
-        if (playerWornBy == null) { return; }
+        if (playerWornBy == null || localPlayer != playerWornBy || !isFlying) { return; }
         if (!playerWornBy.quickMenuManager.isMenuOpen && !playerWornBy.inTerminalMenu && !playerWornBy.isTypingChat && !playerWornBy.isClimbingLadder && !playerWornBy.inSpecialInteractAnimation && !playerWornBy.jetpackControls)
         {
             Vector2 vector = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Move").ReadValue<Vector2>();
@@ -108,24 +108,24 @@ internal partial class PowerRing : WearableObject
     }
 }
 
-[HarmonyPatch]
-internal static class FlightPatches
-{
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Update))]
-    static void PlayerControllerB_Update_Prefix(PlayerControllerB __instance) // TODO: Test this
-    {
-        try
-        {
-            if (localPlayer != __instance) { return; }
-            PowerRing? ring = __instance.GetWearables().FirstOrDefault(x => x is PowerRing) as PowerRing;
-            if (ring == null || !ring.isFlying) { return; }
-            ring.FlightUpdate();
-        }
-        catch (System.Exception e)
-        {
-            logger.LogError(e);
-            return;
-        }
-    }
-}
+//[HarmonyPatch]
+//internal static class FlightPatches
+//{
+//    [HarmonyPrefix]
+//    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Update))]
+//    static void PlayerControllerB_Update_Prefix(PlayerControllerB __instance) // TODO: Test this // TODO: Why are we not just using the ring.Update for this????
+//    {
+//        try
+//        {
+//            if (localPlayer != __instance) { return; }
+//            PowerRing? ring = __instance.GetWearables().FirstOrDefault(x => x is PowerRing) as PowerRing;
+//            if (ring == null || !ring.isFlying) { return; }
+//            ring.FlightUpdate();
+//        }
+//        catch (System.Exception e)
+//        {
+//            logger.LogError(e);
+//            return;
+//        }
+//    }
+//}

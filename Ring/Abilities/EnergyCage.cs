@@ -16,7 +16,7 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyCageKeyPressed(InputAction.CallbackContext context) // Energy Cage
     {
-        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyCage]) { return; }
+        if (!CanUseRing(withAnimation: true) || !AbilityEnabled[(int)Ability.EnergyCage]) { return; }
 
         if (AbilityToggle[(int)Ability.EnergyCage])
         {
@@ -55,7 +55,7 @@ internal partial class PowerRing : WearableObject
             }
             else
             {
-                StopCastAnimationRpc();
+                StopCastRpc();
                 lastConstruct?.DeactivateRpc(); // TODO: Test this
             }
         }
@@ -81,7 +81,7 @@ internal partial class PowerRing : WearableObject
     {
         if (!netRef.TryGet(out NetworkObject netObj)) { logger.LogError("EnergyCageRpc: Failed to get netObj from netRef"); return; }
         EnemyAI enemy = netObj.GetComponent<EnemyAI>();
-        var cageObj = Instantiate(energyCagePrefab, enemy.transform.position, Quaternion.identity);
+        var cageObj = Instantiate(PowerRingContentHandler.Instance.PowerRing.EnergyCagePrefab, enemy.transform.position, Quaternion.identity);
         cageObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (cageNetObj) => cageNetObj.GetComponent<EnergyCage>().ActivateRpc(this.NetworkObject, netRef));
     }
 }

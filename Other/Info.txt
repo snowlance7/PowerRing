@@ -1,0 +1,43 @@
+This will be broken up into multiple replies as per discords character limit. (1/3)
+
+Hey, sorry for the delayed response. I wanted to put together some initial ideas for the Green Lantern ring mod. I'm definitely open to modifying or simplifying things depending on what's practical to implement. 
+
+Ring Model:
+https://sketchfab.com/3d-models/green-lantern-ring-dd4875c6ffca46b399ecf9cd07b204e7
+
+The ring itself would be equipped when picked up, and when selected on the scrap bar it would allow the player to use its abilities. I'm thinking multiple key presses/holds could control different abilities, but I'm open to whatever control scheme works best.
+Sketchfab
+YahyaKassab
+Green Lantern Ring - Download Free 3D model by YahyaKassab
+Green lantern ring concept - Green Lantern Ring - Download Free 3D model by YahyaKassab
+Image
+(2/3)
+Main abilities (If set keybinds for this is too difficult or complex, perhaps have a singular button that rotates through the abilities with labels for each one?) 
+Green Light – The ring can produce a green light similar to a flashlight.
+Protective Bubble – Create a green energy bubble around yourself, and potentially target another player you're pointing at. Ideally toggleable while the ring is selected. (Blocks from outside damage - turrets, mobs, mines, etc - Ideally a quick cast time for emergency use)
+Energy Construct – Create a temporary green energy wall/structure (some transparency would be ideal). It would disappear after a certain amount of time or once the ring runs out of charge. (Maybe adjustable duration in mod config settings?)
+Energy Pulse/Beam – A green energy blast that knocks enemies back and/or deals damage. Damage could be adjustable in the config.
+Hover/Fly – Allow the player to briefly hover/slow their falling, mainly to prevent fall damage. It doesn't necessarily need to be full flight. (If you can add flight, that would be cool - but not absolutely necessary if difficult to implement)
+Simple energy cage/trap - briefly slows or holds an enemy (Think a cage / dome around the target similar to the bubble earlier, but for hostile mobs to restrict movement - Maybe you could adjust the bubble to scale to size of target, and have it work on self/allies/hostiles so it would cover both use cases
+Directional energy shield - Holds up a shield in front of you that moves with your character (Blocks damage from turrets)
+
+Abilities should have a green color to it (similar to the rings color if not exactly the same) 
+
+I'm more interested in having a handful of abilities that feel good and polished rather than trying to make the ring overly complicated.
+(3/3)
+Ring/Mod Configuration
+
+Ideally, I'd like configurable options for: (if there's anything obvious I'm missing, feel free to add or let me know)
+
+Ring scrap value
+Ring spawn weight
+Which moons the ring can spawn on (all moons option available please)
+Whether the ring can be used by everyone or restricted to specific Steam IDs
+Ability damage
+Ability cooldowns
+Ring energy/charge capacity/ability usage drain adjuster (If we're gonna go with a charge system at all, maybe have the default recharging station work on the ring as well? - Similar to regular flashlights)
+Ability duration where applicable
+
+I'd also like the ring to have some sort of charge/energy system, so the stronger abilities can't simply be spammed indefinitely. The exact recharge/consumption system can be whatever is easiest to implement.
+
+I'm open to suggestions as well. If certain abilities are considerably more complicated than others, I'm happy to prioritize the simpler ones and potentially add more functionality later.

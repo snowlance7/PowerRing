@@ -11,7 +11,7 @@ internal partial class PowerRing : WearableObject
 
     private void GreenLightKeyPressed(InputAction.CallbackContext context) // Green Light
     {
-        if (!CanUseRing() || !AbilityEnabled[(int)Ability.GreenLight]) { return; }
+        if (!CanUseRing(withAnimation: true) || !AbilityEnabled[(int)Ability.GreenLight]) { return; }
 
         if (AbilityToggle[(int)Ability.GreenLight])
         {
@@ -63,7 +63,12 @@ internal partial class PowerRing : WearableObject
         {
             greenLightObj.SetActive(false);
             powerUsage -= AbilityPowerUsagePerSecond[(int)Ability.GreenLight];
-            StopCastAnimationRpc();
+            StopCastRpc();
         }
+    }
+
+    public void GreenLightUpdate()
+    {
+
     }
 }

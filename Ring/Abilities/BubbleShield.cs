@@ -50,7 +50,7 @@ internal partial class PowerRing : WearableObject
             }
             else
             {
-                StopCastAnimationRpc();
+                StopCastRpc();
 
                 var shield = localPlayer.GetConstruct<BubbleShield>();
                 if (shield != null && shield.IsActivated)
@@ -63,7 +63,7 @@ internal partial class PowerRing : WearableObject
 
     private void SharedBubbleShieldKeyPressed(InputAction.CallbackContext context) // SHARED CAST
     {
-        if (!CanUseRing() || !AbilityEnabled[(int)Ability.BubbleShield]) { return; }
+        if (!CanUseRing(withAnimation: true) || !AbilityEnabled[(int)Ability.BubbleShield]) { return; }
 
         logger.LogDebug("Shared cast");
 
@@ -104,7 +104,7 @@ internal partial class PowerRing : WearableObject
             }
             else
             {
-                StopCastAnimationRpc();
+                StopCastRpc();
                 lastConstruct?.DeactivateRpc(); // TODO: Test this
             }
         }
@@ -129,7 +129,7 @@ internal partial class PowerRing : WearableObject
     private void SpawnBubbleShieldRpc(ulong shieldedClientId)
     {
         PlayerControllerB player = PlayerFromId(shieldedClientId)!;
-        var shieldObj = Instantiate(bubbleShieldPrefab, player.transform);
+        var shieldObj = Instantiate(PowerRingContentHandler.Instance.PowerRing.BubbleShieldPrefab, player.transform);
         shieldObj.GetComponent<NetworkObject>().Spawn(destroyWithScene: true, (netObj) =>
         {
             netObj.GetComponent<BubbleShield>().ActivateRpc(this.NetworkObject, player.actualClientId);

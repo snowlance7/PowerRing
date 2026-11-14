@@ -22,7 +22,7 @@ internal partial class PowerRing : WearableObject
 
     private void EnergyBlastKeyPressed(InputAction.CallbackContext context) // Energy Blast
     {
-        if (!CanUseRing() || !AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
+        if (!CanUseRing(withAnimation: true) || !AbilityEnabled[(int)Ability.EnergyBlast] || context.canceled) { return; }
 
         QuickCastAbilitySynced(() =>
         {
@@ -81,7 +81,7 @@ internal partial class PowerRing : WearableObject
 
             if (netObj.TryGetComponent(out PlayerControllerB player))
             {
-                GameObject energyHitObj = Instantiate(energyHitPrefab, player.bodyParts[5]);
+                GameObject energyHitObj = Instantiate(PowerRingContentHandler.Instance.PowerRing.EnergyHitPrefab, player.bodyParts[5]);
                 Destroy(energyHitObj, 1f);
 
                 player.DamagePlayer(EnergyBlastPlayerDamage, callRPC: false, causeOfDeath: CauseOfDeath.Blast, force: direction * EnergyBlastPlayerKnockbackForce);
@@ -94,7 +94,7 @@ internal partial class PowerRing : WearableObject
             }
             else if (netObj.TryGetComponent(out EnemyAI enemy))
             {
-                GameObject energyHitObj = Instantiate(energyHitPrefab, enemy.eye);
+                GameObject energyHitObj = Instantiate(PowerRingContentHandler.Instance.PowerRing.EnergyHitPrefab, enemy.eye);
                 Destroy(energyHitObj, 1f);
 
                 enemy.HitEnemy(EnergyBlastEnemyDamage, lastPlayerWornBy);

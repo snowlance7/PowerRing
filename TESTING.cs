@@ -55,7 +55,8 @@ public static class TESTING
             if (!Utils.testing) { return true; }
             //DoHitTest();
             //Utils.LogLayerNames(1051400); // Turret raycast: Player, Room, InteractableObject, Colliders, PlayerRagdoll
-            Utils.LogLayerNames(1084754248); // Knife hit cast: Player, Props, Room, Colliders, Enemies, MapHazards, EnemiesNotRendered, Vehicle
+            //Utils.LogLayerNames(1084754248); // Knife hit cast: Player, Props, Room, Colliders, Enemies, MapHazards, EnemiesNotRendered, Vehicle
+            Utils.Ping(GameObject.FindObjectOfType<PowerRing>().transform.position);
             return false;
         }
         catch

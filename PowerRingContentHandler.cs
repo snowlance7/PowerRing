@@ -12,6 +12,18 @@ public class PowerRingContentHandler : ContentHandler<PowerRingContentHandler>
 
         [LoadFromBundle("EnergyHit.prefab")]
         public GameObject EnergyHitPrefab { get; private set; } = null!;
+
+        [LoadFromBundle("BubbleShield.prefab")]
+        public GameObject BubbleShieldPrefab { get; private set; } = null!;
+
+        [LoadFromBundle("EnergyConstruct.prefab")]
+        public GameObject EnergyConstructPrefab { get; private set; } = null!;
+
+        [LoadFromBundle("EnergyCage.prefab")]
+        public GameObject EnergyCagePrefab { get; private set; } = null!;
+
+        [LoadFromBundle("EnergyShield.prefab")]
+        public GameObject EnergyShieldPrefab { get; private set; } = null!;
     }
     public PowerRingAssets? PowerRing;
 
