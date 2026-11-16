@@ -47,9 +47,12 @@ internal partial class PowerRing : WearableObject
     public static int roomMask;
     public static int miscLevelGeometryMask;
 
+    int hashGrab;
+
     [HideInInspector] public bool isCasting { get; set; }
     [HideInInspector] public bool inQuickCastingAnimation;
     [HideInInspector] public bool inCastingAnimation;
+    bool inCastingAnimationLastFrame;
 
     public readonly Vector3 castLocalPositionOffset = new Vector3(-0.0141f, 0.0376f, 0.0576f);
     public readonly Vector3 castLocalRotationOffset = new Vector3(-30.894f, -92.448f, -4.496f);
@@ -110,6 +113,7 @@ internal partial class PowerRing : WearableObject
         enemiesMask = LayerMask.GetMask("Enemies");
         roomMask = LayerMask.GetMask("Room");
         miscLevelGeometryMask = LayerMask.GetMask("MiscLevelGeometry");
+        hashGrab = Animator.StringToHash("Grab");
     }
 
     public override void Start()
@@ -211,13 +215,33 @@ internal partial class PowerRing : WearableObject
             cooldowns[i] -= Time.deltaTime;
         }
 
+        if (isCasting && !CanContinueCasting())
+        {
+            StopCast();
+        }
+
         if (playerWornBy != null)
         {
             if (inCastingAnimation)
             {
-                if (!playerWornBy.isHoldingObject)
+                if (!playerWornBy.isHoldingObject && !playerWornBy.playerBodyAnimator.GetBool(hashGrab)) // TODO: Figure out how to get this working
                 {
-
+                    logger.LogDebug("Not in grab animation, setting grab animation");
+                    playerWornBy.playerBodyAnimator.SetTrigger("SwitchHoldAnimation");
+                    playerWornBy.playerBodyAnimator.SetBool(hashGrab, true);
+                }
+                inCastingAnimationLastFrame = true;
+            }
+            else
+            {
+                if (inCastingAnimationLastFrame)
+                {
+                    inCastingAnimationLastFrame = false;
+                    if (!playerWornBy.isHoldingObject && playerWornBy.playerBodyAnimator.GetBool(hashGrab))
+                    {
+                        playerWornBy.playerBodyAnimator.SetBool(hashGrab, false);
+                        playerWornBy.playerBodyAnimator.SetBool("cancelHolding", true);
+                    }
                 }
             }
         }
@@ -273,7 +297,7 @@ internal partial class PowerRing : WearableObject
 
     public bool CanContinueCasting()
     {
-
+        return playerWornBy != null && !playerWornBy.twoHanded && !playerWornBy.twoHandedAnimation && !playerWornBy.inSpecialInteractAnimation && !playerWornBy.isClimbingLadder && !playerWornBy.isGrabbingObjectAnimation;
     }
 
     //public bool CanCastAbilityWithAnimation(Ability ability, bool withAnimation)
@@ -413,26 +437,10 @@ internal partial class PowerRing : WearableObject
         renderer.material.SetFloat("_EmissiveIntensity", Mathf.Lerp(0, 10, strength));
     }
 
-    public void StartCastAnimation()
-    {
-        inCastingAnimation = true;
-        // TODO: Do HoldOneHandedItem animation here instead, ChargeItem breaks
-        //playerWornBy.playingQuickSpecialAnimation = true;
-        //playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, 0.5f);
-    }
-
-    public void StopCastAnimation()
-    {
-        inCastingAnimation = false;
-    }
-
     public void StartCast(bool doCastingAnimation = true, float maxGlowTime = 0.1f)
     {
         isCasting = true;
-        if (playerWornBy != null && doCastingAnimation)
-        {
-            StartCastAnimation();
-        }
+        inCastingAnimation = doCastingAnimation;
 
         IEnumerator startCast(float maxGlowTime)
         {
@@ -452,11 +460,10 @@ internal partial class PowerRing : WearableObject
     public void StopCast(float minGlowTime = 1f)
     {
         isCasting = false;
-        if (playerWornBy != null && inCastingAnimation)
-        {
-            StopCastAnimation();
-        }
         inCastingAnimation = false;
+
+        ToggleFlight(false);
+        ToggleGreenLight(false);
 
         IEnumerator stopCast(float minGlowTime)
         {
