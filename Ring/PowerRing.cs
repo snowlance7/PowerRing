@@ -224,11 +224,15 @@ internal partial class PowerRing : WearableObject
         {
             if (inCastingAnimation)
             {
-                if (!playerWornBy.isHoldingObject && !playerWornBy.playerBodyAnimator.GetBool(hashGrab)) // TODO: Figure out how to get this working
+                if (!playerWornBy.isHoldingObject && !playerWornBy.playerBodyAnimator.GetCurrentAnimatorStateInfo(2).IsName("HoldOneHandedItem")) // TODO: Figure out how to get this working
                 {
                     logger.LogDebug("Not in grab animation, setting grab animation");
-                    playerWornBy.playerBodyAnimator.SetTrigger("SwitchHoldAnimation");
-                    playerWornBy.playerBodyAnimator.SetBool(hashGrab, true);
+                    playerWornBy.inSpecialInteractAnimation = true;
+                    playerWornBy.playerBodyAnimator.Play("HoldOneHandedItem", 2);
+                    playerWornBy.playerBodyAnimator.SetBool("cancelHolding", false);
+                    //playerWornBy.playerBodyAnimator.SetTrigger("SwitchHoldAnimation");
+                    //playerWornBy.playerBodyAnimator.SetBool(hashGrab, true);
+
                 }
                 inCastingAnimationLastFrame = true;
             }
@@ -239,12 +243,45 @@ internal partial class PowerRing : WearableObject
                     inCastingAnimationLastFrame = false;
                     if (!playerWornBy.isHoldingObject && playerWornBy.playerBodyAnimator.GetBool(hashGrab))
                     {
+                        playerWornBy.inSpecialInteractAnimation = false;
                         playerWornBy.playerBodyAnimator.SetBool(hashGrab, false);
                         playerWornBy.playerBodyAnimator.SetBool("cancelHolding", true);
                     }
                 }
             }
         }
+
+        //if (playerWornBy != null)
+        //{
+        //    if (inCastingAnimation)
+        //    {
+        //        if (localPlayer == playerWornBy)
+        //        {
+        //            playerWornBy.playerBodyAnimator.speed = 0f;
+        //        }
+        //        else
+        //        {
+        //            if (playerWornBy.isWalking)
+        //            {
+        //                if (playerWornBy.playingQuickSpecialAnimation)
+        //                {
+        //                    playerWornBy.playerBodyAnimator.StopPlayback(); // TODO: Test this
+        //                    playerWornBy.playingQuickSpecialAnimation = false;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (!playerWornBy.playingQuickSpecialAnimation)
+        //                {
+        //                    playerWornBy.playingQuickSpecialAnimation = true;
+        //                    playerWornBy.playerBodyAnimator.Play("ChargeItem", 5, 0.5f);
+        //                }
+
+        //                playerWornBy.playerBodyAnimator.speed = 0f;
+        //            }
+        //        }
+        //    }
+        //}
 
         FlightUpdate();
         GreenLightUpdate();
